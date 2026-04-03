@@ -1,0 +1,221 @@
+
+{% extends 'main.html' %}
+{% block title %}Home{% endblock %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
+    <!-- ico-font-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
+    <!-- Themify icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
+    <!-- Flag icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
+    <!-- Feather icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
+    <!-- Plugins css start-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
+    <!-- Plugins css Ends-->
+    <!-- Bootstrap css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
+    <!-- App css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
+    <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
+    <!-- Responsive css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+{% endblock %}
+{% if messages %}
+    {% for message in messages %}
+        <div style="background:#fee2e2; color:#991b1b; padding:10px; margin:10px; border-radius:5px;">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+{% load tz %}
+ {% block content %}
+<div style="background:#111827; color:white; padding:15px 25px; display:flex; justify-content:space-between;">
+    <h3 style="margin:0;">Task Manager</h3>
+    <div>
+        <span style="margin-right:15px;">👤 {{ request.user.username }}</span>
+        <a href="/user_logout/" style="color:#f87171; text-decoration:none;">Logout</a>
+    </div>
+</div>
+
+<div style="padding:25px; background:#f3f4f6; min-height:100vh;">
+
+    <h2 style="margin-bottom:20px;">My Tasks</h2>
+
+    <!-- ✅ TASK CARDS -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:20px;">
+
+        {% for t in tasks %}
+        <div style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+
+            <!-- Title -->
+            <h4 style="margin-bottom:10px;">{{ t.title }}</h4>
+
+            <!-- Description -->
+            <p style="color:#6b7280; font-size:14px;">{{ t.description }}</p>
+
+            <!-- Status -->
+            <div style="margin:10px 0;">
+                {% if t.status == 'started' %}
+                    <span style="background:#d1fae5; color:#065f46; padding:5px 10px; border-radius:5px;">Running</span>
+                {% elif t.status == 'paused' %}
+                    <span style="background:#fef3c7; color:#92400e; padding:5px 10px; border-radius:5px;">Paused</span>
+                {% elif t.status == 'completed' %}
+                    <span style="background:#dbeafe; color:#1e3a8a; padding:5px 10px; border-radius:5px;">Completed</span>
+                {% else %}
+                    <span style="background:#e5e7eb; color:#374151; padding:5px 10px; border-radius:5px;">Pending</span>
+                {% endif %}
+            </div>
+
+            <!-- Timer -->
+            <div style="font-size:18px; font-weight:bold; margin:10px 0;">
+                ⏱ <span class="timer"
+                        data-start="{{ t.start_time|date:'c' }}"
+                        data-status="{{ t.status }}"
+                        data-end="{{ t.end_time|date:'c' }}"
+                        data-pause-time="{{ t.pause_time|date:'c' }}">
+                    </span>
+            </div>
+
+            <!-- Buttons -->
+            <div style="margin-top:10px;">
+
+                {% if t.status == 'pending' %}
+                    <a href="{% url 'start_task' t.id %}"
+                       style="background:#10b981; color:white; padding:6px 12px; border-radius:5px; text-decoration:none;">
+                       Start
+                    </a>
+
+                {% elif t.status == 'started' %}
+                    <a href="{% url 'pause_task' t.id %}"
+                       style="background:#f59e0b; color:white; padding:6px 12px; border-radius:5px; margin-right:5px; text-decoration:none;">
+                       Pause
+                    </a>
+
+                    <a href="{% url 'stop_task' t.id %}"
+                       style="background:#ef4444; color:white; padding:6px 12px; border-radius:5px; text-decoration:none;">
+                       Complete
+                    </a>
+
+                {% elif t.status == 'paused' %}
+                    <a href="{% url 'start_task' t.id %}"
+                       style="background:#3b82f6; color:white; padding:6px 12px; border-radius:5px; margin-right:5px; text-decoration:none;">
+                       Resume
+                    </a>
+
+                    <a href="{% url 'stop_task' t.id %}"
+                       style="background:#ef4444; color:white; padding:6px 12px; border-radius:5px; text-decoration:none;">
+                       Complete
+                    </a>
+
+                {% else %}
+                    <span style="color:#10b981;">✔ Done</span>
+                {% endif %}
+
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+<script>
+function formatTime(seconds) {
+    let h = Math.floor(seconds / 3600);
+    let m = Math.floor((seconds % 3600) / 60);
+    let s = seconds % 60;
+    return h + "h " + m + "m " + s + "s";
+}
+
+function updateTimer() {
+    document.querySelectorAll('.timer').forEach(el => {
+
+        let start = el.dataset.start;
+        let status = el.dataset.status;
+        let end = el.dataset.end;
+        let pauseTime = el.dataset.pauseTime;
+
+        if (!start) {
+            el.innerHTML = "-";
+            return;
+        }
+
+        let startTime = new Date(start);
+        let now = new Date();
+
+        let diff = 0;
+
+        // ✅ COMPLETED
+        if (status === 'completed' && end) {
+            diff = (new Date(end) - startTime) / 1000;
+        }
+
+        // ✅ RUNNING
+        else if (status === 'started') {
+            diff = (now - startTime) / 1000;
+        }
+
+        // ✅ PAUSED (🔥 FIXED)
+        else if (status === 'paused' && pauseTime) {
+            diff = (new Date(pauseTime) - startTime) / 1000;
+        }
+
+        el.innerHTML = formatTime(Math.floor(diff));
+    });
+}
+
+setInterval(updateTimer, 1000);
+updateTimer();
+</script>
+
+{% endblock %}
+{% block js %}
+    <!-- latest jquery-->
+    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <!-- Bootstrap js-->
+    <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <!-- feather icon js-->
+    <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
+    <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
+    <!-- scrollbar js-->
+    <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
+    <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
+    <!-- Sidebar jquery-->
+    <script src="{% static 'assets/js/config.js' %}"></script>
+    <!-- Plugins JS start-->
+    <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
+    <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.js' %}"></script>
+    <script src="{% static 'assets/js/header-slick.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"> </script>
+    <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/moment.min.js' %}"></script>
+    <script src="{% static 'assets/js/notify/bootstrap-notify.min.js' %}"></script>
+    <script src="{% static 'assets/js/dashboard/default.js' %}"></script>
+    <script src="{% static 'assets/js/notify/index.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/datatable.custom.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/datatable.custom1.js' %}"></script>
+    <script src="{% static 'assets/js/owlcarousel/owl.carousel.js' %}"></script>
+    <script src="{% static 'assets/js/owlcarousel/owl-custom.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/handlebars.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/typeahead.bundle.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/typeahead.custom.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
+    <script src="{% static 'assets/js/height-equal.js' %}"></script>
+    <!-- Plugins JS Ends-->
+{% endblock %}

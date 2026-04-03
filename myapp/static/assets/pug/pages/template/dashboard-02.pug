@@ -1,0 +1,629 @@
+
+doctype html
+html(lang='en')
+  include ../../components/header-files
+  body
+    include ../../components/loader
+    include ../../components/taptop
+    // page-wrapper Start
+    #pageWrapper.page-wrapper.compact-wrapper
+      include ../../components/header
+      // Page Body Start
+      .page-body-wrapper
+        include ../../components/sidebar
+        .page-body
+          .container-fluid
+            .page-title
+              .row
+                .col-xl-4.col-sm-7.box-col-3
+                  h3
+                    | Ecommerce Dashboard
+                .col-5.d-none.d-xl-block 
+                  include ../../components/sub-header
+                .col-xl-3.col-sm-5.box-col-4 
+                  ol.breadcrumb
+                    li.breadcrumb-item
+                      a(href='index.html') 
+                        svg.stroke-icon
+                          use(href='../assets/svg/icon-sprite.svg#stroke-home')
+                    li.breadcrumb-item Dashboard 
+                    li.breadcrumb-item.active E-Commerce
+          // Container-fluid starts
+          .container-fluid.ecommerce-dashboard
+            .row
+              .col-xl-6.proorder-xl-1
+                .card
+                  .card-body.selling-card 
+                    .row
+                      .col-md-4
+                        .sale-card 
+                          .sale-date
+                            h4 Total Sale
+                            a(href="order-history.html")
+                              span.txt-primary.f-w-700 (See all sales)
+                          span.f-w-700.f-14.pb-4 Jan 1,2024 - Jun 30,2022
+                          div.sale-data
+                            ul
+                              li
+                                h4 $654.85K
+                                .sale-value 
+                                  svg
+                                    use(href='../assets/svg/icon-sprite.svg#drop-menu') 
+                                  .sales-value
+                                    span.txt-danger 95%
+                                    span 6 month before 
+                      .col-md-8
+                        #latestSales-chart.latest-chart 
+              .col-xl-6.proorder-xl-2
+                .card
+                  .card-header.pb-0
+                    .header-top
+                      h4 Summary
+                      .dropdown.icon-dropdown.setting-menu
+                        button#userdropdown12.btn.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
+                          svg
+                            use(href='../assets/svg/icon-sprite.svg#setting') 
+                        .dropdown-menu.dropdown-menu-end(aria-labelledby='userdropdown12')
+                          a.dropdown-item(href='#') Weekly
+                          a.dropdown-item(href='#') Monthly 
+                          a.dropdown-item(href='#') Yearly 
+                  .card-body.pt-0.summary-card
+                    span.f-w-700.f-14 Jan 1,2024 - Jun 30,2022
+                    div.summary-progressbar
+                      ul
+                        li
+                          div
+                            h4 $654.85K
+                            span Summary
+                          .progress-showcase
+                            .progress.sm-progress-bar.progress-border-primary
+                              .progress-bar.bg-primary(role='progressbar', style='width: 30%', aria-valuenow='25', aria-valuemin='0', aria-valuemax='100') 
+                        li
+                          div 
+                            h4 $34.5K
+                            span Orders 
+                          div
+                            .progress.sm-progress-bar.progress-border-secondary
+                              .progress-bar.bg-secondary(role='progressbar', style='width: 45%', aria-valuenow='25', aria-valuemin='0', aria-valuemax='100') 
+                        li
+                          div
+                            h4 $3.86K
+                            span Avg. Order Value 
+                          div
+                            .progress-showcase 
+                              .progress.sm-progress-bar.progress-border-secondary
+                                .progress-bar(role='progressbar', style='width: 80%', aria-valuenow='25', aria-valuemin='0', aria-valuemax='100')
+                        li
+                          div 
+                            h4 $3.86K
+                            span Avg. Order Value 
+                          div
+                            .progress.sm-progress-bar.progress-border-secondary
+                              .progress-bar.bg-secondary(role='progressbar', style='width: 65%', aria-valuenow='25', aria-valuemin='0', aria-valuemax='100') 
+              .col-xl-7.proorder-xl-3.box-col-6
+                .card 
+                  .card-header.pb-0
+                    .header-top
+                      h4 Recent Orders 
+                      .dropdown.icon-dropdown.setting-menu
+                        button#userdropdown4.btn.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
+                          svg
+                            use(href='../assets/svg/icon-sprite.svg#setting') 
+                        .dropdown-menu.dropdown-menu-end(aria-labelledby='userdropdown4')
+                          a.dropdown-item(href='#') Weekly
+                          a.dropdown-item(href='#') Monthly 
+                          a.dropdown-item(href='#') Yearly
+                  .card-body
+                    .table-responsive.custom-scrollbar
+                      table#last-orders.last-orders-table.table
+                        thead
+                          tr 
+                            th.checkbox-checked
+                              .form-check 
+                                input#flexCheckDefault.form-check-input(type='checkbox' value='')  
+                            th Product Name
+                            th Date & Time 
+                            th Customer
+                            th Price 
+                            th Status
+                            th Action 
+                        tbody
+                          tr
+                            td.checkbox-checked
+                              .form-check
+                                input#flexCheckDefaults.form-check-input(type='checkbox' value='')
+                            td
+                              div.user-data
+                                div
+                                  img(src="../assets/images/product/16.png" alt="product")
+                                div
+                                  a(href="product.html")
+                                    h4 Camera Lens
+                                  span.f-w-600  Canon Camera
+                            td
+                              div.user-time
+                                a(href="product.html")
+                                  h4 14 Mar 2024
+                                span.f-w-600  10:00 AM
+                            td Brooklyn Simmons
+                            td $ 247.92
+                            td.txt-success Succeed
+                            td
+                              .dropdown.icon-dropdown
+                                button#userdropdownes5.btn.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
+                                  .drop-menu
+                                    i.icon-more-alt
+                                .dropdown-menu.dropdown-menu-end(aria-labelledby='userdropdownes5')
+                                  a.dropdown-item(href='#') Weekly
+                                  a.dropdown-item(href='#') Monthly
+                                  a.dropdown-item(href='#') Yearly
+                          tr
+                            td.checkbox-checked
+                              .form-check
+                                input#flexCheckDefault1.form-check-input(type='checkbox' value='')
+                            td
+                              div.user-data
+                                div
+                                  img(src="../assets/images/product/17.png" alt="product")
+                                div
+                                  a(href="product.html")
+                                    h4 Black Dress
+                                  span.f-w-600 Shasmi
+                            td
+                              div.user-time
+                                a(href="product.html")
+                                  h4 12 Mar 2024
+                                span.f-w-600  05:00 AM
+                            td Savannah Nguyen
+                            td $ 695.20
+                            td.txt-warning Waiting
+                            td
+                              .dropdown.icon-dropdown
+                                button#userdropdownes6.btn.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
+                                  .drop-menu
+                                    i.icon-more-alt
+                                .dropdown-menu.dropdown-menu-end(aria-labelledby='userdropdownes6')
+                                  a.dropdown-item(href='#') Weekly
+                                  a.dropdown-item(href='#') Monthly
+                                  a.dropdown-item(href='#') Yearly
+                          tr
+                            td.checkbox-checked
+                              .form-check
+                                input#flexCheckDefault2.form-check-input(type='checkbox' value='')
+                            td
+                              div.user-data
+                                div
+                                  img(src="../assets/images/product/19.png" alt="product")
+                                div
+                                  a(href="product.html")
+                                    h4 Argan Oil
+                                  span.f-w-600 Moroccan
+                            td
+                              div.user-time
+                                a(href="product.html")
+                                  h4 10 Mar 2024
+                                span.f-w-600  12:30 AM
+                            td Ronald Richards
+                            td $ 189.30
+                            td.txt-success Succeed
+                            td
+                              .dropdown.icon-dropdown
+                                button#userdropdownes7.btn.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
+                                  .drop-menu
+                                    i.icon-more-alt
+                                .dropdown-menu.dropdown-menu-end(aria-labelledby='userdropdownes7')
+                                  a.dropdown-item(href='#') Weekly
+                                  a.dropdown-item(href='#') Monthly
+                                  a.dropdown-item(href='#') Yearly
+                          tr
+                            td.checkbox-checked
+                              .form-check
+                                input#flexCheckDefault3.form-check-input(type='checkbox' value='')
+                            td
+                              div.user-data
+                                div
+                                  img(src="../assets/images/product/18.png" alt="product")
+                                div
+                                  a(href="product.html")
+                                    h4 Parfum
+                                  span.f-w-600 Bella Vita 
+                            td
+                              div.user-time
+                                a(href="product.html")
+                                  h4 01 Mar 2024
+                                span.f-w-600  09:20 AM
+                            td Marvin McKinney
+                            td $ 249.21 
+                            td.txt-danger Canceled 
+                            td
+                              .dropdown.icon-dropdown
+                                button#userdropdownes8.btn.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
+                                  .drop-menu 
+                                    i.icon-more-alt
+                                .dropdown-menu.dropdown-menu-end(aria-labelledby='userdropdownes8')
+                                  a.dropdown-item(href='#') Weekly
+                                  a.dropdown-item(href='#') Monthly
+                                  a.dropdown-item(href='#') Yearly
+              .col-xl-5.proorder-xl-4.col-lg-6.box-col-6
+                .card
+                  .card-header.custom-border-bottom
+                    .header-top
+                      h4 Customer Growth
+                      .dropdown.icon-dropdown.setting-menu
+                        button#userdropdown.btn.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
+                          svg
+                            use(href='../assets/svg/icon-sprite.svg#setting') 
+                        .dropdown-menu.dropdown-menu-end(aria-labelledby='userdropdown')
+                          a.dropdown-item(href='#') Weekly
+                          a.dropdown-item(href='#') Monthly 
+                          a.dropdown-item(href='#') Yearly 
+                  .card-body 
+                    .row 
+                      .col-xxl-8
+                        .map-world 
+                          .map
+                            #world-map2.jvector-map-height
+                      .col-xxl-4.d-xxl-block.d-none
+                        ul.customer-growth
+                          li
+                            div.customer-details
+                              div 
+                                img(src="../assets/images/dashboard-2/flags/1.png" alt="flag")
+                              div
+                                h6.f-w-600.f-14 United States
+                                span.f-w-600 70%
+                            .progress.progress-striped-primary.b-r-2
+                              .progress-bar(role='progressbar', style='width: 70%', aria-valuenow='10', aria-valuemin='0', aria-valuemax='100')
+                          li
+                            div.customer-details
+                              div
+                                img(src="../assets/images/dashboard-2/flags/2.png" alt="flag")
+                              div
+                                h6.f-w-600.f-14 Sweden 
+                                span.f-w-600 50% 
+                            .progress.progress-striped-primary.b-r-2
+                              .progress-bar(role='progressbar', style='width: 50%', aria-valuenow='10', aria-valuemin='0', aria-valuemax='100')
+                          li
+                            div.customer-details
+                              div
+                                img(src="../assets/images/dashboard-2/flags/3.png" alt="flag")
+                              div
+                                h6.f-w-600.f-14 Australia
+                                span.f-w-600 20%
+                            .progress.progress-striped-primary.b-r-2
+                              .progress-bar(role='progressbar', style='width: 20%', aria-valuenow='10', aria-valuemin='0', aria-valuemax='100')
+                          li
+                            div.customer-details
+                              div
+                                img(src="../assets/images/dashboard-2/flags/4.png" alt="flag")
+                              div
+                                h6.f-w-600.f-14 France 
+                                span.f-w-600 80% 
+                            .progress.progress-striped-primary.b-r-2
+                              .progress-bar(role='progressbar', style='width: 80%', aria-valuenow='10', aria-valuemin='0', aria-valuemax='100')
+              .col-xxl-4.col-lg-6.proorder-xl-5.box-col-6
+                .card
+                  .card-header
+                    .header-top 
+                      h4 Top Transaction
+                      .dropdown.icon-dropdown.setting-menu
+                        button#userdropdown21.btn.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
+                          svg
+                            use(href='../assets/svg/icon-sprite.svg#setting') 
+                        .dropdown-menu.dropdown-menu-end(aria-labelledby='userdropdown21')
+                          a.dropdown-item(href='#') Weekly
+                          a.dropdown-item(href='#') Monthly 
+                          a.dropdown-item(href='#') Yearly 
+                  .card-body
+                    .table-responsive.custom-scrollbar
+                      table.last-orders-table.table
+                        thead
+                          tr
+                            th Product Name
+                            th Date
+                            th Payment
+                            th Purchase
+                        tbody
+                          tr
+                            td
+                              div.user-data
+                                div
+                                  img(src="../assets/images/product/5.png" alt="product")
+                                div
+                                  a(href="product.html")
+                                    h4 Leather Crop
+                                  span  #854692
+                            td
+                              div.user-time
+                                a(href="product.html")
+                                  h4 30 Mar 2024
+                            td Credit Card
+                            td $3,658
+                          tr
+                            td
+                              div.user-data
+                                div
+                                  img(src="../assets/images/product/9.png" alt="product")
+                                div
+                                  a(href="product.html")
+                                    h4 Female Bag
+                                  span #315984
+                            td
+                              div.user-time
+                                a(href="product.html")
+                                  h4 25 Mar 2024
+                            td Bank Transfer
+                            td $6,954
+                          tr
+                            td
+                              div.user-data
+                                div
+                                  img(src="../assets/images/product/6.png" alt="product")
+                                div
+                                  a(href="product.html")
+                                    h4 Shoes leather
+                                  span #315984 
+                            td
+                              div.user-time
+                                a(href="product.html")
+                                  h4 20 Mar 2024
+                            td Credit Card
+                            td $1,945
+                          tr
+                            td
+                              div.user-data
+                                div 
+                                  img(src="../assets/images/product/7.png" alt="product")
+                                div
+                                  a(href="product.html")
+                                    h4 Headphone
+                                  span #874596
+                            td
+                              div.user-time
+                                a(href="product.html")
+                                  h4 14 Mar 2024 
+                            td Bank Transfer
+                            td $3,942 
+              .col-xxl-4.col-md-6.proorder-xl-6.box-col-6
+                .card
+                  .card-header.pb-0
+                    .header-top
+                      h4 Weekly User Activity
+                      .dropdown.icon-dropdown.setting-menu
+                        button#userdropdown23.btn.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
+                          svg
+                            use(href='../assets/svg/icon-sprite.svg#setting') 
+                        .dropdown-menu.dropdown-menu-end(aria-labelledby='userdropdown23')
+                          a.dropdown-item(href='#') Weekly 
+                          a.dropdown-item(href='#') Monthly
+                          a.dropdown-item(href='#') Yearly
+                  .card-body.pt-0
+                    .user-activity#UserActivity 
+                    div.user-activity
+                      ul
+                        li
+                          div.applications-menu
+                            div.rounded-btn-primary
+                            h3 Online Applications
+                          h4 55%
+                        li
+                          div.applications-menu
+                            div.rounded-btn-secondary
+                            h3 Offline Applications
+                          h4 45%
+              .col-xxl-4.col-md-6.proorder-xl-7.box-col-12
+                .card
+                  .card-header 
+                    .header-top
+                      h4 Monthly Selling Product (Mar 2024) 
+                      .dropdown.icon-dropdown.setting-menu
+                        button#userdropdown34.btn.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
+                          svg 
+                            use(href='../assets/svg/icon-sprite.svg#setting') 
+                        .dropdown-menu.dropdown-menu-end(aria-labelledby='userdropdown34')
+                          a.dropdown-item(href='#') Weekly
+                          a.dropdown-item(href='#') Monthly 
+                          a.dropdown-item(href='#') Yearly
+                  .card-body
+                    .table-responsive.custom-scrollbar
+                      table.table.monthly-selling
+                        thead 
+                          tr
+                            th Product Name
+                            th Orders 
+                            th Status 
+                            th.text-end Price
+                        tbody
+                          tr
+                            td 
+                              div.user-data
+                                div.product-image
+                                  img(src="../assets/images/dashboard-2/product/20.png" alt="product")
+                                div
+                                  a(href="product.html")
+                                    h4 Iphone
+                                  span #654892
+                            td
+                              div.user-time
+                                a(href="product.html")
+                                  h4 652
+                            td.txt-primary In Stock
+                            td $20.00
+                          tr
+                            td
+                              div.user-data
+                                div.product-image
+                                  img(src="../assets/images/dashboard-2/product/21.png" alt="product")
+                                div
+                                  a(href="product.html")
+                                    h4 Woolen hat
+                                  span #324856
+                            td
+                              div.user-time
+                                a(href="product.html")
+                                  h4 123
+                            td.txt-warning Low stock
+                            td $12.25
+                          tr
+                            td
+                              div.user-data
+                                div.product-image
+                                  img(src="../assets/images/dashboard-2/product/23.png" alt="product")
+                                div
+                                  a(href="product.html")
+                                    h4 Flower pot
+                                  span #954123
+                            td
+                              div.user-time
+                                a(href="product.html")
+                                  h4 200
+                            td.txt-primary In Stock
+                            td $30.99
+                          tr
+                            td
+                              div.user-data 
+                                div.product-image 
+                                  img(src="../assets/images/dashboard-2/product/22.png" alt="product")
+                                div
+                                  a(href="product.html")
+                                    h4 Athletic top
+                                  span #954026
+                            td
+                              div.user-time
+                                a(href="product.html")
+                                  h4 501
+                            td.txt-danger Out of stock
+                            td $34.68 
+              .col-xxl-6.proorder-xl-9.box-col-12 
+                .card
+                  .card-header
+                    .header-top 
+                      h4 Sales Details
+                      div.sales-details 
+                        div.user-activity
+                          ul 
+                            li
+                              div.applications-menu
+                                div.rounded-btn-primary
+                                h3 Running Orders
+                            li 
+                              div.applications-menu
+                                div.rounded-btn-secondary 
+                                h3 Complete Delivery
+                        .dropdown.icon-dropdown.setting-menu
+                          button#userdropdown15.btn.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
+                            svg
+                              use(href='../assets/svg/icon-sprite.svg#setting') 
+                          .dropdown-menu.dropdown-menu-end(aria-labelledby='userdropdown15')
+                            a.dropdown-item(href='#') Weekly
+                            a.dropdown-item(href='#') Monthly
+                            a.dropdown-item(href='#') Yearly
+                  .card-body 
+                    .overview-wrapper 
+                      #orderoverview.overview-dash-line
+                    .chart-dash-2-line#chart-dash-2-line
+              .col-xl-6.proorder-xl-8.box-col-12
+                .card
+                  .card-header
+                    .header-top 
+                      h4 Latest Offer Product
+                      .dropdown.icon-dropdown.setting-menu
+                        button#userdropdown25.btn.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
+                          svg 
+                            use(href='../assets/svg/icon-sprite.svg#setting') 
+                        .dropdown-menu.dropdown-menu-end(aria-labelledby='userdropdown25')
+                          a.dropdown-item(href='#') Weekly
+                          a.dropdown-item(href='#') Monthly
+                          a.dropdown-item(href='#') Yearly
+                  .card-body.product-page-main.pt-0
+                    .row
+                      .col-lg-6
+                        #sync3.product-slider.owl-carousel.owl-theme.product-slides
+                          .item  
+                            img(src='../assets/images/dashboard-2/product/10.png', alt='product') 
+                          .item
+                            img(src='../assets/images/dashboard-2/product/11.png', alt='product')
+                          .item
+                            img(src='../assets/images/dashboard-2/product/12.png', alt='product')
+                          .item
+                            img(src='../assets/images/dashboard-2/product/13.png', alt='product')
+                          .item
+                            img(src='../assets/images/dashboard-2/product/10.png', alt='product')
+                          .item
+                            img(src='../assets/images/dashboard-2/product/11.png', alt='product')
+                          .item
+                            img(src='../assets/images/dashboard-2/product/12.png', alt='product')
+                          .item
+                            img(src='../assets/images/dashboard-2/product/13.png', alt='product')
+                        #sync4.owl-carousel.owl-theme.product-data
+                          .item 
+                            img(src='../assets/images/dashboard-2/product/10.png', alt='product')
+                          .item
+                            img(src='../assets/images/dashboard-2/product/11.png', alt='product')
+                          .item
+                            img(src='../assets/images/dashboard-2/product/12.png', alt='product')
+                          .item
+                            img(src='../assets/images/dashboard-2/product/13.png', alt='product')
+                          .item
+                            img(src='../assets/images/dashboard-2/product/10.png', alt='product')
+                          .item
+                            img(src='../assets/images/dashboard-2/product/11.png', alt='product')
+                          .item
+                            img(src='../assets/images/dashboard-2/product/12.png', alt='product')
+                          .item 
+                            img(src='../assets/images/dashboard-2/product/13.png', alt='product')
+                      .col-lg-6 
+                        .product-details
+                          a(href="product-page.html")
+                            h4 Apple iphone 13 Mini (512 GB) Green 
+                          div.product-Price
+                            h2.txt-primary $89,999 
+                            div
+                              del $1,19,999
+                          div.d-flex.gap-2.variants-title 
+                            span Color :
+                            span Green
+                          div.color-variants
+                            .form-check.radio.radio-primary
+                              input#radio22.form-check-input(type='radio' name='radio1' value='option1' checked="")
+                              label.form-check-label(for='radio22')
+                            .form-check.radio.radio-secondary
+                              input#radio23.form-check-input(type='radio' name='radio1' value='option2')
+                              label.form-check-label(for='radio23')
+                            .form-check.radio.radio-warning 
+                              input#radio24.form-check-input(type='radio' name='radio1' value='option3')
+                              label.form-check-label(for='radio24')
+                            .form-check.radio.radio-info
+                              input#radio25.form-check-input(type='radio' name='radio1' value='option4')
+                              label.form-check-label(for='radio25')
+                            .form-check.radio.radio-danger
+                              input#radio27.form-check-input(type='radio' name='radio1' value='option6')
+                              label.form-check-label(for='radio27')
+                          div.d-flex.gap-2.variants-title
+                            span Size :
+                            span 512GB 
+                          div.variants-button
+                            button.btn.btn-outline-primary.btn-md(type='button' title='btn btn-pill btn-outline-primary btn-md') 512GB
+                            button.btn.btn-outline-lights.btn-md.txt-dark(type='button' title='btn btn-pill btn-outline-light btn-md') 256GB
+                          .discount-box
+                            h6 Special Discount
+                          h3.text-truncate Deal of the  Day From
+                          #clock-arrival.countdown(data-hours="1" data-minutes="2" data-seconds="3")
+                            ul
+                              li 
+                                span.days.time  
+                                span.title Days
+                              li
+                                span.hours.time
+                                span.title Hours
+                              li.px-3
+                                span.minutes.time
+                                span.title Min
+                              li.px-3
+                                span.seconds.time
+                                span.title Sec
+       
+          // Container-fluid Ends 
+        include ../../components/footer
+    include ../../components/footer-files
+    

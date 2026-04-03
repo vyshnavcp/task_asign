@@ -1,0 +1,112 @@
+
+{% extends 'main.html' %}
+{% block title %}Home{% endblock %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
+    <!-- ico-font-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
+    <!-- Themify icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
+    <!-- Flag icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
+    <!-- Feather icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
+    <!-- Plugins css start-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
+    <!-- Plugins css Ends-->
+    <!-- Bootstrap css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
+    <!-- App css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
+    <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
+    <!-- Responsive css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+{% endblock %}
+{% block content %}
+<nav class="navbar navbar-expand-lg  mb-4">
+  <div class="container-fluid">
+
+
+    <div class="navbar-nav ms-auto">
+      <a class="nav-link" href="/">Home</a>
+      <a class="nav-link" href="/staff/">Staff</a>
+      <a class="nav-link" href="/profile/">Profile</a>
+      <a class="nav-link text-danger" href="/user_logout/">Logout</a>
+    </div>
+  </div>
+</nav>
+<div class="container mt-5" style="max-width:500px;">
+    <h3>Edit Staff</h3>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <input type="text" name="username" value="{{ staff.authuser.username }}" class="form-control mb-2" required>
+
+        <input type="email" name="email" value="{{ staff.authuser.email }}" class="form-control mb-2" required>
+
+        <input type="password" name="password" class="form-control mb-2" placeholder="New Password (optional)">
+
+        <input type="text" name="phone" value="{{ staff.phone }}" class="form-control mb-2" required>
+
+        <textarea name="address" class="form-control mb-2">{{ staff.address }}</textarea>
+
+        {% if staff.image %}
+            <img src="{{ staff.image.url }}" width="100" class="mb-2">
+        {% endif %}
+
+        <input type="file" name="image" class="form-control mb-3">
+
+        <button class="btn btn-primary w-100">Update</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block js %}
+    <!-- latest jquery-->
+    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <!-- Bootstrap js-->
+    <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <!-- feather icon js-->
+    <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
+    <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
+    <!-- scrollbar js-->
+    <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
+    <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
+    <!-- Sidebar jquery-->
+    <script src="{% static 'assets/js/config.js' %}"></script>
+    <!-- Plugins JS start-->
+    <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
+    <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.js' %}"></script>
+    <script src="{% static 'assets/js/header-slick.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"> </script>
+    <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/moment.min.js' %}"></script>
+    <script src="{% static 'assets/js/notify/bootstrap-notify.min.js' %}"></script>
+    <script src="{% static 'assets/js/dashboard/default.js' %}"></script>
+    <script src="{% static 'assets/js/notify/index.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/datatable.custom.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/datatable.custom1.js' %}"></script>
+    <script src="{% static 'assets/js/owlcarousel/owl.carousel.js' %}"></script>
+    <script src="{% static 'assets/js/owlcarousel/owl-custom.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/handlebars.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/typeahead.bundle.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/typeahead.custom.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
+    <script src="{% static 'assets/js/height-equal.js' %}"></script>
+    <!-- Plugins JS Ends-->
+{% endblock %}

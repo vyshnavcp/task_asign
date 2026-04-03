@@ -1,0 +1,142 @@
+{% load static %}
+<div class="sidebar-wrapper" data-layout="stroke-svg">
+          <div>
+            <div class="logo-wrapper"><a href="{% static 'index.html' %}"> <img class="img-fluid for-light" src="{% static 'assets/images/logo/logo.png' %}" alt=""><img class="img-fluid for-dark" src="{% static 'assets/images/logo/logo_dark.png' %}" alt=""></a>
+             
+            </div>
+            <div class="logo-icon-wrapper"><a href="{% static 'index.html' %}"><img class="img-fluid" src="{% static 'assets/images/logo/logo-icon.png' %}" alt=""></a></div>
+            <nav class="sidebar-main">
+              <div class="left-arrow" id="left-arrow"><i data-feather="arrow-left"></i></div>
+              <div id="sidebar-menu">
+                <ul class="sidebar-links" id="simple-bar">
+                  <li class="back-btn"><a href="{% static 'index.html' %}"><img class="img-fluid" src="{% static 'assets/images/logo/logo-icon.png' %}" alt=""></a>
+                    <div class="mobile-back text-end"><span>Back</span><i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
+                  </li>
+                
+                  <li class="sidebar-main-title">
+                    <div>
+                        {% if request.user.is_superuser %}
+                      <h6 class="lan-1">Staff Management </h6>
+                      {% endif %}
+                    </div>
+                  </li>
+                   {% if request.user.is_superuser %}
+                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
+                      <svg class="stroke-icon">
+                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
+                      </svg>
+                      <svg class="fill-icon">
+                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
+                      </svg><span>Staff</span></a>
+                    <ul class="sidebar-submenu">
+                       
+                      <li><a href="{% url "staff_add" %}">Create staff</a></li>
+                      <li> <a href="{% url "staff_list" %}">Staff list</a></li>
+                      <li> <a href="{% url "assign_task" %}">Assign task</a></li>
+                    </ul>
+                  </li>
+                  {% endif %}
+                  
+                  <li class="sidebar-main-title">
+                    <div>
+                        {% if request.user.is_superuser %}
+                      <h6 class="lan-1">Assigned Task </h6>
+                      {% endif %}
+                    </div>
+                  </li>
+                 
+                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
+                      <svg class="stroke-icon">
+                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
+                      </svg>
+                      <svg class="fill-icon">
+                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
+                      </svg><span>Tasks</span></a>
+                    <ul class="sidebar-submenu">
+                         {% if not request.user.is_superuser %}
+                      <li><a href="{% url "my_tasks" %}">My task</a></li>
+                      {% endif %}
+                      {% if request.user.is_superuser %}
+                      <li><a href="{% url "admin_task_view" %}">Admin task view</a></li>
+                      {% endif %}
+                     
+                      
+                    </ul>
+                  </li>
+                  
+                  {% comment %} <li class="sidebar-main-title">
+                    <div>
+                      <h6 class="lan-1">Product/Shop Management</h6>
+                    </div>
+                  </li>
+                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
+                      <svg class="stroke-icon">
+                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
+                      </svg>
+                      <svg class="fill-icon">
+                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
+                      </svg><span>Product</span></a>
+                    <ul class="sidebar-submenu">
+                      <li><a href="{% url "add_product" %}">Add product</a></li>
+                       <li> <a href="{% url "product_list" %}">Product List</a></li>
+                    </ul>
+                  </li>
+                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
+                      <svg class="stroke-icon">
+                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
+                      </svg>
+                      <svg class="fill-icon">
+                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
+                      </svg><span>Shop</span></a>
+                    <ul class="sidebar-submenu">
+                      <li><a href="{% url "add_shop" %}">Add Shop</a></li>
+                       <li> <a href="{% url "shop_list" %}">Shop List</a></li>
+                    </ul>
+                  </li> {% endcomment %}
+                  {% comment %} <li class="sidebar-main-title">
+                    <div>
+                      <h6 class="lan-1">New Order</h6>
+                    </div>
+                  </li>
+                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
+                      <svg class="stroke-icon">
+                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
+                      </svg>
+                      <svg class="fill-icon">
+                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
+                      </svg><span>Orders</span></a>
+                    <ul class="sidebar-submenu">
+                      <li><a href="{% url "shop_select" %}">Place order</a></li>
+                       <li> <a href="{% url "order_list" %}">All order</a></li>
+                         <li><a href="{% url "delivery_list" %}">Delivery list</a></li>
+          
+                          <li><a href="{% url "return_orders_page" %}">Return</a></li>
+                           <li><a href="{% url "return_shop_list" %}">Return_history</a></li>
+                    </ul>
+                  </li>
+                  
+                  </li>
+                  <li class="sidebar-main-title">
+                    <div>
+                      <h6 class="lan-1">Collection</h6>
+                    </div>
+                  </li>
+                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
+                      <svg class="stroke-icon">
+                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
+                      </svg>
+                      <svg class="fill-icon">
+                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
+                      </svg><span>Payment</span></a>
+                    <ul class="sidebar-submenu">
+                      <li><a href="{% url "shop_payment_list" %}"> Amount collect</a></li>
+                    </ul>
+                  </li>  {% endcomment %}
+                  
+
+                </ul>
+              </div>
+              <div class="right-arrow" id="right-arrow"><i data-feather="arrow-right"></i></div>
+            </nav>
+          </div>
+        </div>

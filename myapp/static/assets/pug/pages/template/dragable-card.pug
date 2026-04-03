@@ -1,0 +1,150 @@
+
+doctype html
+html(lang='en')
+  include ../../components/header-files
+  body
+    include ../../components/loader
+    include ../../components/taptop
+    // page-wrapper Start
+    #pageWrapper.page-wrapper.compact-wrapper
+      include ../../components/header
+      // Page Body Start
+      .page-body-wrapper
+        include ../../components/sidebar
+        .page-body
+          .container-fluid
+            .page-title
+              .row
+                .col-xl-4.col-sm-7.box-col-3
+                  h3
+                    | Draggable Card
+                .col-5.d-none.d-xl-block
+                  include ../../components/sub-header
+                .col-xl-3.col-sm-5.box-col-4
+                  ol.breadcrumb
+                    li.breadcrumb-item
+                      a(href='index.html')
+                        svg.stroke-icon
+                          use(href='../assets/svg/icon-sprite.svg#stroke-home')
+                    li.breadcrumb-item Bonus Ui
+                    li.breadcrumb-item.active Draggable Card
+          // Container-fluid starts
+          .container-fluid
+            #draggableMultiple.row.ui-sortable
+              .col-xxl-4.col-md-6
+                .card.height-equal
+                  .card-header.card-no-border.pb-0
+                    h4 Basic Card
+                    p.mt-1.f-m-light
+                        | You can draggable cards anywhere.
+                  .card-body
+                    ul.list-group
+                      li.list-group-item 
+                        i.icofont.icofont-arrow-right
+                        | Logo Design
+                      li.list-group-item 
+                        i.icofont.icofont-arrow-right
+                        | Web Designer 
+                      li.list-group-item 
+                        i.icofont.icofont-arrow-right
+                        | E-Commerce
+                      li.list-group-item 
+                        i.icofont.icofont-arrow-right
+                        | UX Designer
+              .col-xxl-4.col-md-6
+                .card.height-equal
+                  .card-header.card-no-border.pb-0
+                    h4 Default Card
+                    p.mt-1.f-m-light
+                        | You can draggable cards anywhere.
+                  .card-body
+                    ul.list-group
+                      li.list-group-item.active.bg-warning-light(aria-current='true')
+                        i.icofont.icofont-arrow-right 
+                        | UI Kits
+                      li.list-group-item
+                        i.icofont.icofont-arrow-right 
+                        | Wow Animations
+                      li.list-group-item 
+                        i.icofont.icofont-arrow-right 
+                        |Apex Charts
+                      li.list-group-item
+                        i.icofont.icofont-arrow-right 
+                        | Starter Kits
+              .col-xxl-4.col-xl-6.col-12
+                .card.b-r-0.height-equal
+                  .card-header.card-no-border.pb-0
+                    h4 Flat Card
+                    p.f-m-light.mt-1
+                      | You can draggable cards anywhere.
+                  .card-body
+                    ul.list-group.list-group-flush
+                      li.list-group-item
+                        i.icofont.icofont-arrow-right 
+                        | PRODUCT
+                      li.list-group-item
+                        i.icofont.icofont-arrow-right 
+                        | PRODUCT DETAILS 
+                      li.list-group-item
+                        i.icofont.icofont-arrow-right 
+                        | CART 
+                      li.list-group-item.pb-0
+                        i.icofont.icofont-arrow-right 
+                        | CHECKOUT
+              .col-xxl-4.col-xl-6.col-12
+                .card.shadow-none.border
+                  .card-header.card-no-border.pb-0
+                    h4 Without Shadow Card
+                    p.f-m-light.mt-1
+                      | You can draggable cards anywhere.
+                  .card-body
+                    .alert.txt-primary.border-primary.alert-dismissible.fade.show(role='alert')
+                      i(data-feather='clock')
+                      p You can check in on some of those fields below.
+                      button.btn-close(type='button', aria-label='Close')
+                    .alert.txt-success.border-success.outline-2x.alert-dismissible.fade.show.alert-icons(role='alert')
+                      i(data-feather='thumbs-up')
+                      p
+                        b  Well done! 
+                        | You successfully read important message.
+                      button.btn-close(type='button', aria-label='Close')
+              .col-xxl-4.col-xl-6.col-12
+                .card
+                  .card-header.card-no-border.pb-0
+                    h4
+                      i.icon-move.me-2
+                      |  Icon In Heading
+                    p.f-m-light.mt-1
+                      | You can draggable cards anywhere.
+                  .card-body
+                    .alert.border-warning.alert-dismissible.fade.show.p-0(role='alert')
+                      .alert-arrow.bg-warning
+                        i.icon-timer
+                      p
+                        | Your time Over after 5 minute                          
+                    .alert.border-danger.alert-dismissible.fade.show.p-0.mb-0(role='alert')
+                      .alert-arrow.bg-danger
+                        i.icon-heart
+                      p
+                        | Oh snap! Change a few things up notification check
+              .col-xxl-4.col-xl-6.col-12
+                .card
+                  .card-header.card-no-border.pb-0
+                    h4 Lists With Checkbox
+                    p.f-m-light.mt-1
+                      | You can draggable cards anywhere.
+                  .card-body.dark-list
+                    ul.list-group
+                      li.list-group-item
+                        input#firstCheckbox.form-check-input.me-1.checkbox-primary(type='checkbox' value='')
+                        label.form-check-label.txt-primary.mb-0(for='firstCheckbox') Auto Start
+                      li.list-group-item
+                        input#secondCheckbox.form-check-input.me-1.checkbox-secondary(type='checkbox' value='')
+                        label.form-check-label.txt-secondary.mb-0(for='secondCheckbox') Auto Update
+                      li.list-group-item
+                        input#thirdCheckbox.form-check-input.me-1.checkbox-success(type='checkbox' value='')
+                        label.form-check-.txt-success.mb-0(for='thirdCheckbox') Don't check auth key
+         
+          // Container-fluid Ends
+        include ../../components/footer
+    include ../../components/footer-files

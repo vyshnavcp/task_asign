@@ -1,0 +1,378 @@
+{% extends 'main.html' %}
+{% block title %}User Profile{% endblock %}
+{% load static %}
+
+{% block css %}
+  <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
+    <!-- ico-font-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
+    <!-- Themify icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
+    <!-- Flag icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
+    <!-- Feather icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
+    <!-- Plugins css start-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/photoswipe.css' %}">
+    <!-- Plugins css Ends-->
+    <!-- Bootstrap css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
+    <!-- App css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
+    <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
+    <!-- Responsive css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+{% endblock %}
+
+
+{% block content %}
+          <div class="container-fluid">
+            <div class="page-title">
+              <div class="row">
+                <div class="col-xl-4 col-sm-7 box-col-3">
+                  <h3>User Profile</h3>
+                </div>
+                <div class="col-5 d-none d-xl-block">
+                  <!-- Page Sub Header Start-->
+                 
+                  <!-- Page Sub Header end
+                  -->
+                </div>
+                <div class="col-xl-3 col-sm-5 box-col-4"> 
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% static 'index.html' %}">
+                        <svg class="stroke-icon"> 
+                          <use href="{% static 'assets/svg/icon-sprite.svg#stroke-home' %}"></use>
+                        </svg></a></li>
+                    <li class="breadcrumb-item">Users</li>
+                    <li class="breadcrumb-item active">User Profile</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="container-fluid">
+            <div class="user-profile">
+              <div class="row">
+                <!-- user profile first-style start-->
+                <div class="col-sm-12">
+                  <div class="card hovercard text-center">
+                    <div class="cardheader position-relative"
+                      style="background-image: url('{% if reg.background_image %}{{ reg.background_image.url }}{% else %}{% static 'assets/images/bg.jpg' %}{% endif %}');
+                              height: 200px;
+                              background-size: cover;
+                              background-position: center;">
+
+                    <!-- EDIT ICON -->
+                    <div style="position:absolute; top:10px; right:10px; cursor:pointer;"
+                        onclick="document.getElementById('bgInput').click();">
+                      <i class="icofont icofont-pencil-alt-5 text-white bg-dark p-2 rounded"></i>
+                    </div>
+
+                    <!-- HIDDEN FORM -->
+                    <form id="bgForm" method="POST" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <input type="file" id="bgInput" name="background_image" style="display:none;" onchange="uploadBG()">
+                    </form>
+                  </div>
+                    <div class="user-image">
+                    <div class="avatar">
+                      {% if reg.profile_image %}
+                        <img alt="" src="{{ reg.profile_image.url }}">
+                      {% else %}
+                        <img alt="" src="{% static 'assets/images/user/7.jpg' %}">
+                      {% endif %}
+                    </div>
+
+                    <!-- CLICK ICON -->
+                    <div class="icon-wrapper" onclick="document.getElementById('imageInput').click();">
+                      <i class="icofont icofont-pencil-alt-5"></i>
+                    </div>
+
+                    <!-- HIDDEN FORM -->
+                    <form id="imageForm" method="POST" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <input type="file" id="imageInput" name="profile_image" style="display:none;" onchange="uploadImage()">
+                    </form>
+                  </div>
+                    <div class="info">
+                      <div class="row">
+                        <div class="col-sm-6 col-lg-4 order-sm-1 order-xl-0">
+                          <div class="row">
+                            <div class="col-md-6">
+                              <div class="ttl-info text-start">
+                                <h6><i class="fa fa-envelope"></i>  Email</h6><span>{{user.email}}</span>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <!-- <div class="ttl-info text-start">
+                                <h6><i class="fa fa-calendar"></i>  BOD</h6><span>02 January 1988</span>
+                              </div> -->
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-lg-4 order-sm-0 order-xl-1">
+                          <div class="user-designation">
+                            <div class="title"><a target="_blank" href=""><span>{{user.first_name}}</span><span>{{user.last_name}}</span></a></div>
+                            <div class="desc">designer</div>
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-4 order-sm-2 order-xl-2">
+                          <div class="row">
+
+                            <!-- PHONE -->
+                            <div class="col-md-6">
+                              <div class="ttl-info text-start">
+                                <h6>
+                                  <i class="fa fa-phone"></i> Contact Us
+                                  <i class="fa fa-plus text-primary ms-2" style="cursor:pointer;" onclick="editProfile()"></i>
+                                </h6>
+
+                                <!-- DISPLAY -->
+                                <span id="phoneText">
+                                  {% if reg.phone %}{{ reg.phone }}{% else %}No phone added{% endif %}
+                                </span>
+
+                                <!-- INPUT -->
+                                <input type="text" id="phoneInput" name="phone"
+                                      value="{{ reg.phone }}"
+                                      class="form-control mt-1 d-none">
+                              </div>
+                            </div>
+
+                            <!-- LOCATION -->
+                            <div class="col-md-6">
+                              <div class="ttl-info text-start">
+                                <h6><i class="fa fa-location-arrow"></i> Location</h6>
+
+                                <!-- DISPLAY -->
+                                <span id="locationText">
+                                  {% if reg.location %}{{ reg.location }}{% else %}No location added{% endif %}
+                                </span>
+
+                                <!-- INPUT -->
+                                <input type="text" id="locationInput" name="location"
+                                      value="{{ reg.location }}"
+                                      class="form-control mt-1 d-none">
+                              </div>
+                            </div>
+
+                          </div>
+
+                          <!-- SAVE BUTTON -->
+                          <button id="saveBtn" class="btn btn-sm btn-success mt-2 d-none" onclick="saveProfile()">
+                            Save
+                          </button>
+                        </div>
+                      </div>
+                      <hr>
+
+                      
+                    </div>
+                  </div>
+                </div>
+              
+                <!-- user profile fourth-style end-->
+                <!-- user profile fifth-style start-->
+               
+                <!-- user profile fifth-style end-->
+                <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+                  <div class="pswp__bg"></div>
+                  <div class="pswp__scroll-wrap">
+                    <div class="pswp__container">
+                      <div class="pswp__item"></div>
+                      <div class="pswp__item"></div>
+                      <div class="pswp__item"></div>
+                    </div>
+                    <div class="pswp__ui pswp__ui--hidden">
+                      <div class="pswp__top-bar">
+                        <div class="pswp__counter"></div>
+                        <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                        <button class="pswp__button pswp__button--share" title="Share"></button>
+                        <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                        <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                        <div class="pswp__preloader">
+                          <div class="pswp__preloader__icn">
+                            <div class="pswp__preloader__cut">
+                              <div class="pswp__preloader__donut"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                        <div class="pswp__share-tooltip"></div>
+                      </div>
+                      <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+                      <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+                      <div class="pswp__caption">
+                        <div class="pswp__caption__center"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr class="mt-2 mb-3">
+
+
+{% endblock %}
+
+
+{% block js %}
+<!-- latest jquery-->
+    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <!-- Bootstrap js-->
+    <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <!-- feather icon js-->
+    <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
+    <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
+    <!-- scrollbar js-->
+    <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
+    <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
+    <!-- Sidebar jquery-->
+    <script src="{% static 'assets/js/config.js' %}"></script>
+    <!-- Plugins JS start-->
+    <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
+    <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.js' %}"></script>
+    <script src="{% static 'assets/js/header-slick.js' %}"></script>
+    <script src="{% static 'assets/js/counter/jquery.waypoints.min.js' %}"></script>
+    <script src="{% static 'assets/js/counter/jquery.counterup.min.js' %}"></script>
+    <script src="{% static 'assets/js/counter/counter-custom.js' %}"></script>
+    <script src="{% static 'assets/js/photoswipe/photoswipe.min.js' %}"></script>
+    <script src="{% static 'assets/js/photoswipe/photoswipe-ui-default.min.js' %}"></script>
+    <script src="{% static 'assets/js/photoswipe/photoswipe.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Plugins JS Ends-->
+     <script>
+function editProfile() {
+  document.getElementById("phoneText").classList.add("d-none");
+  document.getElementById("locationText").classList.add("d-none");
+
+  document.getElementById("phoneInput").classList.remove("d-none");
+  document.getElementById("locationInput").classList.remove("d-none");
+
+  document.getElementById("saveBtn").classList.remove("d-none");
+}
+
+function saveProfile() {
+  let phone = document.getElementById("phoneInput").value;
+  let location = document.getElementById("locationInput").value;
+
+  fetch("", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": "{{ csrf_token }}",
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: `phone=${phone}&location=${location}`
+  })
+  .then(() => {
+    document.getElementById("phoneText").innerText = phone;
+    document.getElementById("locationText").innerText = location;
+
+    document.getElementById("phoneText").classList.remove("d-none");
+    document.getElementById("locationText").classList.remove("d-none");
+
+    document.getElementById("phoneInput").classList.add("d-none");
+    document.getElementById("locationInput").classList.add("d-none");
+
+    document.getElementById("saveBtn").classList.add("d-none");
+  });
+}
+</script>
+<script>
+function uploadImage() {
+    let form = document.getElementById("imageForm");
+    let formData = new FormData(form);
+
+    fetch("", {
+        method: "POST",
+        body: formData,
+        headers: {
+            "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "ok") {
+            location.reload();
+        }
+    });
+}
+</script>
+<script>
+function uploadBG() {
+    let form = document.getElementById("bgForm");
+    let formData = new FormData(form);
+
+    fetch("", {
+        method: "POST",
+        body: formData,
+        headers: {
+            "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+    if (data.status === "ok") {
+        let file = document.getElementById("bgInput").files[0];
+        let url = URL.createObjectURL(file);
+
+        document.querySelector(".cardheader").style.backgroundImage = `url(${url})`;
+    }
+});
+}
+</script>
+<script>
+function changePassword() {
+    let oldPass = document.getElementById("oldPassword").value;
+    let newPass = document.getElementById("newPassword").value;
+    let confirmPass = document.getElementById("confirmPassword").value;
+
+    // validation
+    if (!oldPass || !newPass || !confirmPass) {
+        Swal.fire("Error", "All fields are required", "error");
+        return;
+    }
+
+    if (newPass !== confirmPass) {
+        Swal.fire("Error", "Passwords do not match", "error");
+        return;
+    }
+
+    fetch("", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `old_password=${oldPass}&new_password=${newPass}`
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "ok") {
+            Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: "Password changed successfully"
+            });
+
+            // clear inputs
+            document.getElementById("oldPassword").value = "";
+            document.getElementById("newPassword").value = "";
+            document.getElementById("confirmPassword").value = "";
+        } else {
+            Swal.fire("Error", data.message, "error");
+        }
+    });
+}
+</script>
+{% endblock %}

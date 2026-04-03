@@ -1,0 +1,359 @@
+
+{% extends 'main.html' %}
+{% block title %}Home{% endblock %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
+    <!-- ico-font-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
+    <!-- Themify icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
+    <!-- Flag icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
+    <!-- Feather icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
+    <!-- Plugins css start-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
+    <!-- Plugins css Ends-->
+    <!-- Bootstrap css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
+    <!-- App css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
+    <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
+    <!-- Responsive css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+    <div class="page-title"> 
+        <div class="row">
+        <div class="col-xl-4 col-sm-7 box-col-3">
+            <h3>Default Dashboard</h3>
+        </div>
+        <div class="col-5 d-none d-xl-block">
+            <!-- Page Sub Header Start-->
+            <div class="left-header main-sub-header p-0">
+            <div class="left-menu-header">
+                <ul class="header-left"> 
+                <li class="onhover-dropdown"> <span class="f-w-700">General </span>
+                    <ul class="onhover-show-div left-dropdown">
+                    <li class="flyout-right"><a href="{% static '#' %}">Dashboards</a><i class="fa fa-angle-right"></i>
+                        <ul>
+                        <li> <a href="{% static 'index.html' %}">Default  </a></li>
+                        <li> <a href="{% static 'dashboard-02.html' %}">Ecommerce</a></li>
+                        </ul>
+                    </li>
+                    <li class="flyout-right"><a href="{% static '#' %}">Widgets</a><i class="fa fa-angle-right"></i>
+                        <ul>
+                        <li><a href="{% static 'general-widget.html' %}">General</a></li>
+                        <li> <a href="{% static 'chart-widget.html' %}">chart</a></li>
+                        </ul>
+                    </li>
+                    <li class="flyout-right"> <a href="{% static '#' %}">Page layout</a><i class="fa fa-angle-right"></i>
+                        <ul>
+                        <li> <a href="{% static 'box-layout.html' %}">Boxed </a></li>
+                        <li> <a href="{% static 'layout-rtl.html' %}">RTL</a></li>
+                        <li> <a href="{% static 'layout-dark.html' %}">Dark Layout</a></li>
+                        <li> <a href="{% static 'footer-light.html' %}">footer-light.html</a></li>
+                        <li> <a href="{% static 'footer-dark.html' %}">footer-dark.html</a></li>
+                        <li><a href="{% static 'footer-fixed.html' %}">footer-fixed.html</a></li>
+                        </ul>
+                    </li>
+                    </ul>
+                </li>
+            
+            </div>
+            </div>
+            <!-- Page Sub Header end
+            -->
+        </div>
+        <div class="col-xl-3 col-sm-5 box-col-4">
+            <ol class="breadcrumb"> 
+            <li class="breadcrumb-item"><a href="{% static 'index.html' %}">
+                <svg class="stroke-icon">
+                    <use href="{% static 'assets/svg/icon-sprite.svg#stroke-home' %}"></use>
+                </svg></a></li>
+            <li class="breadcrumb-item">Dashboard</li>
+            <li class="breadcrumb-item active">Default</li>
+            </ol>
+        </div>
+        </div>
+    </div>
+    </div>
+    <!-- Container-fluid starts-->
+    <div class="container-fluid default-dashboard"> 
+    <div class="row">
+        
+        <div class="col-xl-6 col-md-6 proorder-md-5"> 
+        <div class="card latest-sales">
+            <div class="card-header d-flex justify-content-between align-items-center custom-border-bottom">
+            <h4>Latest Sales</h4>
+            <div class="d-flex align-items-center justify-content-center latest-sales-btn">
+                <button class="btn btn-square btn-outline-primary btn-sm" type="button" title="btn btn-square btn-outline-primary btn-sm">Yearly</button>
+                <button class="btn btn-square btn-outline-primary btn-sm" type="button" title="btn btn-square btn-outline-primary btn-sm">Monthly</button>
+                <button class="btn btn-square btn-outline-primary btn-sm active" type="button" title="btn btn-square btn-outline-primary btn-sm">Weekly</button>
+            </div>
+            </div>
+            <div class="card-body">
+            <div id="lastOrdersChart"></div>
+            </div>
+        </div>
+        </div>
+        <div class="col-xl-6 col-md-12 box-col-12 proorder-md-4">
+        <div class="card">
+            <div class="card-header card-no-border">
+            <div class="header-top">
+                <h4>Last Orders </h4>
+                <div class="dropdown icon-dropdown setting-menu">
+                <button class="btn dropdown-toggle" id="userdropdown3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg>
+                    <use href="{% static 'assets/svg/icon-sprite.svg#setting' %}"></use>
+                    </svg>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userdropdown3"><a class="dropdown-item" href="{% static '#' %}">Weekly</a><a class="dropdown-item" href="{% static '#' %}">Monthly </a><a class="dropdown-item" href="{% static '#' %}">Yearly</a></div>
+                </div>
+            </div>
+            </div>
+            <div class="card-body pt-0">
+            <div class="table-responsive custom-scrollbar"> 
+                <table class="last-orders-table table" id="last-orders">
+                <thead>
+                    <tr>
+                    <th>Name </th>
+                    <th>Order No.  </th>
+                    <th>Amount</th>
+                    <th>Payment Type </th>
+                    <th>Date</th>
+                    <th>Action </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr> 
+                    <td>
+                        <div class="user-data">
+                        <div><img src="{% static 'assets/images/dashboard/avtar/2.jpg' %}" alt="avatar"></div>
+                        <div> <a href="{% static 'user-profile.html' %}"> 
+                            <h4>Dmitriy Groshev</h4></a><span>Switzerland</span></div>
+                        </div>
+                    </td>
+                    <td>#790841</td>
+                    <td>$2.499</td>
+                    <td>Credit Card</td>
+                    <td>1 Oct, 14:43</td>
+                    <td> 
+                        <div class="dropdown icon-dropdown">
+                        <button class="btn dropdown-toggle" id="userdropdownes4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="drop-menu"><i class="icon-more-alt"></i></div>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userdropdownes4"><a class="dropdown-item" href="{% static '#' %}">Weekly</a><a class="dropdown-item" href="{% static '#' %}">Monthly</a><a class="dropdown-item" href="{% static '#' %}">Yearly</a></div>
+                        </div>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+                        <div class="user-data">
+                        <div><img src="{% static 'assets/images/dashboard/avtar/17.jpg' %}" alt="avatar"></div>
+                        <div><a href="{% static 'user-profile.html' %}">
+                            <h4>Patrick Beverley</h4></a><span> Germany</span></div>
+                        </div>
+                    </td>
+                    <td>#454489</td>
+                    <td>$2.499</td>
+                    <td>Paypal</td>
+                    <td>30 Sep, 23:01</td>
+                    <td>
+                        <div class="dropdown icon-dropdown">
+                        <button class="btn dropdown-toggle" id="userdropdownes1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="drop-menu"><i class="icon-more-alt"></i></div>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userdropdownes1"><a class="dropdown-item" href="{% static '#' %}">Weekly</a><a class="dropdown-item" href="{% static '#' %}">Monthly</a><a class="dropdown-item" href="{% static '#' %}">Yearly</a></div>
+                        </div>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+                        <div class="user-data">
+                        <div><img src="{% static 'assets/images/avtar/18.jpg' %}" alt="avatar"></div>
+                        <div><a href="{% static 'user-profile.html' %}">
+                            <h4>Kevin Greem</h4></a><span> Canada</span></div>
+                        </div>
+                    </td>
+                    <td>#594579</td>
+                    <td>$2.499</td>
+                    <td>Credit Card</td>
+                    <td>29 Sep,09:31</td>
+                    <td>
+                        <div class="dropdown icon-dropdown">
+                        <button class="btn dropdown-toggle" id="userdropdownes2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="drop-menu"><i class="icon-more-alt"></i></div>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userdropdownes2"><a class="dropdown-item" href="{% static '#' %}">Weekly</a><a class="dropdown-item" href="{% static '#' %}">Monthly</a><a class="dropdown-item" href="{% static '#' %}">Yearly</a></div>
+                        </div>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+                        <div class="user-data">
+                        <div><img src="{% static 'assets/images/dashboard/avtar/19.jpg' %}" alt="avatar"></div>
+                        <div><a href="{% static 'user-profile.html' %}">
+                            <h4>William Barton</h4></a><span>United States</span></div>
+                        </div>
+                    </td>
+                    <td>#478495</td>
+                    <td>$2.499</td>
+                    <td>Credit Card</td>
+                    <td>28 Sep, 04:34</td>
+                    <td>
+                        <div class="dropdown icon-dropdown">
+                        <button class="btn dropdown-toggle" id="userdropdownes3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="drop-menu"><i class="icon-more-alt"></i></div>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userdropdownes3"><a class="dropdown-item" href="{% static '#' %}">Weekly</a><a class="dropdown-item" href="{% static '#' %}">Monthly</a><a class="dropdown-item" href="{% static '#' %}">Yearly      </a></div>
+                        </div>
+                    </td>
+                    </tr>
+                </tbody>
+                </table>
+            </div>
+            </div>
+        </div>
+        </div>
+        <div class="col-xl-4 col-md-6 proorder-md-6 box-col-6">
+        <div class="card"> 
+            <div class="card-header">
+            <div class="header-top"> 
+                <h4>Monthly Invoices</h4>
+                <div class="dropdown icon-dropdown setting-menu">
+                <button class="btn dropdown-toggle" id="userdropdown4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg>
+                    <use href="{% static 'assets/svg/icon-sprite.svg#setting' %}"> </use>
+                    </svg>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userdropdown4"><a class="dropdown-item" href="{% static '#' %}">Weekly</a><a class="dropdown-item" href="{% static '#' %}">Monthly</a><a class="dropdown-item" href="{% static '#' %}">Yearly</a></div>
+                </div>
+            </div>
+            </div>
+            <div class="card-body pt-0">
+            <div class="monthly-invoices">
+                <ul>
+                <li>
+                    <div class="monthly-data"> 
+                    <div class="invoice-data-icon"><span> 
+                        <svg>
+                            <use href="{% static 'assets/svg/icon-sprite.svg#bookmark' %}"></use>
+                        </svg></span>
+                        <div><a href="{% static 'invoice-1.html' %}">
+                            <h4>Camelun ios Development</h4></a>
+                        <h5>20 paid month out of 24</h5>
+                        </div>
+                    </div>
+                    <div class="invoice-price"><span>$12,453.00</span><span>Per Month</span></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="monthly-data"> 
+                    <div class="invoice-data-icon"><span> 
+                        <svg>
+                            <use href="{% static 'assets/svg/icon-sprite.svg#Ticket-Star' %}"></use>
+                        </svg></span>
+                        <div><a href="">
+                            <h4>ReactDT Motions</h4></a>
+                        <h5>Late payment  12 week - pay invoice</h5>
+                        </div>
+                    </div>
+                    <div class="invoice-price"><span>$54,459.00</span><span>Per month</span></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="monthly-data">
+                    <div class="invoice-data-icon"><span>
+                        <svg>
+                            <use href="{% static 'assets/svg/icon-sprite.svg#Discovery' %}"></use>
+                        </svg></span>
+                        <div><a href="{% static 'invoice-2.html' %}">
+                            <h4>Arocca Store</h4></a>
+                        <h5>Error sending payment - Detail information</h5>
+                        </div>
+                    </div>
+                    <div class="invoice-price"><span>$87,884.00</span><span>Per month</span></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="monthly-data">
+                    <div class="invoice-data-icon"><span> 
+                        <svg> 
+                            <use href="{% static 'assets/svg/icon-sprite.svg#Shield-Done' %}"></use>
+                        </svg></span>
+                        <div><a href="{% static 'invoice-3.html' %}">
+                            <h4>EnterPress Project</h4></a>
+                        <h5>25 paid days out of 113</h5>
+                        </div>
+                    </div>
+                    <div class="invoice-price"><span>$79,955.00 </span><span>Per month</span></div>
+                    </div>
+                </li>
+                <li>
+                    <button class="btn btn-outline-light txt-dark active w-100" type="button"><a class="d-flex gap-2 align-items-center" href="{% static 'projects.html' %}"> 
+                        <svg>
+                        <use href="{% static 'assets/svg/icon-sprite.svg#Plus-Circle' %}"></use>
+                        </svg>Add Project</a></button>
+                </li>
+                </ul>
+            </div>
+            </div>
+        </div>
+        </div>
+           
+    </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <!-- latest jquery-->
+    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <!-- Bootstrap js-->
+    <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <!-- feather icon js-->
+    <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
+    <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
+    <!-- scrollbar js-->
+    <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
+    <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
+    <!-- Sidebar jquery-->
+    <script src="{% static 'assets/js/config.js' %}"></script>
+    <!-- Plugins JS start-->
+    <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
+    <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.js' %}"></script>
+    <script src="{% static 'assets/js/header-slick.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"> </script>
+    <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/moment.min.js' %}"></script>
+    <script src="{% static 'assets/js/notify/bootstrap-notify.min.js' %}"></script>
+    <script src="{% static 'assets/js/dashboard/default.js' %}"></script>
+    <script src="{% static 'assets/js/notify/index.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/datatable.custom.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/datatable.custom1.js' %}"></script>
+    <script src="{% static 'assets/js/owlcarousel/owl.carousel.js' %}"></script>
+    <script src="{% static 'assets/js/owlcarousel/owl-custom.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/handlebars.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/typeahead.bundle.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/typeahead.custom.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
+    <script src="{% static 'assets/js/height-equal.js' %}"></script>
+    <!-- Plugins JS Ends-->
+{% endblock %}

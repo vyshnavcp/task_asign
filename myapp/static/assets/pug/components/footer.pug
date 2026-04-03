@@ -1,0 +1,31 @@
+// footer start
+if footer_dark
+  footer.footer.footer-dark
+       .container-fluid
+            .row
+                .col-md-6.p-0.footer-copyright
+                    p.mb-0 Copyright 2024 © Zono theme by pixelstrap.
+                .col-md-6.p-0
+                  p.heart.mb-0 Hand crafted &amp; made with
+                    svg.footer-icon
+                      use(href='../assets/svg/icon-sprite.svg#heart')
+else if footer_fix
+  footer.footer.footer-fix
+       .container-fluid
+            .row
+                .col-md-6.p-0.footer-copyright
+                    p.mb-0 Copyright 2024 © Zono theme by pixelstrap.
+                .col-md-6.p-0
+                  p.heart.mb-0 Hand crafted &amp; made with
+                    svg.footer-icon
+                      use(href='../assets/svg/icon-sprite.svg#heart')
+else
+  footer.footer
+       .container-fluid
+            .row
+                .col-md-6.p-0.footer-copyright
+                    p.mb-0 Copyright 2024 © Zono theme by pixelstrap.
+                .col-md-6.p-0
+                  p.heart.mb-0 Hand crafted &amp; made with
+                    svg.footer-icon
+                      use(href='../assets/svg/icon-sprite.svg#heart')

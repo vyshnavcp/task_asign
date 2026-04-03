@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Zono admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+    <meta name="keywords" content="admin template, Zono admin template, dashboard template, flat admin template, responsive admin template, web app">
+    <meta name="author" content="pixelstrap">
+    <link rel="icon" href="{% static 'assets/images/favicon.png' %}" type="image/x-icon">
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.png' %}" type="image/x-icon">
+    <title>Zono - Premium Admin Template</title>
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;300;400;600;700;800;900&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900&amp;display=swap" rel="stylesheet">
+    {% block css %}
+
+    {% endblock %}
+  </head>
+  <body> 
+    <!-- tap on top starts-->
+    <div class="tap-top"><i data-feather="chevrons-up"></i></div>
+    <!-- tap on tap ends-->
+    <!-- page-wrapper Start   -->
+    <div class="page-wrapper compact-wrapper" id="pageWrapper">
+      <!-- Page Header Start-->
+      <div class="page-header">
+        <div class="header-wrapper row m-0">
+          <div class="header-logo-wrapper col-auto p-0">
+            <div class="logo-wrapper"><a href="{% static '/' %}"> <img class="img-fluid for-light" src="{% static 'assets/images/logo/logo.png' %}" alt=""><img class="img-fluid for-dark" src="{% static 'assets/images/logo/logo_dark.png' %}" alt=""></a></div>
+            <div class="toggle-sidebar">
+              <svg class="sidebar-toggle"> 
+                <use href="{% static 'assets/svg/icon-sprite.svg#stroke-animation' %}"></use>
+              </svg>
+            </div>
+          </div>
+          
+          <div class="nav-right col-xl-12 col-lg-12 col-auto pull-right right-header p-0">
+            <ul class="nav-menus">
+            
+              
+            
+              <li class="profile-nav onhover-dropdown pe-0 py-0">
+                <div class="d-flex align-items-center profile-media">
+                   {% if user_reg and user_reg.profile_image %}
+                      <img class="b-r-25"
+                          src="{{ user_reg.profile_image.url }}"
+                          style="width:48px;height:48px;object-fit:cover;border-radius:50%;">
+                  {% else %}
+                      <img class="b-r-25"
+                          src="{% static 'assets/images/dashboard/profile.png' %}"
+                          style="width:48px;height:48px;object-fit:cover;border-radius:50%;">
+                  {% endif %}
+                  <div class="flex-grow-1 user"><span><span>{{ request.user.username }}</span></span>
+                    <p class="mb-0 font-nunito">
+                      <svg>
+                        <use href="{% static 'assets/svg/icon-sprite.svg#header-arrow-down' %}"></use>
+                      </svg>
+                    </p>
+                  </div>
+                </div>
+                <ul class="profile-dropdown onhover-show-div">
+                  <li><a href="{% url "profile" %}"><i data-feather="user"></i><span>Account </span></a></li>
+                  <li><a href="{% static 'letter-box.html' %}"><i data-feather="mail"></i><span>Inbox</span></a></li>
+                  <li><a href="{% static 'task.html' %}"><i data-feather="file-text"></i><span>Taskboard</span></a></li>
+                  <li><a href="{% static 'edit-profile.html' %}"><i data-feather="settings"></i><span>Settings</span></a></li>
+                  <li><a href="{% url "user_logout" %}"> <i data-feather="log-in"></i><span>Log Out</span></a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <script class="result-template" type="text/x-handlebars-template">
+            <div class="ProfileCard u-cf">              
+            <div class="ProfileCard-avatar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-airplay m-0"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path><polygon points="12 15 17 21 7 21 12 15"></polygon></svg></div>
+            <div class="ProfileCard-details">
+            <div class="ProfileCard-realName">{{name}}</div>
+            </div>
+            </div>
+          </script>
+          <script class="empty-template" type="text/x-handlebars-template"><div class="EmptyMessage">Your search turned up 0 results. This most likely means the backend is down, yikes!</div></script>
+        </div>
+      </div>
+      <!-- Page Header Ends                              -->
+      <!-- Page body Start -->
+      <div class="page-body-wrapper"> 
+        <!-- Page Sidebar Start-->
+         {% include "components/navbar.html" %}
+        <!-- Page Sidebar Ends-->
+        <div class="page-body">
+
+          {% block content %}
+            <!-- Page content will come here -->
+          {% endblock %}
+
+        </div>
+        <!-- footer start-->
+        {% include 'components/footer.html' %}
+      </div>
+    </div>
+
+    {% block js %}
+
+    {% endblock %}
+
+
+  </body>
+</html>
