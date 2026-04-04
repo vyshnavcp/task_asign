@@ -91,7 +91,7 @@
 
         <div style="background:linear-gradient(135deg,#3b82f6,#2563eb); color:white; padding:20px; border-radius:14px;">
             <h5>Pause Count</h5>
-            <td style="padding:10px; font-weight:500;">{{ p.duration|duration_format }}</td>
+            <h2 style="margin-top:10px;">{{ pause_count }}</h2>
         </div>
 
     </div>
@@ -125,7 +125,9 @@
                         <tr style="border-bottom:1px solid #e2e8f0;">
                            <td style="padding:10px;">{{ p.pause_start|date:"Y-m-d H:i:s" }}</td>
                             <td style="padding:10px;">{{ p.pause_end|date:"Y-m-d H:i:s"|default:"Ongoing" }}</td>
-                            <td style="padding:10px; font-weight:500;">{{ p.duration }}</td>
+                            <td style="padding:10px; font-weight:500;">
+                                {{ p.duration|duration_format }}
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>

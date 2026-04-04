@@ -59,8 +59,6 @@
                       {% if request.user.is_superuser %}
                       <li><a href="{% url "admin_task_view" %}">Admin task view</a></li>
                       {% endif %}
-                     
-                      
                     </ul>
                   </li>
                    <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
@@ -81,76 +79,6 @@
                      
                     </ul>
                   </li>
-                  
-                  {% comment %} <li class="sidebar-main-title">
-                    <div>
-                      <h6 class="lan-1">Product/Shop Management</h6>
-                    </div>
-                  </li>
-                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
-                      <svg class="stroke-icon">
-                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
-                      </svg>
-                      <svg class="fill-icon">
-                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
-                      </svg><span>Product</span></a>
-                    <ul class="sidebar-submenu">
-                      <li><a href="{% url "add_product" %}">Add product</a></li>
-                       <li> <a href="{% url "product_list" %}">Product List</a></li>
-                    </ul>
-                  </li>
-                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
-                      <svg class="stroke-icon">
-                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
-                      </svg>
-                      <svg class="fill-icon">
-                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
-                      </svg><span>Shop</span></a>
-                    <ul class="sidebar-submenu">
-                      <li><a href="{% url "add_shop" %}">Add Shop</a></li>
-                       <li> <a href="{% url "shop_list" %}">Shop List</a></li>
-                    </ul>
-                  </li> {% endcomment %}
-                  {% comment %} <li class="sidebar-main-title">
-                    <div>
-                      <h6 class="lan-1">New Order</h6>
-                    </div>
-                  </li>
-                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
-                      <svg class="stroke-icon">
-                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
-                      </svg>
-                      <svg class="fill-icon">
-                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
-                      </svg><span>Orders</span></a>
-                    <ul class="sidebar-submenu">
-                      <li><a href="{% url "shop_select" %}">Place order</a></li>
-                       <li> <a href="{% url "order_list" %}">All order</a></li>
-                         <li><a href="{% url "delivery_list" %}">Delivery list</a></li>
-          
-                          <li><a href="{% url "return_orders_page" %}">Return</a></li>
-                           <li><a href="{% url "return_shop_list" %}">Return_history</a></li>
-                    </ul>
-                  </li>
-                  
-                  </li>
-                  <li class="sidebar-main-title">
-                    <div>
-                      <h6 class="lan-1">Collection</h6>
-                    </div>
-                  </li>
-                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
-                      <svg class="stroke-icon">
-                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
-                      </svg>
-                      <svg class="fill-icon">
-                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
-                      </svg><span>Payment</span></a>
-                    <ul class="sidebar-submenu">
-                      <li><a href="{% url "shop_payment_list" %}"> Amount collect</a></li>
-                    </ul>
-                  </li>  {% endcomment %}
-                  
 
                 </ul>
               </div>
