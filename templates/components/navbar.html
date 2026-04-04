@@ -45,22 +45,42 @@
                     </div>
                   </li>
                  
-                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
-                      <svg class="stroke-icon">
-                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
-                      </svg>
-                      <svg class="fill-icon">
-                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
-                      </svg><span>Tasks</span></a>
-                    <ul class="sidebar-submenu">
-                         {% if not request.user.is_superuser %}
-                      <li><a href="{% url "my_tasks" %}">My task</a></li>
+                <li class="sidebar-list"><i></i>
+                  <a class="sidebar-link sidebar-title" href="#">
+                      <svg class="stroke-icon"><use href="../assets/svg/icon-sprite.svg#stroke-widget"></use></svg>
+                      <svg class="fill-icon"><use href="../assets/svg/icon-sprite.svg#fill-product"></use></svg>
+                      <span>Tasks</span>
+                  </a>
+                  <ul class="sidebar-submenu">
+                      {% if not request.user.is_superuser %}
+                      <li>
+                          <a href="{% url 'my_tasks' %}" style="display:flex; justify-content:space-between; align-items:center;">
+                              My Task
+                              <span id="notif-badge"
+                                    style="display:none; background:#dc3545; color:#fff;
+                                          border-radius:50%; padding:2px 7px;
+                                          font-size:11px; margin-left:8px;">0</span>
+                          </a>
+                      </li>
+                      <li>
+                          <a href="#" id="notif-toggle">🔔 Notifications</a>
+                          <ul id="notif-list"
+                              style="display:none; list-style:none;
+                                    padding-left:10px; max-height:200px;
+                                    overflow-y:auto;"></ul>
+                          <a href="#" id="mark-read-btn"
+                            style="display:none; font-size:11px;
+                                    padding-left:10px; color:#7366ff;">
+                              ✔ Mark all as read
+                          </a>
+                      </li>
                       {% endif %}
                       {% if request.user.is_superuser %}
-                      <li><a href="{% url "admin_task_view" %}">Admin task view</a></li>
+                      <li><a href="{% url 'admin_task_view' %}">Admin task view</a></li>
                       {% endif %}
-                    </ul>
-                  </li>
+                  </ul>
+              </li>
+
                    <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
                       <svg class="stroke-icon">
                         <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
@@ -86,3 +106,88 @@
             </nav>
           </div>
         </div>
+
+
+{% if not request.user.is_superuser %}
+<script>
+(function(){
+    const badge   = document.getElementById('notif-badge');
+    const list    = document.getElementById('notif-list');
+    const markBtn = document.getElementById('mark-read-btn');
+    const toggle  = document.getElementById('notif-toggle');
+
+    function updateBadge(count){
+        badge.textContent   = count > 99 ? '99+' : count;
+        badge.style.display = count > 0 ? 'inline-block' : 'none';
+    }
+
+    function renderList(notifs){
+        list.innerHTML = '';
+        if(!notifs.length){
+            list.innerHTML = '<li style="font-size:12px;color:#aaa;padding:4px 0">No tasks</li>';
+            markBtn.style.display = 'none';
+            return;
+        }
+        notifs.forEach(function(n){
+            const li       = document.createElement('li');
+            li.style.cssText = 'font-size:12px; padding:4px 0;' +
+                               'border-bottom:1px solid #eee; color:#333;';
+            li.textContent = (n.is_read ? '⚪ ' : '🔴 ') + n.message;
+            list.appendChild(li);
+        });
+        markBtn.style.display = 'block';
+    }
+
+    function fetchNotifs(){
+        fetch("{% url 'get_notifications' %}")
+        .then(r => r.json())
+        .then(function(data){
+            updateBadge(data.unread);
+            if(list.style.display === 'block'){
+                renderList(data.notifications);
+            }
+        });
+    }
+
+    // Toggle open/close
+    toggle.addEventListener('click', function(e){
+        e.preventDefault();
+        if(list.style.display === 'none'){
+            fetch("{% url 'get_notifications' %}")
+            .then(r => r.json())
+            .then(function(data){
+                updateBadge(data.unread);
+                renderList(data.notifications);
+                list.style.display = 'block';
+            });
+        } else {
+            list.style.display    = 'none';
+            markBtn.style.display = 'none';
+        }
+    });
+
+    // Mark all as read
+    markBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        fetch("{% url 'mark_notifications_read' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        }).then(function(){
+            updateBadge(0);
+            markBtn.style.display = 'none';
+            list.querySelectorAll('li').forEach(function(li){
+                li.textContent = li.textContent.replace('🔴', '⚪');
+            });
+        });
+    });
+
+    // Poll every 5 seconds
+    fetchNotifs();
+    setInterval(fetchNotifs, 5000);
+
+})();
+</script>
+{% endif %}

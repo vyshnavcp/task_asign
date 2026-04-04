@@ -179,6 +179,7 @@ def assign_task(request):
     return render(request, 'assign_task.html', {'staff_list': staff_list})
 
 
+@login_required(login_url='user_login')
 def my_tasks(request):
     staff = Staff.objects.get(authuser=request.user)
     tasks = Task.objects.filter(staff=staff).prefetch_related('pauses')
@@ -335,3 +336,35 @@ def reject_leave(request, id):
         messages.warning(request, "This leave is already processed.")
 
     return redirect('leave_requests')
+
+@login_required
+def get_notifications(request):
+    try:
+        staff = Staff.objects.get(authuser=request.user)
+        tasks = Task.objects.filter(staff=staff).order_by('-id')[:20]
+        seen_ids = request.session.get('seen_task_ids', [])
+        unread = sum(1 for t in tasks if t.id not in seen_ids)
+        data = [
+            {
+                'id': t.id,
+                'message': f"Task assigned: {t.title}",
+                'status': t.status,
+                'is_read': t.id in seen_ids,
+            }
+            for t in tasks
+        ]
+        return JsonResponse({'notifications': data, 'unread': unread})
+    except Staff.DoesNotExist:
+        return JsonResponse({'notifications': [], 'unread': 0})
+
+
+@login_required
+def mark_notifications_read(request):
+    try:
+        staff = Staff.objects.get(authuser=request.user)
+        task_ids = list(Task.objects.filter(staff=staff).values_list('id', flat=True))
+        request.session['seen_task_ids'] = task_ids
+        request.session.modified = True
+        return JsonResponse({'status': 'ok'})
+    except Staff.DoesNotExist:
+        return JsonResponse({'status': 'error'}, status=400)
