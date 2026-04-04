@@ -12,6 +12,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
+from django.db.models import Sum
 from datetime import timedelta
 # Create your views here.
 def home(request):
@@ -178,41 +179,63 @@ def assign_task(request):
 
 def my_tasks(request):
     staff = Staff.objects.get(authuser=request.user)
-    tasks = Task.objects.filter(staff=staff)
+    tasks = Task.objects.filter(staff=staff).prefetch_related('pauses')
     return render(request, 'my_tasks.html', {'tasks': tasks})
+
 
 def start_task(request, id):
     task = get_object_or_404(Task, id=id)
+
     if task.status == 'pending':
         task.start_time = timezone.now()
         task.status = 'started'
+
     elif task.status == 'paused':
-        if task.pause_time:
-            pause_duration = timezone.now() - task.pause_time
-            task.total_pause += pause_duration  
+        now = timezone.now()
+        open_pause = task.pauses.filter(pause_end__isnull=True).last()
+        if open_pause:
+            open_pause.pause_end = now
+            open_pause.save()
+            task.total_pause += open_pause.duration
+
         task.pause_time = None
         task.status = 'started'
+
     task.save()
     return redirect('my_tasks')
 
+
 def pause_task(request, id):
     task = get_object_or_404(Task, id=id)
+
     if task.status == 'started':
-        task.pause_time = timezone.now()
+        now = timezone.now()
+        task.pause_time = now
         task.status = 'paused'
         task.save()
+        TaskPause.objects.create(task=task, pause_start=now)
+
     return redirect('my_tasks')
+
 
 def stop_task(request, id):
     task = get_object_or_404(Task, id=id)
+
     if task.start_time:
-        task.end_time = timezone.now()
+        now = timezone.now()
+        if task.status == 'paused':
+            open_pause = task.pauses.filter(pause_end__isnull=True).last()
+            if open_pause:
+                open_pause.pause_end = now
+                open_pause.save()
+                task.total_pause += open_pause.duration
+
+        task.end_time = now
         total = task.end_time - task.start_time - task.total_pause
-        if total.total_seconds() < 0:
-            total = timedelta(0)
-        task.total_time = total
+        task.total_time = max(total, timedelta(0))
         task.status = 'completed'
         task.save()
+
     return redirect('my_tasks')
 
 @staff_member_required
@@ -221,3 +244,28 @@ def admin_task_view(request):
     tasks = Task.objects.select_related('staff').all().order_by('-id')
 
     return render(request, 'admin_tasks.html', {'tasks': tasks})
+
+
+def task_detail(request, id):
+    task = get_object_or_404(Task.objects.prefetch_related('pauses'), id=id)
+
+    pauses = task.pauses.all()
+
+    total_pause = sum(
+        (p.duration for p in pauses if p.pause_end),
+        timedelta()
+    )
+
+    total_work = None
+    if task.start_time and task.end_time:
+        total_work = task.end_time - task.start_time - total_pause
+
+    context = {
+        'task': task,
+        'pauses': pauses,
+        'total_pause': total_pause,
+        'total_work': total_work,
+        'pause_count': pauses.count(),
+    }
+
+    return render(request, 'task_detail.html', context)

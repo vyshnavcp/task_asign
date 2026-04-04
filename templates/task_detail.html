@@ -1,0 +1,219 @@
+
+{% extends 'main.html' %}
+{% block title %}Home{% endblock %}
+{% load static %}
+{% load time_filters %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
+    <!-- ico-font-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
+    <!-- Themify icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
+    <!-- Flag icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
+    <!-- Feather icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
+    <!-- Plugins css start-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
+    <!-- Plugins css Ends-->
+    <!-- Bootstrap css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
+    <!-- App css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
+    <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
+    <!-- Responsive css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+{% endblock %}
+{% block content %}
+<div style="padding:30px; background:#f8fafc; min-height:100vh; font-family:system-ui;">
+
+    <!-- HEADER -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+        <div>
+            <h2 style="margin:0; font-weight:700;">📄 Task Details</h2>
+            <p style="color:#64748b;">Detailed analytics & pause tracking</p>
+        </div>
+
+        <a href="{% url 'admin_task_view' %}" 
+           style="background:#0f172a; color:white; padding:10px 18px; border-radius:8px; text-decoration:none;">
+            ⬅ Back
+        </a>
+    </div>
+
+    <!-- TASK CARD -->
+    <div style="background:white; border-radius:14px; padding:25px; box-shadow:0 8px 25px rgba(0,0,0,0.05); margin-bottom:25px;">
+        
+        <h3 style="margin-bottom:10px;">{{ task.title }}</h3>
+        <p style="color:#475569;">{{ task.description }}</p>
+
+        <div style="display:flex; gap:40px; margin-top:20px; flex-wrap:wrap;">
+
+            <div>
+                <small style="color:#94a3b8;">Staff</small>
+                <div style="font-weight:600;">👤 {{ task.staff }}</div>
+            </div>
+
+            <div>
+                <small style="color:#94a3b8;">Status</small>
+                <div style="font-weight:600; text-transform:capitalize;">{{ task.status }}</div>
+            </div>
+
+            <div>
+                <small style="color:#94a3b8;">Start Time</small>
+                <div>{{ task.start_time }}</div>
+            </div>
+
+            <div>
+                <small style="color:#94a3b8;">End Time</small>
+                <div>{{ task.end_time|default:"-" }}</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- STATS CARDS -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:20px; margin-bottom:25px;">
+
+        <div style="background:linear-gradient(135deg,#22c55e,#16a34a); color:white; padding:20px; border-radius:14px;">
+            <h5>Total Work Time</h5>
+            <h2 style="margin-top:10px;">{{ total_work|duration_format }}</h2>
+        </div>
+
+        <div style="background:linear-gradient(135deg,#f59e0b,#d97706); color:white; padding:20px; border-radius:14px;">
+            <h5>Total Pause Time</h5>
+            <h2 style="margin-top:10px;">{{ total_pause|duration_format }}</h2>
+        </div>
+
+        <div style="background:linear-gradient(135deg,#3b82f6,#2563eb); color:white; padding:20px; border-radius:14px;">
+            <h5>Pause Count</h5>
+            <td style="padding:10px; font-weight:500;">{{ p.duration|duration_format }}</td>
+        </div>
+
+    </div>
+
+    <!-- CHART + TABLE -->
+    <div style="display:grid; grid-template-columns:1fr 1.5fr; gap:20px;">
+
+        <!-- PIE CHART -->
+        <div style="background:white; padding:20px; border-radius:14px; box-shadow:0 8px 25px rgba(0,0,0,0.05);">
+            <h4 style="margin-bottom:15px;">📊 Work vs Pause</h4>
+            <canvas id="pieChart"></canvas>
+        </div>
+
+        <!-- PAUSE HISTORY -->
+        <div style="background:white; padding:20px; border-radius:14px; box-shadow:0 8px 25px rgba(0,0,0,0.05);">
+            <h4 style="margin-bottom:15px;">⏸ Pause History</h4>
+
+            <div style="max-height:300px; overflow:auto;">
+                <table style="width:100%; border-collapse:collapse; text-align:center;">
+
+                    <thead>
+                        <tr style="background:#0f172a; color:white;">
+                            <th style="padding:10px;">Start</th>
+                            <th style="padding:10px;">End</th>
+                            <th style="padding:10px;">Duration</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for p in pauses %}
+                        <tr style="border-bottom:1px solid #e2e8f0;">
+                           <td style="padding:10px;">{{ p.pause_start|date:"Y-m-d H:i:s" }}</td>
+                            <td style="padding:10px;">{{ p.pause_end|date:"Y-m-d H:i:s"|default:"Ongoing" }}</td>
+                            <td style="padding:10px; font-weight:500;">{{ p.duration }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" style="padding:15px;">No pauses recorded</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- CHART JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    let work = {{ total_work.total_seconds|default:0 }};
+    let pause = {{ total_pause.total_seconds|default:0 }};
+
+    const ctx = document.getElementById('pieChart');
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Work', 'Pause'],
+            datasets: [{
+                data: [work, pause],
+                backgroundColor: ['#22c55e', '#f59e0b'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            cutout: '65%'
+        }
+    });
+</script>
+
+{% endblock %}
+
+
+{% block js %}
+    <!-- latest jquery-->
+    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <!-- Bootstrap js-->
+    <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <!-- feather icon js-->
+    <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
+    <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
+    <!-- scrollbar js-->
+    <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
+    <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
+    <!-- Sidebar jquery-->
+    <script src="{% static 'assets/js/config.js' %}"></script>
+    <!-- Plugins JS start-->
+    <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
+    <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.js' %}"></script>
+    <script src="{% static 'assets/js/header-slick.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"> </script>
+    <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/moment.min.js' %}"></script>
+    <script src="{% static 'assets/js/notify/bootstrap-notify.min.js' %}"></script>
+    <script src="{% static 'assets/js/dashboard/default.js' %}"></script>
+    <script src="{% static 'assets/js/notify/index.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/datatable.custom.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/datatable.custom1.js' %}"></script>
+    <script src="{% static 'assets/js/owlcarousel/owl.carousel.js' %}"></script>
+    <script src="{% static 'assets/js/owlcarousel/owl-custom.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/handlebars.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/typeahead.bundle.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/typeahead.custom.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
+    <script src="{% static 'assets/js/height-equal.js' %}"></script>
+    <!-- Plugins JS Ends-->
+{% endblock %}

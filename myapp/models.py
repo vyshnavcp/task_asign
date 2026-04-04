@@ -35,7 +35,7 @@ class Task(models.Model):
 
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
-    pause_time = models.DateTimeField(null=True, blank=True)
+    pause_time = models.DateTimeField(null=True, blank=True)   # current pause start
     total_pause = models.DurationField(default=timedelta(seconds=0))
     total_time = models.DurationField(null=True, blank=True)
 
@@ -49,7 +49,29 @@ class Task(models.Model):
 
     @property
     def total_pause_seconds(self):
-        """Returns total paused seconds as integer for JS"""
         if self.total_pause:
             return int(self.total_pause.total_seconds())
         return 0
+
+
+class TaskPause(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='pauses')
+    pause_start = models.DateTimeField()
+    pause_end = models.DateTimeField(null=True, blank=True)   
+
+    @property
+    def duration(self):
+        if self.pause_start and self.pause_end:
+            return self.pause_end - self.pause_start
+        return timedelta(0)
+
+    def __str__(self):
+        return f"Pause for '{self.task.title}' | {self.pause_start} → {self.pause_end or 'ongoing'}"
+
+class LeaveRequest(model.Model):
+    STATUS_CHOICE=(
+         ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    )
+    staff=model.models.ForeignKey("app.Model", verbose_name=_(""), on_delete=models.CASCADE)
