@@ -11,6 +11,8 @@ from django.contrib.auth import authenticate, login,logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.utils import timezone
+from datetime import timedelta
 # Create your views here.
 def home(request):
     return render(request,'home.html')
@@ -174,7 +176,6 @@ def assign_task(request):
     return render(request, 'assign_task.html', {'staff_list': staff_list})
 
 
-
 def my_tasks(request):
     staff = Staff.objects.get(authuser=request.user)
     tasks = Task.objects.filter(staff=staff)
@@ -188,7 +189,7 @@ def start_task(request, id):
     elif task.status == 'paused':
         if task.pause_time:
             pause_duration = timezone.now() - task.pause_time
-            task.total_pause += pause_duration
+            task.total_pause += pause_duration  
         task.pause_time = None
         task.status = 'started'
     task.save()
@@ -212,7 +213,6 @@ def stop_task(request, id):
         task.total_time = total
         task.status = 'completed'
         task.save()
-
     return redirect('my_tasks')
 
 @staff_member_required
