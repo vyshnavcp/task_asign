@@ -72,7 +72,11 @@
                       </svg><span>Leave</span></a>
                     <ul class="sidebar-submenu">
                          {% if not request.user.is_superuser %}
-                      <li><a href="{% url "my_tasks" %}">Send Leave request</a></li>
+                      <li><a href="{% url "apply_leave" %}">Send Leave request</a></li>
+                       <li><a href="{% url "my_leave" %}">View request</a></li>
+                      {% endif %}
+                      {% if request.user.is_superuser %}
+                      <li><a href="{% url "leave_requests" %}">Leave request</a></li>
                       {% endif %}
                      
                     </ul>

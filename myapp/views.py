@@ -1,3 +1,5 @@
+from myapp.models import LeaveRequest
+from myapp.models import Staff
 from django.shortcuts import render
 from datetime import datetime
 from django.shortcuts import redirect, render,get_object_or_404
@@ -269,3 +271,67 @@ def task_detail(request, id):
     }
 
     return render(request, 'task_detail.html', context)
+
+@login_required
+def apply_leave(request):
+    if request.method == 'POST':
+        try:
+            staff = Staff.objects.get(authuser=request.user)
+            reason = request.POST.get('reason')
+            from_date = request.POST.get('from_date')
+            to_date = request.POST.get('to_date')
+            from_date = datetime.strptime(from_date, "%Y-%m-%d").date()
+            to_date = datetime.strptime(to_date, "%Y-%m-%d").date()
+            if from_date > to_date:
+                messages.error(request, "From date cannot be after To date!")
+                return redirect('apply_leave')
+            LeaveRequest.objects.create(
+                staff=staff,
+                reason=reason,
+                from_date=from_date,
+                to_date=to_date
+            )
+            messages.success(request, "Leave request submitted successfully!")
+            return redirect('my_leave')
+        except Exception as e:
+            messages.error(request, f"Error: {str(e)}")
+            return redirect('apply_leave')
+    return render(request, 'apply_leave.html')
+
+@login_required
+def my_leave(request):
+    try:
+        staff = Staff.objects.get(authuser=request.user)
+        leaves = LeaveRequest.objects.filter(staff=staff).order_by('-id')
+    except Staff.DoesNotExist:
+        leaves = []
+    return render(request, 'my_leave.html', {'leaves': leaves})
+
+@login_required
+def leave_requests(request):
+    leaves = LeaveRequest.objects.all().order_by('-id')
+    return render(request, 'admin leave_requests.html', {'leaves': leaves})
+
+@login_required
+def approve_leave(request, id):
+    leave = get_object_or_404(LeaveRequest, id=id)
+
+    if leave.status == 'pending':
+        leave.status = 'approved'
+        leave.save()
+        messages.success(request, "Leave approved successfully!")
+    else:
+        messages.warning(request, "This leave is already processed.")
+    return redirect('leave_requests')
+
+@login_required
+def reject_leave(request, id):
+    leave = get_object_or_404(LeaveRequest, id=id)
+    if leave.status == 'pending':
+        leave.status = 'rejected'
+        leave.save()
+        messages.success(request, "Leave rejected.")
+    else:
+        messages.warning(request, "This leave is already processed.")
+
+    return redirect('leave_requests')

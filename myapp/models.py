@@ -68,10 +68,26 @@ class TaskPause(models.Model):
     def __str__(self):
         return f"Pause for '{self.task.title}' | {self.pause_start} → {self.pause_end or 'ongoing'}"
 
-class LeaveRequest(model.Model):
-    STATUS_CHOICE=(
-         ('pending', 'Pending'),
+class LeaveRequest(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
     )
-    staff=model.models.ForeignKey("app.Model", verbose_name=_(""), on_delete=models.CASCADE)
+
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    reason = models.TextField()
+    from_date = models.DateField()
+    to_date = models.DateField()
+    applied_on = models.DateTimeField(auto_now_add=True)
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    admin_remark = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.staff.authuser.username} - {self.status}"
+
+
+
+
+    

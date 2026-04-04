@@ -20,5 +20,10 @@ urlpatterns = [
     path('stop/<int:id>/', views.stop_task, name='stop_task'),
     path('admin_task_view/',views.admin_task_view,name='admin_task_view'),
     path('task-detail/<int:id>/', views.task_detail, name='task_detail'),
+    path('apply-leave/', views.apply_leave, name='apply_leave'),
+    path('my-leave/', views.my_leave, name='my_leave'),
+    path('leave-requests/', views.leave_requests, name='leave_requests'),
+    path('approve-leave/<int:id>/', views.approve_leave, name='approve_leave'),
+    path('reject-leave/<int:id>/', views.reject_leave, name='reject_leave'),
 
 ]
