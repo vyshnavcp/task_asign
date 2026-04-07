@@ -1,5 +1,5 @@
 {% extends 'main.html' %}
-{% block title %}Home{% endblock %}
+{% block title %}My Tasks{% endblock %}
 {% load static %}
 
 {% block css %}
@@ -31,7 +31,7 @@
 {% load tz %}
 
 {% block content %}
-<div style="background:#111827; color:white; padding:15px 25px; display:flex; justify-content:space-between;">
+<div style="background:#111827; color:white; padding:15px 25px; display:flex; justify-content:space-between; align-items:center;">
     <h3 style="margin:0;">Task Manager</h3>
     <div>
         <span style="margin-right:15px;">👤 {{ request.user.username }}</span>
@@ -43,10 +43,10 @@
 
     <h2 style="margin-bottom:20px;">My Tasks</h2>
 
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:20px;">
+   <div style="display:flex; flex-wrap:wrap; gap:20px;">
 
         {% for t in tasks %}
-        <div style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+        <div style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.05); width: 300px;">
 
             <h4 style="margin-bottom:10px;">{{ t.title }}</h4>
             <p style="color:#6b7280; font-size:14px;">{{ t.description }}</p>
@@ -65,43 +65,46 @@
 
             <div style="font-size:18px; font-weight:bold; margin:10px 0;">
                 ⏱ <span class="timer"
-                    data-start="{{ t.start_time|date:'c' }}"
-                    data-status="{{ t.status }}"
-                    data-end="{{ t.end_time|date:'c' }}"
-                    data-pause-time="{{ t.pause_time|date:'c' }}"
-                    data-total-pause="{{ t.total_pause_seconds }}">
-                </span>
+                        data-status="{{ t.status }}"
+                        data-start="{{ t.start_time|date:'c' }}"
+                        data-end="{{ t.end_time|date:'c' }}"
+                        data-pause-time="{{ t.pause_time|date:'c' }}"
+                        data-total-pause="{{ t.total_pause_seconds }}"
+                        data-worked="{{ t.worked_time.total_seconds|default:'0'|floatformat:'0' }}"
+                        data-expected="{{ t.expected_time.total_seconds|default:'0' }}">
+                    </span>
             </div>
+            <div class="time-warning" style="margin-top:8px; font-weight:bold;"></div>
 
             <div style="margin-top:10px;">
                 {% if t.status == 'pending' %}
                     <a href="{% url 'start_task' t.id %}"
                        style="background:#10b981; color:white; padding:6px 12px; border-radius:5px; text-decoration:none;">
-                       Start
+                       ▶ Start
                     </a>
 
                 {% elif t.status == 'started' %}
                     <a href="{% url 'pause_task' t.id %}"
                        style="background:#f59e0b; color:white; padding:6px 12px; border-radius:5px; margin-right:5px; text-decoration:none;">
-                       Pause
+                       ⏸ Pause
                     </a>
                     <a href="{% url 'stop_task' t.id %}"
                        style="background:#ef4444; color:white; padding:6px 12px; border-radius:5px; text-decoration:none;">
-                       Complete
+                       ✔ Complete
                     </a>
 
                 {% elif t.status == 'paused' %}
                     <a href="{% url 'start_task' t.id %}"
                        style="background:#3b82f6; color:white; padding:6px 12px; border-radius:5px; margin-right:5px; text-decoration:none;">
-                       Resume
+                       ▶ Resume
                     </a>
                     <a href="{% url 'stop_task' t.id %}"
                        style="background:#ef4444; color:white; padding:6px 12px; border-radius:5px; text-decoration:none;">
-                       Complete
+                       ✔ Complete
                     </a>
 
                 {% else %}
-                    <span style="color:#10b981;">✔ Done</span>
+                    <span style="color:#10b981; font-weight:bold;">✔ Done</span>
                 {% endif %}
             </div>
 
@@ -113,50 +116,72 @@
 </div>
 
 <script>
-function formatTime(seconds) {
-    seconds = Math.max(0, Math.floor(seconds));
-    let h = Math.floor(seconds / 3600);
-    let m = Math.floor((seconds % 3600) / 60);
-    let s = seconds % 60;
-    return h + "h " + m + "m " + s + "s";
+function formatTime(totalSeconds) {
+    totalSeconds = Math.max(0, Math.floor(totalSeconds));
+    let h = Math.floor(totalSeconds / 3600);
+    let m = Math.floor((totalSeconds % 3600) / 60);
+    let s = totalSeconds % 60;
+    return h + "h " + String(m).padStart(2,'0') + "m " + String(s).padStart(2,'0') + "s";
 }
 
-function updateTimer() {
-    document.querySelectorAll('.timer').forEach(el => {
-        let status      = el.dataset.status;
-        let start       = el.dataset.start;
-        let end         = el.dataset.end;
-        let pauseTime   = el.dataset.pauseTime;
-        let totalPause  = parseInt(el.dataset.totalPause) || 0; // ✅ already-accumulated pause seconds
+function updateTimers() {
+    const nowMs = Date.now();
 
-        if (!start || start === "None") {
+    document.querySelectorAll('.timer').forEach(el => {
+        const status      = el.dataset.status;
+        const startStr    = el.dataset.start;
+        const endStr      = el.dataset.end;
+        const pauseStr    = el.dataset.pauseTime;   // when current pause began
+        const totalPause  = parseInt(el.dataset.totalPause) || 0;  // seconds of all CLOSED pauses (updated by server on resume/stop)
+        const workedSaved = parseFloat(el.dataset.worked) || 0;    // final worked_time seconds (completed tasks)
+
+        // ── COMPLETED ──────────────────────────────────────────
+        // Use the server-calculated worked_time directly — never recompute.
+        if (status === 'completed') {
+            el.innerHTML = formatTime(workedSaved);
+            return;
+        }
+
+        // ── PENDING ────────────────────────────────────────────
+        if (status === 'pending' || !startStr || startStr === "None") {
             el.innerHTML = "-";
             return;
         }
 
-        let startMs    = new Date(start).getTime();
-        let now        = Date.now();
-        let diff       = 0;
+        const startMs = new Date(startStr).getTime();
 
-        if (status === 'completed' && end && end !== "None") {
-            // ✅ COMPLETED: use saved total_time = end - start - total_pause
-            diff = (new Date(end).getTime() - startMs) / 1000 - totalPause;
-
-        } else if (status === 'started') {
-            // ✅ RUNNING: (now - start) minus ALL accumulated pauses
-            diff = (now - startMs) / 1000 - totalPause;
-
-        } else if (status === 'paused' && pauseTime && pauseTime !== "None") {
-            // ✅ PAUSED: (pause_time - start) minus previous pauses = actual work done so far
-            diff = (new Date(pauseTime).getTime() - startMs) / 1000 - totalPause;
+        // ── PAUSED ─────────────────────────────────────────────
+        // Elapsed work = (pause_time - start) - total_pause_of_prior_pauses
+        // total_pause on the model does NOT include the current pause (it's still open).
+        // So we freeze the display at the moment the pause button was clicked.
+        if (status === 'paused') {
+            if (!pauseStr || pauseStr === "None") {
+                el.innerHTML = "-";
+                return;
+            }
+            const pauseMs  = new Date(pauseStr).getTime();
+            const elapsed  = (pauseMs - startMs) / 1000;   // wall time up to pause click
+            const worked   = elapsed - totalPause;          // subtract prior closed pauses
+            el.innerHTML   = formatTime(worked);
+            return;
         }
 
-        el.innerHTML = formatTime(diff);
+        // ── STARTED (running) ──────────────────────────────────
+        // total_pause already has ALL closed pauses (server updates it on every resume).
+        // So: worked = (now - start) - total_pause_of_all_closed_pauses
+        if (status === 'started') {
+            const elapsed = (nowMs - startMs) / 1000;
+            const worked  = elapsed - totalPause;
+            el.innerHTML  = formatTime(worked);
+            return;
+        }
+
+        el.innerHTML = "-";
     });
 }
 
-setInterval(updateTimer, 1000);
-updateTimer();
+setInterval(updateTimers, 1000);
+updateTimers();
 </script>
 
 {% endblock %}

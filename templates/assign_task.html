@@ -61,6 +61,14 @@
 
         <!-- Description -->
         <textarea name="description" class="form-control mb-3" placeholder="Task Description" required></textarea>
+        <!-- Expected Time -->
+        <div class="mb-3">
+            <label><strong>Expected Time</strong></label>
+            <div class="d-flex gap-2">
+                <input type="number" name="hours" class="form-control" placeholder="Hours" min="0">
+                <input type="number" name="minutes" class="form-control" placeholder="Minutes" min="0" max="59">
+            </div>
+        </div>
 
         <button class="btn btn-primary w-100">Assign Task</button>
     </form>

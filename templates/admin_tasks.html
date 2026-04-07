@@ -2,7 +2,6 @@
 {% extends 'main.html' %}
 {% block title %}Home{% endblock %}
 {% load static %}
-{% load time_filters %} 
 
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
@@ -30,93 +29,149 @@
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
 {% endblock %}
-{% load tz %}
+
 {% block content %}
 
-<div style="padding:30px; background:#f1f5f9; min-height:100vh;">
+<div style="padding:20px;">
 
-    <h2 style="margin-bottom:20px;">📊 Admin Task Dashboard</h2>
+    <h2>Tasks</h2>
 
-    <table style="width:100%; background:white; border-radius:10px; overflow:hidden; text-align:center;">
-        <thead style="background:#0f172a; color:white;">
-            <tr>
-                <th style="padding:12px;">Staff</th>
-                <th style="padding:12px;">Task Name</th>
-                <th style="padding:12px;">Total Time</th>
-            </tr>
-        </thead>
+    <div style="display:flex; flex-wrap:wrap; gap:15px;">
 
-        <tbody>
-            {% for t in tasks %}
-            <tr style="border-bottom:1px solid #e5e7eb;">
+        {% for t in tasks %}
+        
+        <a href="{% url 'task_detail' t.id %}" 
+           style="text-decoration:none; color:black;">
 
-                <td style="padding:12px;">
-                    👤 {{ t.staff }}
-                </td>
+            <div style="border:1px solid #ccc; padding:15px; width:250px; border-radius:6px;    box-shadow: 4px 6px 10px;
+    background-color: antiquewhite;">
 
-                <!-- ✅ CLICKABLE TASK -->
-                <td style="padding:12px;">
-                    <a href="{% url 'task_detail' t.id %}" 
-                       style="color:#2563eb; font-weight:600; text-decoration:none;">
-                        {{ t.title }}
-                    </a>
-                </td>
+                <b style="font-weight: 600; font-family:'Inter', sans-serif;" >{{ t.title }}</b><br><br>
 
-                <td style="padding:12px;">
-                    {{ t.total_time|duration_format }}
-                </td>
+                <span style="font-weight: 600; font-family:'Inter', sans-serif;"> Staff: {{ t.staff.authuser.username }}</span><br>
+                <span style="font-weight: 600; font-family:'Inter', sans-serif;">Assigned: {{ t.assigned_by.username }}</span><br><br>
 
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                <!-- STATUS -->
+                <span style="font-weight: 600; font-family:'Inter', sans-serif;">Status:</span>
+                <span class="status" data-id="{{ t.id }}" style="color: green; font-family: 'font-weight: 600; font-family: 'Inter', sans-serif;">
+                    {{ t.status }}
+                </span>
+                <br><br>
+
+                <!-- TIMER -->
+                ⏱ 
+                <b><span  class="timer"
+                    data-id="{{ t.id }}"
+                    data-start="{{ t.start_time|date:'c' }}"
+                    data-status="{{ t.status }}"
+                    data-end="{{ t.end_time|date:'c' }}"
+                    data-pause-time="{{ t.pause_time|date:'c' }}"
+                    data-total-pause="{{ t.total_pause_seconds }}">
+                </span></b>
+                
+                {% if t.status == 'completed' %}
+                    <br><small>Stopped: {{ t.end_time }}</small>
+                {% endif %}
+
+            </div>
+
+        </a>
+
+        {% endfor %}
+
+    </div>
 
 </div>
-<!-- ✅ LIVE TIMER -->
+
 <script>
+// ✅ FORMAT TIME
 function formatTime(seconds) {
+    seconds = Math.max(0, Math.floor(seconds));
     let h = Math.floor(seconds / 3600);
     let m = Math.floor((seconds % 3600) / 60);
     let s = seconds % 60;
     return h + "h " + m + "m " + s + "s";
 }
 
+// ✅ TIMER CALCULATION
 function updateTimer() {
     document.querySelectorAll('.timer').forEach(el => {
 
-        let start = el.dataset.start;
         let status = el.dataset.status;
+        let start = el.dataset.start;
         let end = el.dataset.end;
-        let pause = el.dataset.pause;
+        let pause = el.dataset.pauseTime;
+        let totalPause = parseInt(el.dataset.totalPause) || 0;
 
-        if (!start) {
+        if (!start || start === "None" || start === "") {
             el.innerHTML = "-";
             return;
         }
 
-        let startTime = new Date(start);
-        let now = new Date();
+        let startMs = new Date(start).getTime();
+        let now = Date.now();
         let diff = 0;
 
-        if (status === 'completed' && end) {
-            diff = (new Date(end) - startTime) / 1000;
-        }
-        else if (status === 'started') {
-            diff = (now - startTime) / 1000;
-        }
-        else if (status === 'paused' && pause) {
-            diff = (new Date(pause) - startTime) / 1000;
+        if (status === 'completed' && end && end !== "None" && end !== "") {
+            diff = (new Date(end).getTime() - startMs) / 1000 - totalPause;
+
+        } else if (status === 'started') {
+            diff = (now - startMs) / 1000 - totalPause;
+
+        } else if (status === 'paused' && pause && pause !== "None" && pause !== "") {
+            diff = (new Date(pause).getTime() - startMs) / 1000 - totalPause;
         }
 
-        el.innerHTML = formatTime(Math.floor(diff));
+        diff = Math.max(0, diff);
+        el.innerHTML = formatTime(diff);
     });
 }
 
-setInterval(updateTimer, 1000);
-updateTimer();
+// ✅ UPDATE FROM API
+function updateFromAPI(tasks) {
+    tasks.forEach(task => {
+
+        let timerEl = document.querySelector(`.timer[data-id='${task.id}']`);
+        let statusEl = document.querySelector(`.status[data-id='${task.id}']`);
+
+        if (!timerEl) return;
+
+        // 🔥 UPDATE DATASET
+        timerEl.dataset.status = task.status;
+        timerEl.dataset.start = task.start;
+        timerEl.dataset.end = task.end;
+        timerEl.dataset.pauseTime = task.pause;
+        timerEl.dataset.totalPause = task.total_pause;
+
+        // 🔥 UPDATE STATUS TEXT
+        if (statusEl) {
+            statusEl.innerHTML = task.status;
+        }
+    });
+
+    updateTimer();
+}
+
+// ✅ FETCH EVERY 3s
+function fetchTaskUpdates() {
+    fetch("/task-status-api/")
+        .then(res => res.json())
+        .then(data => {
+            updateFromAPI(data.tasks);
+        })
+        .catch(err => console.log("Error:", err));
+}
+
+// ✅ RUN EVERYTHING
+document.addEventListener("DOMContentLoaded", function () {
+    updateTimer();
+    setInterval(updateTimer, 1000);     // smooth timer
+    setInterval(fetchTaskUpdates, 3000); // backend sync
+});
 </script>
 
 {% endblock %}
+
 {% block js %}
     <!-- latest jquery-->
     <script src="{% static 'assets/js/jquery.min.js' %}"></script>

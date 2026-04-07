@@ -26,5 +26,6 @@ urlpatterns = [
     path('reject-leave/<int:id>/', views.reject_leave, name='reject_leave'),
     path('notifications/', views.get_notifications, name='get_notifications'),
     path('notifications/mark-read/', views.mark_notifications_read, name='mark_notifications_read'),
+    path('task-status-api/', views.task_status_api),
 
 ]

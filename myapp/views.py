@@ -168,19 +168,27 @@ def assign_task(request):
         title = request.POST.get('title')
         description = request.POST.get('description')
 
+        hours = request.POST.get('hours')
+        minutes = request.POST.get('minutes')
+
+        expected_time = timedelta(
+            hours=int(hours or 0),
+            minutes=int(minutes or 0)
+        )
+
         staff = Staff.objects.get(id=staff_id)
 
         Task.objects.create(
             staff=staff,
             title=title,
             description=description,
+            expected_time=expected_time,  
             assigned_by=request.user  
         )
 
         return redirect('assign_task')
 
     return render(request, 'assign_task.html', {'staff_list': staff_list})
-
 
 @login_required(login_url='user_login')
 def my_tasks(request):
@@ -198,12 +206,18 @@ def start_task(request, id):
 
     elif task.status == 'paused':
         now = timezone.now()
+        # Close the open pause record
         open_pause = task.pauses.filter(pause_end__isnull=True).last()
         if open_pause:
             open_pause.pause_end = now
             open_pause.save()
-            task.total_pause += open_pause.duration
 
+        # ✅ Recalculate and SAVE total_pause so the template renders correctly
+        total_pause = sum(
+            (p.duration for p in task.pauses.all() if p.pause_end),
+            timedelta()
+        )
+        task.total_pause = total_pause
         task.pause_time = None
         task.status = 'started'
 
@@ -234,40 +248,56 @@ def stop_task(request, id):
             if open_pause:
                 open_pause.pause_end = now
                 open_pause.save()
-                task.total_pause += open_pause.duration
 
+        total_pause = sum(
+            (p.duration for p in task.pauses.all() if p.pause_end),
+            timedelta()
+        )
+        task.total_pause = total_pause
         task.end_time = now
-        total = task.end_time - task.start_time - task.total_pause
-        task.total_time = max(total, timedelta(0))
+        total_time = task.end_time - task.start_time
+        worked_time = total_time - total_pause
+
+        task.total_time = max(total_time, timedelta(0))
+        task.worked_time = max(worked_time, timedelta(0))
         task.status = 'completed'
         task.save()
 
     return redirect('my_tasks')
 
+def task_status_api(request):
+    tasks = Task.objects.all()
+
+    data = []
+    for t in tasks:
+        data.append({
+            "id": t.id,
+            "status": t.status,
+            "start": t.start_time.isoformat() if t.start_time else None,
+            "end": t.end_time.isoformat() if t.end_time else None,
+            "pause": t.pause_time.isoformat() if t.pause_time else None,
+
+            "total_pause": int(t.total_pause.total_seconds()) if t.total_pause else 0,
+            "total_time": int(t.total_time.total_seconds()) if t.total_time else 0,
+            "worked_time": int(t.worked_time.total_seconds()) if t.worked_time else 0,
+        })
+
+    return JsonResponse({"tasks": data})
+
 @staff_member_required
 def admin_task_view(request):
-
-    tasks = Task.objects.select_related('staff').all().order_by('-id')
-
+    tasks = Task.objects.select_related('staff', 'assigned_by').all().order_by('-id')
     return render(request, 'admin_tasks.html', {'tasks': tasks})
+
 
 def task_detail(request, id):
     task = get_object_or_404(Task.objects.prefetch_related('pauses'), id=id)
-    pauses = task.pauses.all()
-    total_pause = sum(
-        (p.duration for p in pauses if p.pause_end),
-        timedelta()
-    )
 
-    total_work = None
-    if task.start_time and task.end_time:
-        total_work = task.end_time - task.start_time - total_pause
+    pauses = task.pauses.all()
 
     context = {
         'task': task,
         'pauses': pauses,
-        'total_pause': total_pause,
-        'total_work': total_work,
         'pause_count': pauses.count(),
     }
 

@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 # Create your models here.
 from django.db import models
-from django.contrib.auth import get_user_model
 from datetime import timedelta
 from django.utils import timezone
 
@@ -18,14 +17,12 @@ class Staff(models.Model):
     def __str__(self):
         return self.authuser.username
 
-
-
 class Task(models.Model):
     STATUS_CHOICES = (
-        ('pending', 'Pending'),
-        ('started', 'Started'),
-        ('paused', 'Paused'),
-        ('completed', 'Completed'),
+        ('pending','Pending'),
+        ('started','Started'),
+        ('paused','Paused'),
+        ('completed','Completed'),
     )
 
     staff = models.ForeignKey('Staff', on_delete=models.CASCADE)
@@ -35,17 +32,26 @@ class Task(models.Model):
 
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
-    pause_time = models.DateTimeField(null=True, blank=True)   # current pause start
+    pause_time = models.DateTimeField(null=True, blank=True)   
     total_pause = models.DurationField(default=timedelta(seconds=0))
     total_time = models.DurationField(null=True, blank=True)
+    worked_time = models.DurationField(null=True, blank=True) 
     assigned_by = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name='assigned_tasks')
+    expected_time=(models.DurationField(null=True,blank=True))
+    
 
     def __str__(self):
         return self.title
 
     def get_total_work_time(self):
-        if self.start_time and self.end_time:
-            return self.end_time - self.start_time - (self.total_pause or timedelta(0))
+        if self.worked_time:
+            return self.worked_time  
+
+        if self.start_time:
+            from django.utils.timezone import now
+            current = self.end_time or now()
+            return current - self.start_time - (self.total_pause or timedelta(0))
+
         return None
 
     @property
