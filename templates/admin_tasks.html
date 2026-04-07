@@ -1,215 +1,241 @@
-
 {% extends 'main.html' %}
 {% block title %}Home{% endblock %}
 {% load static %}
 
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
-    <!-- ico-font-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
-    <!-- Themify icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
-    <!-- Flag icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
-    <!-- Feather icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
-    <!-- Plugins css start-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
-    <!-- Plugins css Ends-->
-    <!-- Bootstrap css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
-    <!-- App css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
-    <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+
+    <style>
+        .exceeded-box {
+            margin-top: 8px;
+            padding: 4px 10px;
+            border: 1px solid #d32f2f;
+            border-radius: 8px;
+            background-color: #ffcdd2;
+            color: #b71c1c;
+            font-size: 12px;
+            font-weight: 600;
+            display: none; /* hidden by default, JS shows it */
+        }
+
+        .status-text {
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .status-pending   { color: #6b7280; }
+        .status-started   { color: #059669; }
+        .status-paused    { color: #d97706; }
+        .status-completed { color: #1d4ed8; }
+        .status-exceeded  { color: #dc2626; font-weight: 700; }
+    </style>
 {% endblock %}
 
 {% block content %}
 
 <div style="padding:20px;">
-
     <h2>Tasks</h2>
 
     <div style="display:flex; flex-wrap:wrap; gap:15px;">
 
         {% for t in tasks %}
-        
-        <a href="{% url 'task_detail' t.id %}" 
-           style="text-decoration:none; color:black;">
+        <a href="{% url 'task_detail' t.id %}" style="text-decoration:none; color:black;">
 
-            <div style="border:1px solid #ccc; padding:15px; width:250px; border-radius:6px;    box-shadow: 4px 6px 10px;
-    background-color: antiquewhite;">
+            <div style="border:1px solid #ccc; padding:15px; width:250px; border-radius:6px;
+                        box-shadow: 4px 6px 10px; background-color: antiquewhite;">
 
-                <b style="font-weight: 600; font-family:'Inter', sans-serif;" >{{ t.title }}</b><br><br>
+                <b style="font-weight:600; font-family:'Inter', sans-serif;">{{ t.title }}</b><br><br>
 
-                <span style="font-weight: 600; font-family:'Inter', sans-serif;"> Staff: {{ t.staff.authuser.username }}</span><br>
-                <span style="font-weight: 600; font-family:'Inter', sans-serif;">Assigned: {{ t.assigned_by.username }}</span><br><br>
+                <span style="font-weight:600; font-family:'Inter', sans-serif;">Staff: {{ t.staff.authuser.username }}</span><br>
+                <span style="font-weight:600; font-family:'Inter', sans-serif;">Assigned: {{ t.assigned_by.username }}</span><br><br>
 
                 <!-- STATUS -->
-                <span style="font-weight: 600; font-family:'Inter', sans-serif;">Status:</span>
-                <span class="status" data-id="{{ t.id }}" style="color: green; font-family: 'font-weight: 600; font-family: 'Inter', sans-serif;">
-                    {{ t.status }}
+                <span style="font-weight:600; font-family:'Inter', sans-serif;">Status:</span>
+                <span class="status status-text status-{{ t.status }}" data-id="{{ t.id }}">
+                    {{ t.get_status_display }}
                 </span>
                 <br><br>
 
                 <!-- TIMER -->
-                ⏱ 
-                <b><span  class="timer"
+                ⏱
+                <b><span class="timer"
                     data-id="{{ t.id }}"
                     data-start="{{ t.start_time|date:'c' }}"
                     data-status="{{ t.status }}"
                     data-end="{{ t.end_time|date:'c' }}"
                     data-pause-time="{{ t.pause_time|date:'c' }}"
-                    data-total-pause="{{ t.total_pause_seconds }}">
+                    data-total-pause="{{ t.total_pause_seconds }}"
+                    data-worked="{{ t.worked_seconds }}"
+                    data-expected="{{ t.expected_seconds }}">
                 </span></b>
-                
-                {% if t.status == 'completed' %}
-                    <br><small>Stopped: {{ t.end_time }}</small>
-                {% endif %}
+
+                <!-- EXCEEDED BOX — hidden by default, shown by JS -->
+                <div class="exceeded-box" id="exceeded-{{ t.id }}">
+                    ⚠ Time Exceeded
+                </div>
 
             </div>
-
         </a>
-
         {% endfor %}
 
     </div>
-
 </div>
 
 <script>
-// ✅ FORMAT TIME
 function formatTime(seconds) {
     seconds = Math.max(0, Math.floor(seconds));
     let h = Math.floor(seconds / 3600);
     let m = Math.floor((seconds % 3600) / 60);
     let s = seconds % 60;
-    return h + "h " + m + "m " + s + "s";
+    return h + "h " + String(m).padStart(2,'0') + "m " + String(s).padStart(2,'0') + "s";
 }
 
-// ✅ TIMER CALCULATION
+function getStatusLabel(status) {
+    const map = {
+        'pending':   'Pending',
+        'started':   'Started',
+        'paused':    'Paused',
+        'completed': 'Completed',
+        'exceeded':  'Exceeded',
+    };
+    return map[status] || status;
+}
+
 function updateTimer() {
     document.querySelectorAll('.timer').forEach(el => {
-
-        let status = el.dataset.status;
-        let start = el.dataset.start;
-        let end = el.dataset.end;
-        let pause = el.dataset.pauseTime;
+        let status     = el.dataset.status;
+        let start      = el.dataset.start;
+        let end        = el.dataset.end;
+        let pause      = el.dataset.pauseTime;
         let totalPause = parseInt(el.dataset.totalPause) || 0;
+        let worked     = parseInt(el.dataset.worked) || 0;
+        let expected   = parseInt(el.dataset.expected) || 0;
+        let taskId     = el.dataset.id;
+
+        let exceededBox  = document.getElementById('exceeded-' + taskId);
+        let statusEl     = document.querySelector(`.status[data-id='${taskId}']`);
 
         if (!start || start === "None" || start === "") {
             el.innerHTML = "-";
+            if (exceededBox) exceededBox.style.display = "none";
             return;
         }
 
+        let diff = 0;
         let startMs = new Date(start).getTime();
         let now = Date.now();
-        let diff = 0;
 
-        if (status === 'completed' && end && end !== "None" && end !== "") {
-            diff = (new Date(end).getTime() - startMs) / 1000 - totalPause;
+        if (status === 'completed') {
+            // use saved worked_seconds
+            diff = worked;
+
+        } else if (status === 'exceeded') {
+            // use saved worked_seconds
+            diff = worked;
 
         } else if (status === 'started') {
             diff = (now - startMs) / 1000 - totalPause;
 
-        } else if (status === 'paused' && pause && pause !== "None" && pause !== "") {
+        } else if (status === 'paused') {
+            if (!pause || pause === "None") { el.innerHTML = "-"; return; }
             diff = (new Date(pause).getTime() - startMs) / 1000 - totalPause;
         }
 
         diff = Math.max(0, diff);
         el.innerHTML = formatTime(diff);
+
+        // Show/hide exceeded box and color status red
+        let isExceeded = status === 'exceeded' || (expected > 0 && diff > expected && status === 'started');
+
+        if (exceededBox) {
+            if (isExceeded) {
+                let over = (status === 'exceeded' && expected > 0)
+                    ? diff - expected
+                    : (expected > 0 ? diff - expected : 0);
+                exceededBox.style.display = "inline-block";
+                exceededBox.innerHTML = over > 0
+                    ? "⚠ Exceeded by " + formatTime(over)
+                    : "⚠ Time Exceeded";
+            } else {
+                exceededBox.style.display = "none";
+            }
+        }
+
+        // Update status text color
+        if (statusEl) {
+            statusEl.className = 'status status-text status-' + (isExceeded ? 'exceeded' : status);
+            statusEl.innerHTML = isExceeded ? 'Exceeded' : getStatusLabel(status);
+        }
     });
 }
 
-// ✅ UPDATE FROM API
 function updateFromAPI(tasks) {
     tasks.forEach(task => {
-
-        let timerEl = document.querySelector(`.timer[data-id='${task.id}']`);
+        let timerEl  = document.querySelector(`.timer[data-id='${task.id}']`);
         let statusEl = document.querySelector(`.status[data-id='${task.id}']`);
-
         if (!timerEl) return;
 
-        // 🔥 UPDATE DATASET
-        timerEl.dataset.status = task.status;
-        timerEl.dataset.start = task.start;
-        timerEl.dataset.end = task.end;
-        timerEl.dataset.pauseTime = task.pause;
+        timerEl.dataset.status     = task.status;
+        timerEl.dataset.start      = task.start || "";
+        timerEl.dataset.end        = task.end || "";
+        timerEl.dataset.pauseTime  = task.pause || "";
         timerEl.dataset.totalPause = task.total_pause;
-
-        // 🔥 UPDATE STATUS TEXT
-        if (statusEl) {
-            statusEl.innerHTML = task.status;
-        }
+        timerEl.dataset.worked     = task.worked_time;
     });
-
     updateTimer();
 }
 
-// ✅ FETCH EVERY 3s
 function fetchTaskUpdates() {
     fetch("/task-status-api/")
         .then(res => res.json())
-        .then(data => {
-            updateFromAPI(data.tasks);
-        })
-        .catch(err => console.log("Error:", err));
+        .then(data => updateFromAPI(data.tasks))
+        .catch(err => console.log("API error:", err));
 }
 
-// ✅ RUN EVERYTHING
 document.addEventListener("DOMContentLoaded", function () {
     updateTimer();
-    setInterval(updateTimer, 1000);     // smooth timer
-    setInterval(fetchTaskUpdates, 3000); // backend sync
+    setInterval(updateTimer, 1000);
+    setInterval(fetchTaskUpdates, 3000);
 });
 </script>
 
 {% endblock %}
 
 {% block js %}
-    <!-- latest jquery-->
     <script src="{% static 'assets/js/jquery.min.js' %}"></script>
-    <!-- Bootstrap js-->
     <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
-    <!-- feather icon js-->
     <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
     <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
-    <!-- scrollbar js-->
     <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
     <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
-    <!-- Sidebar jquery-->
     <script src="{% static 'assets/js/config.js' %}"></script>
-    <!-- Plugins JS start-->
     <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
     <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.js' %}"></script>
     <script src="{% static 'assets/js/header-slick.js' %}"></script>
-    <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
-    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"> </script>
-    <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
-    <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/moment.min.js' %}"></script>
     <script src="{% static 'assets/js/notify/bootstrap-notify.min.js' %}"></script>
     <script src="{% static 'assets/js/dashboard/default.js' %}"></script>
-    <script src="{% static 'assets/js/notify/index.js' %}"></script>
     <script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'assets/js/datatable/datatables/datatable.custom.js' %}"></script>
-    <script src="{% static 'assets/js/datatable/datatables/datatable.custom1.js' %}"></script>
     <script src="{% static 'assets/js/owlcarousel/owl.carousel.js' %}"></script>
-    <script src="{% static 'assets/js/owlcarousel/owl-custom.js' %}"></script>
     <script src="{% static 'assets/js/typeahead/handlebars.js' %}"></script>
     <script src="{% static 'assets/js/typeahead/typeahead.bundle.js' %}"></script>
-    <script src="{% static 'assets/js/typeahead/typeahead.custom.js' %}"></script>
-    <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
-    <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
     <script src="{% static 'assets/js/height-equal.js' %}"></script>
-    <!-- Plugins JS Ends-->
 {% endblock %}

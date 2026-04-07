@@ -28,6 +28,24 @@
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+    <style>
+.exceeded-box{
+    margin-top: -13px;
+    padding: 6px 12px;
+
+    background-color: #ffebee;  
+    color: #c62828;              
+
+    border: 1px solid #ef9a9a;
+   
+
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+
+    display: inline-block;
+}
+</style>
 {% endblock %}
 
 
@@ -40,8 +58,26 @@
 
 
     <div style="border:1px solid #ccc; padding:15px; border-radius:8px; margin-top:20px; box-shadow: 6px 6px 10px;border-radius: 20px;" >
+        <p style="font-weight: 600; font-family: 'Inter', sans-serif;">
+    <b>Status:</b> 
+    <span style="
+        color: {% if task.status == 'exceeded' %}#c62828{% else %}green{% endif %};
+        font-weight: 700;
+    ">
+        {{ task.status }}
+    </span>
+</p>
+              {% if task.is_time_exceeded %}
+                <div class="exceeded-box">
+                    ⚠ Time Exceeded ({{ task.exceeded_time_calc|duration_format }})
+                </div>
 
-        <p style="color: green; font-family: 'font-weight: 600; font-family: 'Inter', sans-serif;"><b>Status:</b> {{ task.status }}</p>
+            {% elif task.is_time_reached %}
+                <div class="exceeded-box" style="background:#fff3cd; color:#856404; border-color:#ffeeba;">
+                    ⏳ Time Limit Reached
+                </div>
+            {% endif %}
+        
         <p style="font-weight: 600; font-family:'Inter', sans-serif;" ><b>Assigned To:</b> {{ task.staff }}</p>
         <p style="font-weight: 600; font-family: 'Inter', sans-serif;"><b>Created By:</b> {{ task.assigned_by }}</p>
 
@@ -53,6 +89,14 @@
         <p><b>Total Time:</b> {{ task.total_time|duration_format }}</p>
         <p><b>Total Pause Time:</b> {{ task.total_pause|duration_format }}</p>
         <p><b>Worked Time:</b> {{ task.worked_time|duration_format }}</p>
+        {% if task.exceeded_time_calc > 0 %}
+            <div class="exceeded-box">
+                ⚠ Time Exceeded 
+                ({{ task.exceeded_time_calc|duration_format }})
+            </div>
+        {% endif %}
+
+        <p><b>Expected Time:</b> {{ task.expected_time|duration_format }}</p>
 
     </div>
 
@@ -123,5 +167,6 @@
     <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
     <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
     <script src="{% static 'assets/js/height-equal.js' %}"></script>
+
     <!-- Plugins JS Ends-->
 {% endblock %}

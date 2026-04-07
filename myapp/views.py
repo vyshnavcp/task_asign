@@ -197,6 +197,7 @@ def my_tasks(request):
     return render(request, 'my_tasks.html', {'tasks': tasks})
 
 
+@login_required(login_url='user_login')
 def start_task(request, id):
     task = get_object_or_404(Task, id=id)
 
@@ -206,7 +207,6 @@ def start_task(request, id):
 
     elif task.status == 'paused':
         now = timezone.now()
-    
         open_pause = task.pauses.filter(pause_end__isnull=True).last()
         if open_pause:
             open_pause.pause_end = now
@@ -223,21 +223,21 @@ def start_task(request, id):
     return redirect('my_tasks')
 
 
+@login_required(login_url='user_login')
 def pause_task(request, id):
     task = get_object_or_404(Task, id=id)
-
     if task.status == 'started':
         now = timezone.now()
         task.pause_time = now
         task.status = 'paused'
         task.save()
         TaskPause.objects.create(task=task, pause_start=now)
-
     return redirect('my_tasks')
 
+
+@login_required(login_url='user_login')
 def stop_task(request, id):
     task = get_object_or_404(Task, id=id)
-
     if task.start_time:
         now = timezone.now()
         if task.status == 'paused':
@@ -260,17 +260,56 @@ def stop_task(request, id):
 
         if task.expected_time and task.worked_time > task.expected_time:
             task.exceeded_time = task.worked_time - task.expected_time
+            task.status = 'exceeded'
         else:
             task.exceeded_time = None
+            task.status = 'completed'
 
-        task.status = 'completed'
         task.save()
-
     return redirect('my_tasks')
+
+
+@login_required(login_url='user_login')
+def auto_stop_exceeded_tasks(request):
+    now = timezone.now()
+    stopped = []
+
+    started_tasks = Task.objects.filter(status='started', expected_time__isnull=False)
+
+    for task in started_tasks:
+        if not task.start_time:
+            continue
+
+        total_pause = task.total_pause or timedelta(0)
+        worked = now - task.start_time - total_pause
+
+        if worked >= task.expected_time:
+            open_pause = task.pauses.filter(pause_end__isnull=True).last()
+            if open_pause:
+                open_pause.pause_end = now
+                open_pause.save()
+
+            total_pause = sum(
+                (p.duration for p in task.pauses.all() if p.pause_end),
+                timedelta()
+            )
+            task.total_pause = total_pause
+            task.end_time = now
+            total_time = task.end_time - task.start_time
+            worked_time = total_time - total_pause
+
+            task.total_time = max(total_time, timedelta(0))
+            task.worked_time = max(worked_time, timedelta(0))
+            task.exceeded_time = task.worked_time - task.expected_time
+            task.status = 'exceeded'
+            task.save()
+            stopped.append(task.id)
+
+    return JsonResponse({'auto_stopped': stopped})
+
 
 def task_status_api(request):
     tasks = Task.objects.all()
-
     data = []
     for t in tasks:
         data.append({
@@ -279,13 +318,11 @@ def task_status_api(request):
             "start": t.start_time.isoformat() if t.start_time else None,
             "end": t.end_time.isoformat() if t.end_time else None,
             "pause": t.pause_time.isoformat() if t.pause_time else None,
-
             "total_pause": int(t.total_pause.total_seconds()) if t.total_pause else 0,
             "total_time": int(t.total_time.total_seconds()) if t.total_time else 0,
             "worked_time": int(t.worked_time.total_seconds()) if t.worked_time else 0,
         })
-
-    return JsonResponse({"tasks": data})
+    return JsonResponse({'tasks': data})
 
 @staff_member_required
 def admin_task_view(request):

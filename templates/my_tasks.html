@@ -1,6 +1,7 @@
 {% extends 'main.html' %}
 {% block title %}My Tasks{% endblock %}
 {% load static %}
+{% load tz %}
 
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
@@ -20,17 +21,16 @@
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
 {% endblock %}
 
+{% block content %}
+
 {% if messages %}
-    {% for message in messages %}
-        <div style="background:#fee2e2; color:#991b1b; padding:10px; margin:10px; border-radius:5px;">
-            {{ message }}
-        </div>
-    {% endfor %}
+{% for message in messages %}
+<div style="background:#fee2e2; color:#991b1b; padding:10px; margin:10px; border-radius:5px;">
+    {{ message }}
+</div>
+{% endfor %}
 {% endif %}
 
-{% load tz %}
-
-{% block content %}
 <div style="background:#111827; color:white; padding:15px 25px; display:flex; justify-content:space-between; align-items:center;">
     <h3 style="margin:0;">Task Manager</h3>
     <div>
@@ -40,13 +40,11 @@
 </div>
 
 <div style="padding:25px; background:#f3f4f6; min-height:100vh;">
-
     <h2 style="margin-bottom:20px;">My Tasks</h2>
 
     <div style="display:flex; flex-wrap:wrap; gap:20px;">
-
         {% for t in tasks %}
-        <div style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.05); width:300px;">
+        <div id="task-card-{{ t.id }}" style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.05); width:300px;">
 
             <h4 style="margin-bottom:10px;">{{ t.title }}</h4>
             <p style="color:#6b7280; font-size:14px;">{{ t.description }}</p>
@@ -57,20 +55,25 @@
             </p>
             {% endif %}
 
-            <div style="margin:10px 0;">
+            <!-- STATUS BADGE -->
+            <div style="margin:10px 0;" id="badge-wrapper-{{ t.id }}">
                 {% if t.status == 'started' %}
-                    <span style="background:#d1fae5; color:#065f46; padding:5px 10px; border-radius:5px;">Running</span>
+                    <span class="status-badge" data-task="{{ t.id }}" style="background:#d1fae5; color:#065f46; padding:5px 10px; border-radius:5px; display:inline-block;">Running</span>
                 {% elif t.status == 'paused' %}
-                    <span style="background:#fef3c7; color:#92400e; padding:5px 10px; border-radius:5px;">Paused</span>
+                    <span class="status-badge" data-task="{{ t.id }}" style="background:#fef3c7; color:#92400e; padding:5px 10px; border-radius:5px; display:inline-block;">Paused</span>
                 {% elif t.status == 'completed' %}
-                    <span style="background:#dbeafe; color:#1e3a8a; padding:5px 10px; border-radius:5px;">Completed</span>
+                    <span style="background:#dbeafe; color:#1e3a8a; padding:5px 10px; border-radius:5px; display:inline-block;">Completed</span>
+                {% elif t.status == 'exceeded' %}
+                    <span style="background:#fee2e2; color:#991b1b; padding:5px 10px; border-radius:5px; display:inline-block; font-weight:600;">⚠ Exceeded</span>
                 {% else %}
-                    <span style="background:#e5e7eb; color:#374151; padding:5px 10px; border-radius:5px;">Pending</span>
+                    <span style="background:#e5e7eb; color:#374151; padding:5px 10px; border-radius:5px; display:inline-block;">Pending</span>
                 {% endif %}
             </div>
 
+            <!-- TIMER -->
             <div style="font-size:18px; font-weight:bold; margin:10px 0;">
                 ⏱ <span class="timer"
+                    data-task-id="{{ t.id }}"
                     data-status="{{ t.status }}"
                     data-start="{{ t.start_time|date:'c' }}"
                     data-end="{{ t.end_time|date:'c' }}"
@@ -81,21 +84,13 @@
                 </span>
             </div>
 
-            {# Exceeded badge placeholder — populated by JS for live tasks #}
-            {# For completed tasks, render server-side so it shows immediately #}
-            {% if t.status == 'completed' and t.expected_time and t.worked_time and t.worked_time > t.expected_time %}
-            <div class="exceeded-badge" style="margin-top:6px; background:#fee2e2; color:#991b1b; font-size:12px; padding:4px 10px; border-radius:5px; font-weight:600; display:inline-block;">
-                ⚠ Time Exceeded
-            </div>
-            {% endif %}
-
-            <div style="margin-top:10px;">
+            <!-- ACTION BUTTONS -->
+            <div style="margin-top:10px;" id="actions-{{ t.id }}">
                 {% if t.status == 'pending' %}
                     <a href="{% url 'start_task' t.id %}"
                        style="background:#10b981; color:white; padding:6px 12px; border-radius:5px; text-decoration:none;">
                        ▶ Start
                     </a>
-
                 {% elif t.status == 'started' %}
                     <a href="{% url 'pause_task' t.id %}"
                        style="background:#f59e0b; color:white; padding:6px 12px; border-radius:5px; margin-right:5px; text-decoration:none;">
@@ -105,7 +100,6 @@
                        style="background:#ef4444; color:white; padding:6px 12px; border-radius:5px; text-decoration:none;">
                        ✔ Complete
                     </a>
-
                 {% elif t.status == 'paused' %}
                     <a href="{% url 'start_task' t.id %}"
                        style="background:#3b82f6; color:white; padding:6px 12px; border-radius:5px; margin-right:5px; text-decoration:none;">
@@ -115,17 +109,16 @@
                        style="background:#ef4444; color:white; padding:6px 12px; border-radius:5px; text-decoration:none;">
                        ✔ Complete
                     </a>
-
-                {% else %}
+                {% elif t.status == 'completed' %}
                     <span style="color:#10b981; font-weight:bold;">✔ Done</span>
+                {% elif t.status == 'exceeded' %}
+                    <span style="color:#991b1b; font-weight:bold;">⚠ Time Exceeded</span>
                 {% endif %}
             </div>
 
         </div>
         {% endfor %}
-
     </div>
-
 </div>
 
 <script>
@@ -137,18 +130,6 @@ function formatTime(totalSeconds) {
     return h + "h " + String(m).padStart(2,'0') + "m " + String(s).padStart(2,'0') + "s";
 }
 
-function formatExceeded(seconds) {
-    seconds = Math.max(0, Math.floor(seconds));
-    let h = Math.floor(seconds / 3600);
-    let m = Math.floor((seconds % 3600) / 60);
-    let s = seconds % 60;
-    let parts = [];
-    if (h > 0) parts.push(h + "h");
-    if (m > 0) parts.push(m + "m");
-    parts.push(s + "s");
-    return parts.join(" ");
-}
-
 function updateTimers() {
     const nowMs = Date.now();
 
@@ -158,22 +139,20 @@ function updateTimers() {
         const pauseStr    = el.dataset.pauseTime;
         const totalPause  = parseInt(el.dataset.totalPause) || 0;
         const workedSaved = parseFloat(el.dataset.worked) || 0;
-        // ✅ FIX: read data-expected (seconds) correctly
         const expected    = parseFloat(el.dataset.expected) || 0;
+        const taskId      = el.dataset.taskId;
 
         let worked = 0;
 
-        if (status === 'completed') {
+        if (status === 'completed' || status === 'exceeded') {
             worked = workedSaved;
             el.innerHTML = formatTime(worked);
-            // completed exceeded badge is rendered server-side; skip JS badge logic
             return;
         } else if (status === 'pending' || !startStr || startStr === "None") {
             el.innerHTML = "-";
             return;
         } else {
             const startMs = new Date(startStr).getTime();
-
             if (status === 'paused') {
                 if (!pauseStr || pauseStr === "None") { el.innerHTML = "-"; return; }
                 const pauseMs = new Date(pauseStr).getTime();
@@ -181,24 +160,36 @@ function updateTimers() {
             } else if (status === 'started') {
                 worked = (nowMs - startMs) / 1000 - totalPause;
             }
-
             el.innerHTML = formatTime(worked);
         }
 
-        // ✅ FIX: Show exceeded badge for active (started / paused) tasks
-        let badge = el.parentElement.querySelector('.exceeded-badge');
+        // Auto-stop when expected time is reached
+        if (expected > 0 && worked >= expected && status === 'started') {
+            // Mark as stopping to prevent duplicate calls
+            el.dataset.status = '__stopping__';
 
-        if (expected > 0 && worked > expected) {
-            const over = worked - expected;
-            if (!badge) {
-                badge = document.createElement('div');
-                badge.className = 'exceeded-badge';
-                badge.style.cssText = 'margin-top:6px; background:#fee2e2; color:#991b1b; font-size:12px; padding:4px 10px; border-radius:5px; font-weight:600; display:inline-block;';
-                el.parentElement.appendChild(badge);
+            // Immediately update badge to Exceeded
+            const badgeWrapper = document.getElementById('badge-wrapper-' + taskId);
+            if (badgeWrapper) {
+                badgeWrapper.innerHTML = '<span style="background:#fee2e2; color:#991b1b; padding:5px 10px; border-radius:5px; display:inline-block; font-weight:600;">⚠ Exceeded</span>';
             }
-            badge.textContent = '⚠ Exceeded by ' + formatExceeded(over);
-        } else if (badge) {
-            badge.remove();
+
+            // Immediately update action buttons to show exceeded state
+            const actions = document.getElementById('actions-' + taskId);
+            if (actions) {
+                actions.innerHTML = '<span style="color:#991b1b; font-weight:bold;">⚠ Time Exceeded</span>';
+            }
+
+            // Call backend to save exceeded status
+            fetch('/auto-stop-exceeded/')
+                .then(res => res.json())
+                .then(data => {
+                    // Reload after short delay whether or not auto_stopped has items
+                    setTimeout(() => location.reload(), 1500);
+                })
+                .catch(() => {
+                    setTimeout(() => location.reload(), 1500);
+                });
         }
     });
 }
@@ -222,24 +213,14 @@ updateTimers();
     <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.js' %}"></script>
     <script src="{% static 'assets/js/header-slick.js' %}"></script>
-    <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
-    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"></script>
-    <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
-    <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/moment.min.js' %}"></script>
     <script src="{% static 'assets/js/notify/bootstrap-notify.min.js' %}"></script>
     <script src="{% static 'assets/js/dashboard/default.js' %}"></script>
-    <script src="{% static 'assets/js/notify/index.js' %}"></script>
     <script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'assets/js/datatable/datatables/datatable.custom.js' %}"></script>
-    <script src="{% static 'assets/js/datatable/datatables/datatable.custom1.js' %}"></script>
     <script src="{% static 'assets/js/owlcarousel/owl.carousel.js' %}"></script>
-    <script src="{% static 'assets/js/owlcarousel/owl-custom.js' %}"></script>
     <script src="{% static 'assets/js/typeahead/handlebars.js' %}"></script>
     <script src="{% static 'assets/js/typeahead/typeahead.bundle.js' %}"></script>
-    <script src="{% static 'assets/js/typeahead/typeahead.custom.js' %}"></script>
-    <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
-    <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
     <script src="{% static 'assets/js/height-equal.js' %}"></script>
 {% endblock %}

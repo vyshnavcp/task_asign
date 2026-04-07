@@ -23,21 +23,21 @@ class Task(models.Model):
         ('started','Started'),
         ('paused','Paused'),
         ('completed','Completed'),
+        ('exceeded','Exceeded'),
     )
 
     staff = models.ForeignKey('Staff', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     description = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
-    pause_time = models.DateTimeField(null=True, blank=True)   
+    pause_time = models.DateTimeField(null=True, blank=True)
     total_pause = models.DurationField(default=timedelta(seconds=0))
     total_time = models.DurationField(null=True, blank=True)
-    worked_time = models.DurationField(null=True, blank=True) 
-    assigned_by = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name='assigned_tasks')
-    expected_time=(models.DurationField(null=True,blank=True))
+    worked_time = models.DurationField(null=True, blank=True)
+    assigned_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='assigned_tasks')
+    expected_time = models.DurationField(null=True, blank=True)
     exceeded_time = models.DurationField(null=True, blank=True)
 
     def __str__(self):
@@ -45,20 +45,12 @@ class Task(models.Model):
 
     def get_total_work_time(self):
         if self.worked_time:
-            return self.worked_time  
-
+            return self.worked_time
         if self.start_time:
-            from django.utils.timezone import now
-            current = self.end_time or now()
+            current = self.end_time or timezone.now()
             return current - self.start_time - (self.total_pause or timedelta(0))
-
         return None
 
-    @property
-    def total_pause_seconds(self):
-        if self.total_pause:
-            return int(self.total_pause.total_seconds())
-        return 0
     @property
     def total_pause_seconds(self):
         if self.total_pause:
@@ -76,17 +68,30 @@ class Task(models.Model):
         if self.expected_time:
             return int(self.expected_time.total_seconds())
         return 0
+
     @property
     def exceeded_seconds(self):
         if self.exceeded_time:
             return int(self.exceeded_time.total_seconds())
         return 0
 
+    @property
+    def is_time_exceeded(self):
+        if self.worked_time and self.expected_time:
+            return self.worked_time > self.expected_time
+        return False
+
+    @property
+    def is_time_reached(self):
+        if self.worked_time and self.expected_time:
+            return self.worked_time >= self.expected_time
+        return False
+
 
 class TaskPause(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='pauses')
     pause_start = models.DateTimeField()
-    pause_end = models.DateTimeField(null=True, blank=True)   
+    pause_end = models.DateTimeField(null=True, blank=True)
 
     @property
     def duration(self):
@@ -95,8 +100,8 @@ class TaskPause(models.Model):
         return timedelta(0)
 
     def __str__(self):
+        
         return f"Pause for '{self.task.title}' | {self.pause_start} → {self.pause_end or 'ongoing'}"
-
 class LeaveRequest(models.Model):
     STATUS_CHOICES = (
         ('pending', 'Pending'),
