@@ -50,13 +50,12 @@
         {% csrf_token %}
 
         <!-- Select Staff -->
-        <select name="staff" class="form-control mb-3" required>
+       <select name="staff" class="form-control mb-3" required>
             <option value="">Select Staff</option>
             {% for s in staff_list %}
                 <option value="{{ s.id }}">{{ s.authuser.username }}</option>
             {% endfor %}
         </select>
-
         <!-- Task Title -->
         <input type="text" name="title" class="form-control mb-3" placeholder="Task Title" required>
 

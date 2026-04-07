@@ -38,6 +38,7 @@ class Task(models.Model):
     pause_time = models.DateTimeField(null=True, blank=True)   # current pause start
     total_pause = models.DurationField(default=timedelta(seconds=0))
     total_time = models.DurationField(null=True, blank=True)
+    assigned_by = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name='assigned_tasks')
 
     def __str__(self):
         return self.title

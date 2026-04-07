@@ -158,8 +158,10 @@ def profile(request):
     return render(request, 'user-profile.html', {'staff': staff})
 
 
+
+@login_required(login_url='user_login')
 def assign_task(request):
-    staff_list = Staff.objects.all()
+    staff_list = Staff.objects.exclude(authuser__username='admin')
 
     if request.method == "POST":
         staff_id = request.POST.get('staff')
@@ -171,7 +173,8 @@ def assign_task(request):
         Task.objects.create(
             staff=staff,
             title=title,
-            description=description
+            description=description,
+            assigned_by=request.user  
         )
 
         return redirect('assign_task')
@@ -248,12 +251,9 @@ def admin_task_view(request):
 
     return render(request, 'admin_tasks.html', {'tasks': tasks})
 
-
 def task_detail(request, id):
     task = get_object_or_404(Task.objects.prefetch_related('pauses'), id=id)
-
     pauses = task.pauses.all()
-
     total_pause = sum(
         (p.duration for p in pauses if p.pause_end),
         timedelta()
