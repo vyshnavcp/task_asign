@@ -206,13 +206,11 @@ def start_task(request, id):
 
     elif task.status == 'paused':
         now = timezone.now()
-        # Close the open pause record
+    
         open_pause = task.pauses.filter(pause_end__isnull=True).last()
         if open_pause:
             open_pause.pause_end = now
             open_pause.save()
-
-        # ✅ Recalculate and SAVE total_pause so the template renders correctly
         total_pause = sum(
             (p.duration for p in task.pauses.all() if p.pause_end),
             timedelta()
@@ -237,7 +235,6 @@ def pause_task(request, id):
 
     return redirect('my_tasks')
 
-
 def stop_task(request, id):
     task = get_object_or_404(Task, id=id)
 
@@ -260,6 +257,12 @@ def stop_task(request, id):
 
         task.total_time = max(total_time, timedelta(0))
         task.worked_time = max(worked_time, timedelta(0))
+
+        if task.expected_time and task.worked_time > task.expected_time:
+            task.exceeded_time = task.worked_time - task.expected_time
+        else:
+            task.exceeded_time = None
+
         task.status = 'completed'
         task.save()
 

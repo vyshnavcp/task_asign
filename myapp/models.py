@@ -38,7 +38,7 @@ class Task(models.Model):
     worked_time = models.DurationField(null=True, blank=True) 
     assigned_by = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name='assigned_tasks')
     expected_time=(models.DurationField(null=True,blank=True))
-    
+    exceeded_time = models.DurationField(null=True, blank=True)
 
     def __str__(self):
         return self.title
@@ -58,6 +58,28 @@ class Task(models.Model):
     def total_pause_seconds(self):
         if self.total_pause:
             return int(self.total_pause.total_seconds())
+        return 0
+    @property
+    def total_pause_seconds(self):
+        if self.total_pause:
+            return int(self.total_pause.total_seconds())
+        return 0
+
+    @property
+    def worked_seconds(self):
+        if self.worked_time:
+            return int(self.worked_time.total_seconds())
+        return 0
+
+    @property
+    def expected_seconds(self):
+        if self.expected_time:
+            return int(self.expected_time.total_seconds())
+        return 0
+    @property
+    def exceeded_seconds(self):
+        if self.exceeded_time:
+            return int(self.exceeded_time.total_seconds())
         return 0
 
 

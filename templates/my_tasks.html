@@ -43,13 +43,19 @@
 
     <h2 style="margin-bottom:20px;">My Tasks</h2>
 
-   <div style="display:flex; flex-wrap:wrap; gap:20px;">
+    <div style="display:flex; flex-wrap:wrap; gap:20px;">
 
         {% for t in tasks %}
-        <div style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.05); width: 300px;">
+        <div style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.05); width:300px;">
 
             <h4 style="margin-bottom:10px;">{{ t.title }}</h4>
             <p style="color:#6b7280; font-size:14px;">{{ t.description }}</p>
+
+            {% if t.expected_time %}
+            <p style="color:#9ca3af; font-size:12px; margin-bottom:8px;">
+                ⏳ Expected: {{ t.expected_time }}
+            </p>
+            {% endif %}
 
             <div style="margin:10px 0;">
                 {% if t.status == 'started' %}
@@ -65,16 +71,23 @@
 
             <div style="font-size:18px; font-weight:bold; margin:10px 0;">
                 ⏱ <span class="timer"
-                        data-status="{{ t.status }}"
-                        data-start="{{ t.start_time|date:'c' }}"
-                        data-end="{{ t.end_time|date:'c' }}"
-                        data-pause-time="{{ t.pause_time|date:'c' }}"
-                        data-total-pause="{{ t.total_pause_seconds }}"
-                        data-worked="{{ t.worked_time.total_seconds|default:'0'|floatformat:'0' }}"
-                        data-expected="{{ t.expected_time.total_seconds|default:'0' }}">
-                    </span>
+                    data-status="{{ t.status }}"
+                    data-start="{{ t.start_time|date:'c' }}"
+                    data-end="{{ t.end_time|date:'c' }}"
+                    data-pause-time="{{ t.pause_time|date:'c' }}"
+                    data-total-pause="{{ t.total_pause_seconds }}"
+                    data-worked="{{ t.worked_seconds }}"
+                    data-expected="{{ t.expected_seconds }}">
+                </span>
             </div>
-            <div class="time-warning" style="margin-top:8px; font-weight:bold;"></div>
+
+            {# Exceeded badge placeholder — populated by JS for live tasks #}
+            {# For completed tasks, render server-side so it shows immediately #}
+            {% if t.status == 'completed' and t.expected_time and t.worked_time and t.worked_time > t.expected_time %}
+            <div class="exceeded-badge" style="margin-top:6px; background:#fee2e2; color:#991b1b; font-size:12px; padding:4px 10px; border-radius:5px; font-weight:600; display:inline-block;">
+                ⚠ Time Exceeded
+            </div>
+            {% endif %}
 
             <div style="margin-top:10px;">
                 {% if t.status == 'pending' %}
@@ -124,59 +137,69 @@ function formatTime(totalSeconds) {
     return h + "h " + String(m).padStart(2,'0') + "m " + String(s).padStart(2,'0') + "s";
 }
 
+function formatExceeded(seconds) {
+    seconds = Math.max(0, Math.floor(seconds));
+    let h = Math.floor(seconds / 3600);
+    let m = Math.floor((seconds % 3600) / 60);
+    let s = seconds % 60;
+    let parts = [];
+    if (h > 0) parts.push(h + "h");
+    if (m > 0) parts.push(m + "m");
+    parts.push(s + "s");
+    return parts.join(" ");
+}
+
 function updateTimers() {
     const nowMs = Date.now();
 
     document.querySelectorAll('.timer').forEach(el => {
         const status      = el.dataset.status;
         const startStr    = el.dataset.start;
-        const endStr      = el.dataset.end;
-        const pauseStr    = el.dataset.pauseTime;   // when current pause began
-        const totalPause  = parseInt(el.dataset.totalPause) || 0;  // seconds of all CLOSED pauses (updated by server on resume/stop)
-        const workedSaved = parseFloat(el.dataset.worked) || 0;    // final worked_time seconds (completed tasks)
+        const pauseStr    = el.dataset.pauseTime;
+        const totalPause  = parseInt(el.dataset.totalPause) || 0;
+        const workedSaved = parseFloat(el.dataset.worked) || 0;
+        // ✅ FIX: read data-expected (seconds) correctly
+        const expected    = parseFloat(el.dataset.expected) || 0;
 
-        // ── COMPLETED ──────────────────────────────────────────
-        // Use the server-calculated worked_time directly — never recompute.
+        let worked = 0;
+
         if (status === 'completed') {
-            el.innerHTML = formatTime(workedSaved);
+            worked = workedSaved;
+            el.innerHTML = formatTime(worked);
+            // completed exceeded badge is rendered server-side; skip JS badge logic
             return;
-        }
-
-        // ── PENDING ────────────────────────────────────────────
-        if (status === 'pending' || !startStr || startStr === "None") {
+        } else if (status === 'pending' || !startStr || startStr === "None") {
             el.innerHTML = "-";
             return;
-        }
+        } else {
+            const startMs = new Date(startStr).getTime();
 
-        const startMs = new Date(startStr).getTime();
-
-        // ── PAUSED ─────────────────────────────────────────────
-        // Elapsed work = (pause_time - start) - total_pause_of_prior_pauses
-        // total_pause on the model does NOT include the current pause (it's still open).
-        // So we freeze the display at the moment the pause button was clicked.
-        if (status === 'paused') {
-            if (!pauseStr || pauseStr === "None") {
-                el.innerHTML = "-";
-                return;
+            if (status === 'paused') {
+                if (!pauseStr || pauseStr === "None") { el.innerHTML = "-"; return; }
+                const pauseMs = new Date(pauseStr).getTime();
+                worked = (pauseMs - startMs) / 1000 - totalPause;
+            } else if (status === 'started') {
+                worked = (nowMs - startMs) / 1000 - totalPause;
             }
-            const pauseMs  = new Date(pauseStr).getTime();
-            const elapsed  = (pauseMs - startMs) / 1000;   // wall time up to pause click
-            const worked   = elapsed - totalPause;          // subtract prior closed pauses
-            el.innerHTML   = formatTime(worked);
-            return;
+
+            el.innerHTML = formatTime(worked);
         }
 
-        // ── STARTED (running) ──────────────────────────────────
-        // total_pause already has ALL closed pauses (server updates it on every resume).
-        // So: worked = (now - start) - total_pause_of_all_closed_pauses
-        if (status === 'started') {
-            const elapsed = (nowMs - startMs) / 1000;
-            const worked  = elapsed - totalPause;
-            el.innerHTML  = formatTime(worked);
-            return;
-        }
+        // ✅ FIX: Show exceeded badge for active (started / paused) tasks
+        let badge = el.parentElement.querySelector('.exceeded-badge');
 
-        el.innerHTML = "-";
+        if (expected > 0 && worked > expected) {
+            const over = worked - expected;
+            if (!badge) {
+                badge = document.createElement('div');
+                badge.className = 'exceeded-badge';
+                badge.style.cssText = 'margin-top:6px; background:#fee2e2; color:#991b1b; font-size:12px; padding:4px 10px; border-radius:5px; font-weight:600; display:inline-block;';
+                el.parentElement.appendChild(badge);
+            }
+            badge.textContent = '⚠ Exceeded by ' + formatExceeded(over);
+        } else if (badge) {
+            badge.remove();
+        }
     });
 }
 
