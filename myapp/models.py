@@ -102,6 +102,7 @@ class TaskPause(models.Model):
     def __str__(self):
         
         return f"Pause for '{self.task.title}' | {self.pause_start} → {self.pause_end or 'ongoing'}"
+
 class LeaveRequest(models.Model):
     STATUS_CHOICES = (
         ('pending', 'Pending'),
@@ -121,7 +122,3 @@ class LeaveRequest(models.Model):
     def __str__(self):
         return f"{self.staff.authuser.username} - {self.status}"
 
-
-
-
-    
