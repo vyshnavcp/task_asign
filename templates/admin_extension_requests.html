@@ -1,7 +1,7 @@
 {% extends 'main.html' %}
 {% block title %}Extension Requests{% endblock %}
 {% load static %}
-
+{% load time_filters %}
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
@@ -43,7 +43,7 @@
 
         .table-card { background:#fff; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.07); overflow:hidden; }
         .table-card table { width:100%; border-collapse:collapse; }
-        .table-card thead { background:#1e3a5f; color:#fff; }
+        .table-card thead { background:black; color:#fff; }
         .table-card thead th { padding:14px 18px; font-size:.82rem; font-weight:600; letter-spacing:.03em; text-transform:uppercase; }
         .table-card tbody tr { border-bottom:1px solid #f3f4f6; transition:background .15s; }
         .table-card tbody tr:hover { background:#f9fafb; }
@@ -129,13 +129,8 @@
 {% endblock %}
 
 {% block content %}
-<div style="background:#111827;color:white;padding:15px 25px;display:flex;justify-content:space-between;align-items:center;">
-    <h3 style="margin:0;">Task Manager — Admin</h3>
-    <div>
-        <span style="margin-right:15px;">👤 {{ request.user.username }}</span>
-        <a href="{% url 'admin_task_view' %}" style="color:#93c5fd;text-decoration:none;margin-right:15px;">Tasks</a>
-        <a href="/user_logout/" style="color:#f87171;text-decoration:none;">Logout</a>
-    </div>
+<div >
+    
 </div>
 
 <div class="page-wrap">
@@ -219,7 +214,9 @@
                         <span style="color:#9ca3af;font-size:.78rem;">Allocated: {{ req.task.expected_time }}</span>
                         {% endif %}
                         {% if req.task.exceeded_time %}
-                        <br><span style="color:#dc2626;font-size:.78rem;">Exceeded: {{ req.task.exceeded_time }}</span>
+                        <br><span style="color:#dc2626;font-size:.78rem;">
+                            Exceeded: {{ req.task.exceeded_time|duration_format }}
+                        </span>
                         {% endif %}
                         {% if req.status == 'approved' and req.task.status == 'paused' %}
                         <br>
