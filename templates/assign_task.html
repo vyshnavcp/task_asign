@@ -28,52 +28,117 @@
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+    <style>
+/* Card */
+.premium-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #eef1f6;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.04);
+}
+
+/* Header */
+.premium-header {
+    padding: 20px;
+    background-color: black;
+    color: #fff;
+}
+
+.premium-header small {
+    opacity: 0.8;
+}
+
+/* Body */
+.premium-body {
+    padding: 25px;
+}
+
+/* Inputs */
+.form-control {
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+
+/* Button */
+.btn-premium {
+    background-color: black;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-weight: 600;
+    color: #fff;
+    transition: 0.2s;
+}
+
+.btn-premium:hover {
+    opacity: 0.9;
+}
+</style>
 {% endblock %}
 {% block content %}
 
-<nav class="navbar navbar-expand-lg  mb-4">
-  <div class="container-fluid">
 
 
-    <div class="navbar-nav ms-auto">
-      <a class="nav-link" href="/">Home</a>
-      <a class="nav-link" href="/staff/">Staff</a>
-      <a class="nav-link" href="/profile/">Profile</a>
-      <a class="nav-link text-danger" href="/user_logout/">Logout</a>
-    </div>
-  </div>
-</nav>
-<div class="container mt-5" style="max-width:600px;">
-    <h3>Assign Task to Staff</h3>
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
 
-    <form method="POST">
-        {% csrf_token %}
+      <div class="premium-card">
 
-        <!-- Select Staff -->
-       <select name="staff" class="form-control mb-3" required>
-            <option value="">Select Staff</option>
-            {% for s in staff_list %}
-                <option value="{{ s.id }}">{{ s.authuser.username }}</option>
-            {% endfor %}
-        </select>
-        <!-- Task Title -->
-        <input type="text" name="title" class="form-control mb-3" placeholder="Task Title" required>
-
-        <!-- Description -->
-        <textarea name="description" class="form-control mb-3" placeholder="Task Description" required></textarea>
-        <!-- Expected Time -->
-        <div class="mb-3">
-            <label><strong>Expected Time</strong></label>
-            <div class="d-flex gap-2">
-                <input type="number" name="hours" class="form-control" placeholder="Hours" min="0">
-                <input type="number" name="minutes" class="form-control" placeholder="Minutes" min="0" max="59">
-            </div>
+        <!-- Header -->
+        <div class="premium-header">
+          <h5 class="mb-0" style="color: white;">Assign Task</h5>
+          <small>Create task for staff</small>
         </div>
 
-        <button class="btn btn-primary w-100">Assign Task</button>
-    </form>
-</div>
+        <!-- Body -->
+        <div class="premium-body">
 
+          <form method="POST">
+            {% csrf_token %}
+
+            <!-- Staff -->
+            <label class="form-label">Select Staff</label>
+            <select name="staff" class="form-control mb-3" required>
+              <option value="">Choose staff...</option>
+              {% for s in staff_list %}
+                <option value="{{ s.id }}">{{ s.authuser.username }}</option>
+              {% endfor %}
+            </select>
+
+            <!-- Title -->
+            <label class="form-label">Task Title</label>
+            <input type="text" name="title" class="form-control mb-3" placeholder="Enter task title">
+
+            <!-- Description -->
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control mb-3" rows="3" placeholder="Write details..."></textarea>
+
+            <!-- Time -->
+            <label class="form-label">Expected Time</label>
+            <div class="d-flex gap-2 mb-4">
+              <input type="number" name="hours" class="form-control" placeholder="Hours">
+              <input type="number" name="minutes" class="form-control" placeholder="Minutes">
+            </div>
+
+            <button class="btn btn-premium w-100">Assign Task</button>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block js %}
