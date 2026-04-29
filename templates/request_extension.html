@@ -41,7 +41,7 @@
   }
 
   .ext-header {
-    background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+    background-color: black;
     padding: 28px 32px;
     color: #fff;
   }
@@ -123,7 +123,7 @@
   .btn-submit {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(135deg, #1e3a5f, #2563eb);
+    background-color: black;
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -161,7 +161,7 @@
 
 {% block content %}
 <div style="background:#111827; color:white; padding:15px 25px; display:flex; justify-content:space-between; align-items:center;">
-  <h3 style="margin:0;">Task Manager</h3>
+  <h3 style="color: white;">Extent Time Request </h3>
   <div>
     <span style="margin-right:15px;">👤 {{ request.user.username }}</span>
     <a href="/user_logout/" style="color:#f87171; text-decoration:none;">Logout</a>
@@ -170,7 +170,7 @@
 
 <div class="ext-wrapper">
   <div class="ext-header">
-    <h2>⏱ Request Time Extension</h2>
+    <h2 style="color: white;">⏱ Request Time Extension</h2>
     <p>Submit a reason and specify how much extra time you need.</p>
   </div>
 
@@ -199,17 +199,12 @@
         </span>
         {% endif %}
         {% if task.exceeded_time %}
-        <span>
-          🔴 Exceeded by: <strong>{{ task.exceeded_time }}</strong>
-        </span>
+       
         {% endif %}
       </div>
     </div>
 
-    <div class="info-note">
-      💡 Your request will be reviewed by an admin. The task timer will be paused
-      in "Exceeded" state until a decision is made.
-    </div>
+   
 
     <form method="POST">
       {% csrf_token %}
@@ -237,7 +232,7 @@
         </div>
       </div>
 
-      <button type="submit" class="btn-submit">📨 Submit Extension Request</button>
+      <button type="submit" class="btn-submit" style="color: white;">📨 Submit Extension Request</button>
     </form>
 
     <a href="{% url 'my_tasks' %}" class="btn-cancel">← Back to My Tasks</a>

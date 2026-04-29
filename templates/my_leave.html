@@ -146,6 +146,15 @@
         color: #94a3b8;
         background: transparent !important;
     }
+    .btn-black {
+    background: #000 !important;
+    border: none !important;
+    color: #fff !important;
+}
+
+.btn-black:hover {
+    background: #222 !important;
+}
 </style>
 {% endblock %}
    
@@ -161,8 +170,9 @@
             <h2 class="mb-0">My Leave Requests</h2>
             <p class="text-muted small">Track and manage your application status</p>
         </div>
-        <a href="{% url "apply_leave" %}" class="btn btn-primary rounded-4 px-4 py-2 shadow-sm" style="background: #4facfe; border: none;">
-           <i  class="me-1" style="width: 18px;"></i> New Request
+      <a href="{% url "apply_leave" %}" 
+        class="btn btn-primary rounded-4 px-4 py-2 shadow-sm btn-black">
+        <i class="me-1" style="width: 18px;"></i> New Request
         </a>
     </div>
 

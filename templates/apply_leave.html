@@ -29,6 +29,7 @@
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
     <style>
+        
         * {
             margin: 0;
             padding: 0;
@@ -86,13 +87,18 @@
         }
 
         button[type="submit"] {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: #000 !important;
             border: none;
+            color: #fff;
             border-radius: 12px;
             padding: 15px;
             font-weight: 600;
             letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        button[type="submit"]:hover {
+            background: #222 !important;
         }
 
         .alert {
@@ -258,6 +264,7 @@
     height: 16px;
 }
     </style>
+    
 {% endblock %}
     
 {% block content %}
