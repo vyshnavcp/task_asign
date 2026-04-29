@@ -1,12 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
-# Create your models here.
-from django.db import models
 from datetime import timedelta
 from django.utils import timezone
 
 User = get_user_model()
+
 
 class Staff(models.Model):
     authuser = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -17,13 +16,14 @@ class Staff(models.Model):
     def __str__(self):
         return self.authuser.username
 
+
 class Task(models.Model):
     STATUS_CHOICES = (
-        ('pending','Pending'),
-        ('started','Started'),
-        ('paused','Paused'),
-        ('completed','Completed'),
-        ('exceeded','Exceeded'),
+        ('pending',   'Pending'),
+        ('started',   'Started'),
+        ('paused',    'Paused'),
+        ('completed', 'Completed'),
+        ('exceeded',  'Exceeded'),
     )
 
     staff = models.ForeignKey('Staff', on_delete=models.CASCADE)
@@ -36,9 +36,28 @@ class Task(models.Model):
     total_pause = models.DurationField(default=timedelta(seconds=0))
     total_time = models.DurationField(null=True, blank=True)
     worked_time = models.DurationField(null=True, blank=True)
-    assigned_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='assigned_tasks')
+    assigned_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,
+                                    related_name='assigned_tasks')
     expected_time = models.DurationField(null=True, blank=True)
     exceeded_time = models.DurationField(null=True, blank=True)
+
+    # Stores work done before an extension was granted.
+    # When set, expected_time = only the extra window granted.
+    # Total expected = worked_before_extension + expected_time.
+    worked_before_extension = models.DurationField(null=True, blank=True)
+
+    # ── NEW FIELD ──────────────────────────────────────────────────────────────
+    # Tracks whether the staff has already clicked "Continue Task" once after
+    # an extension was approved.
+    #
+    #   False (default) → extension approved but NOT yet resumed by staff.
+    #                      show "Continue Task" button, fresh-clock resume logic.
+    #   True            → staff already clicked "Continue Task" at least once.
+    #                      subsequent pause/resumes are NORMAL (no clock reset).
+    #
+    # Reset to False when a NEW extension is approved (approve_extension view).
+    # ──────────────────────────────────────────────────────────────────────────
+    extension_resumed = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -53,27 +72,23 @@ class Task(models.Model):
 
     @property
     def total_pause_seconds(self):
-        if self.total_pause:
-            return int(self.total_pause.total_seconds())
-        return 0
+        return int(self.total_pause.total_seconds()) if self.total_pause else 0
 
     @property
     def worked_seconds(self):
-        if self.worked_time:
-            return int(self.worked_time.total_seconds())
-        return 0
+        return int(self.worked_time.total_seconds()) if self.worked_time else 0
+
+    @property
+    def worked_before_extension_seconds(self):
+        return int(self.worked_before_extension.total_seconds()) if self.worked_before_extension else 0
 
     @property
     def expected_seconds(self):
-        if self.expected_time:
-            return int(self.expected_time.total_seconds())
-        return 0
+        return int(self.expected_time.total_seconds()) if self.expected_time else 0
 
     @property
     def exceeded_seconds(self):
-        if self.exceeded_time:
-            return int(self.exceeded_time.total_seconds())
-        return 0
+        return int(self.exceeded_time.total_seconds()) if self.exceeded_time else 0
 
     @property
     def is_time_exceeded(self):
@@ -100,25 +115,42 @@ class TaskPause(models.Model):
         return timedelta(0)
 
     def __str__(self):
-        
         return f"Pause for '{self.task.title}' | {self.pause_start} → {self.pause_end or 'ongoing'}"
+
 
 class LeaveRequest(models.Model):
     STATUS_CHOICES = (
-        ('pending', 'Pending'),
+        ('pending',  'Pending'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
     )
-
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
     reason = models.TextField()
     from_date = models.DateField()
     to_date = models.DateField()
     applied_on = models.DateTimeField(auto_now_add=True)
-
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     admin_remark = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.staff.authuser.username} - {self.status}"
 
+
+class TimeExtensionRequest(models.Model):
+    STATUS_CHOICES = (
+        ('pending',  'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    )
+    task = models.ForeignKey(Task, on_delete=models.CASCADE,
+                             related_name='extension_requests')
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    reason = models.TextField()
+    requested_extra_time = models.DurationField()
+    requested_on = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    admin_remark = models.TextField(blank=True, null=True)
+    reviewed_on = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.staff.authuser.username} → '{self.task.title}' [{self.status}]"

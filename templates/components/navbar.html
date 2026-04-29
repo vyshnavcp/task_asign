@@ -77,6 +77,7 @@
                       {% endif %}
                       {% if request.user.is_superuser %}
                       <li><a href="{% url 'admin_task_view' %}">Admin task view</a></li>
+                      <li><a href="{% url 'admin_extension_requests' %}">Time extent request</a></li>
                       {% endif %}
                   </ul>
               </li>

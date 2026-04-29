@@ -19,179 +19,386 @@
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+
+    <style>
+        .ext-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 600; margin-top: 6px;
+        }
+        .ext-pill.pending  { background:#fef3c7; color:#92400e; border:1px dashed #f59e0b; }
+        .ext-pill.approved { background:#d1fae5; color:#065f46; border:1px solid #6ee7b7; }
+        .ext-pill.rejected { background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; }
+
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.3} }
+        .pulse-dot {
+            width:8px; height:8px; border-radius:50%;
+            background:#f59e0b; display:inline-block;
+            animation:pulse-dot 1.2s infinite;
+        }
+
+        .btn-continue {
+            background:linear-gradient(135deg,#059669,#10b981);
+            color:white; padding:7px 14px; border-radius:6px;
+            text-decoration:none; font-size:13px; font-weight:600;
+            display:inline-block; margin-top:6px;
+            box-shadow:0 2px 6px rgba(16,185,129,.35); transition:opacity .2s;
+        }
+        .btn-continue:hover { opacity:.88; color:white; }
+
+        .btn-request-time {
+            background:#7c3aed; color:white; padding:6px 12px;
+            border-radius:5px; text-decoration:none; font-size:13px;
+            display:inline-block; text-align:center; margin-top:6px; transition:opacity .2s;
+        }
+        .btn-request-time:hover { opacity:.88; color:white; }
+
+        .remark-box {
+            background:#fef2f2; border:1px solid #fecaca; border-radius:6px;
+            padding:6px 10px; font-size:11px; color:#7f1d1d; margin-top:6px; line-height:1.4;
+        }
+
+        .progress-wrap { margin:8px 0 4px; }
+        .progress-bar-bg { background:#e5e7eb; border-radius:99px; height:6px; overflow:hidden; }
+        .progress-bar-fill {
+            height:100%; border-radius:99px;
+            background:linear-gradient(90deg,#10b981,#3b82f6); transition:width .5s;
+        }
+        .progress-bar-fill.danger { background:linear-gradient(90deg,#f59e0b,#ef4444); }
+        .progress-label { font-size:11px; color:#9ca3af; margin-top:3px; }
+
+        .ext-session-label {
+            font-size:11px; color:#7c3aed; font-weight:600;
+            margin-bottom:2px; display:block;
+        }
+        .paused-label {
+            font-size:11px; color:#92400e; font-weight:600;
+            margin-bottom:2px; display:block;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
 
 {% if messages %}
-{% for message in messages %}
-<div style="background:#fee2e2; color:#991b1b; padding:10px; margin:10px; border-radius:5px;">
-    {{ message }}
-</div>
-{% endfor %}
+    {% for message in messages %}
+    <div style="background:#fee2e2;color:#991b1b;padding:10px;margin:10px;border-radius:5px;">
+        {{ message }}
+    </div>
+    {% endfor %}
 {% endif %}
 
-<div style="background:#111827; color:white; padding:15px 25px; display:flex; justify-content:space-between; align-items:center;">
+<div style="background:#111827;color:white;padding:15px 25px;display:flex;justify-content:space-between;align-items:center;">
     <h3 style="margin:0;">Task Manager</h3>
     <div>
         <span style="margin-right:15px;">👤 {{ request.user.username }}</span>
-        <a href="/user_logout/" style="color:#f87171; text-decoration:none;">Logout</a>
+        <a href="/user_logout/" style="color:#f87171;text-decoration:none;">Logout</a>
     </div>
 </div>
 
-<div style="padding:25px; background:#f3f4f6; min-height:100vh;">
+<div style="padding:25px;background:#f3f4f6;min-height:100vh;">
     <h2 style="margin-bottom:20px;">My Tasks</h2>
 
-    <div style="display:flex; flex-wrap:wrap; gap:20px;">
+    <div style="display:flex;flex-wrap:wrap;gap:20px;">
         {% for t in tasks %}
-        <div id="task-card-{{ t.id }}" style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.05); width:300px;">
+
+        <div id="task-card-{{ t.id }}"
+             style="background:white;padding:20px;border-radius:10px;
+                    box-shadow:0 2px 8px rgba(0,0,0,0.05);width:300px;">
 
             <h4 style="margin-bottom:10px;">{{ t.title }}</h4>
-            <p style="color:#6b7280; font-size:14px;">{{ t.description }}</p>
+            <p style="color:#6b7280;font-size:14px;">{{ t.description }}</p>
 
             {% if t.expected_time %}
-            <p style="color:#9ca3af; font-size:12px; margin-bottom:8px;">
-                ⏳ Expected: {{ t.expected_time }}
+            <p style="color:#9ca3af;font-size:12px;margin-bottom:4px;">
+                {% if t.worked_before_extension %}
+                    ⏳ Extension window: {{ t.expected_time }}
+                {% else %}
+                    ⏳ Expected: {{ t.expected_time }}
+                {% endif %}
+            </p>
+            {% endif %}
+
+            {% if t.worked_before_extension and t.status != 'completed' and t.status != 'exceeded' %}
+            <p style="color:#7c3aed;font-size:11px;margin-bottom:8px;">
+                📊 Work before extension: {{ t.worked_before_extension }}
             </p>
             {% endif %}
 
             <!-- STATUS BADGE -->
             <div style="margin:10px 0;" id="badge-wrapper-{{ t.id }}">
                 {% if t.status == 'started' %}
-                    <span class="status-badge" data-task="{{ t.id }}" style="background:#d1fae5; color:#065f46; padding:5px 10px; border-radius:5px; display:inline-block;">Running</span>
+                    <span style="background:#d1fae5;color:#065f46;padding:5px 10px;border-radius:5px;display:inline-block;">▶ Running</span>
                 {% elif t.status == 'paused' %}
-                    <span class="status-badge" data-task="{{ t.id }}" style="background:#fef3c7; color:#92400e; padding:5px 10px; border-radius:5px; display:inline-block;">Paused</span>
+                    <span style="background:#fef3c7;color:#92400e;padding:5px 10px;border-radius:5px;display:inline-block;">⏸ Paused</span>
                 {% elif t.status == 'completed' %}
-                    <span style="background:#dbeafe; color:#1e3a8a; padding:5px 10px; border-radius:5px; display:inline-block;">Completed</span>
+                    <span style="background:#dbeafe;color:#1e3a8a;padding:5px 10px;border-radius:5px;display:inline-block;">✔ Completed</span>
                 {% elif t.status == 'exceeded' %}
-                    <span style="background:#fee2e2; color:#991b1b; padding:5px 10px; border-radius:5px; display:inline-block; font-weight:600;">⚠ Exceeded</span>
+                    <span style="background:#fee2e2;color:#991b1b;padding:5px 10px;border-radius:5px;display:inline-block;font-weight:600;">⚠ Exceeded</span>
                 {% else %}
-                    <span style="background:#e5e7eb; color:#374151; padding:5px 10px; border-radius:5px; display:inline-block;">Pending</span>
+                    <span style="background:#e5e7eb;color:#374151;padding:5px 10px;border-radius:5px;display:inline-block;">Pending</span>
                 {% endif %}
             </div>
 
-            <!-- TIMER -->
-            <div style="font-size:18px; font-weight:bold; margin:10px 0;">
+            <!--
+            ════════════════════════════════════════════════════════════════════
+            TIMER DATA ATTRIBUTES
+            ════════════════════════════════════════════════════════════════════
+            data-status              → task.status
+            data-start               → task.start_time (ISO); reset on extension resume
+            data-total-pause         → task.total_pause_seconds; reset to 0 on ext resume
+            data-worked              → task.worked_seconds
+                                       NOW saved by pause_task on every pause → always accurate
+            data-expected            → task.expected_seconds
+                                       = full expected (normal) OR extra window (extension)
+            data-is-extension        → "1" if extension_resumed=True (in ext session)
+            data-awaiting-ext-resume → "1" if approved but not yet resumed (show Continue Task)
+
+            JS TIMER RULES:
+              pending / no start → show "–"
+              paused             → show data-worked (static, saved each pause by server)
+              completed/exceeded → show data-worked (static final)
+              started            → live tick: elapsed = (now − start) − total_pause
+                                   auto-stop when elapsed ≥ expected (if expected set)
+            ════════════════════════════════════════════════════════════════════
+            -->
+            <div style="font-size:18px;font-weight:bold;margin:10px 0;">
+                {% if t.status == 'paused' %}
+                    <span class="paused-label">⏸ Paused at:</span>
+                {% elif t.extension_resumed and t.status == 'started' %}
+                    <span class="ext-session-label">⚡ Extension session</span>
+                {% endif %}
+
                 ⏱ <span class="timer"
                     data-task-id="{{ t.id }}"
                     data-status="{{ t.status }}"
                     data-start="{{ t.start_time|date:'c' }}"
-                    data-end="{{ t.end_time|date:'c' }}"
-                    data-pause-time="{{ t.pause_time|date:'c' }}"
                     data-total-pause="{{ t.total_pause_seconds }}"
                     data-worked="{{ t.worked_seconds }}"
-                    data-expected="{{ t.expected_seconds }}">
+                    data-expected="{{ t.expected_seconds }}"
+                    data-is-extension="{% if t.extension_resumed %}1{% else %}0{% endif %}"
+                    data-awaiting-ext-resume="{% if t.awaiting_ext_resume %}1{% else %}0{% endif %}">
                 </span>
             </div>
 
+            <!-- PROGRESS BAR -->
+            {% if t.expected_time and t.status == 'started' %}
+            <div class="progress-wrap">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="prog-fill-{{ t.id }}" style="width:0%"></div>
+                </div>
+                <div class="progress-label" id="prog-label-{{ t.id }}">
+                    0% of {% if t.extension_resumed %}extension{% else %}expected{% endif %} time
+                </div>
+            </div>
+            {% elif t.expected_time and t.status == 'paused' and t.extension_resumed %}
+            <div class="progress-wrap">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="prog-fill-{{ t.id }}" style="width:0%"></div>
+                </div>
+                <div class="progress-label" id="prog-label-{{ t.id }}">0% of extension time</div>
+            </div>
+            {% endif %}
+
             <!-- ACTION BUTTONS -->
             <div style="margin-top:10px;" id="actions-{{ t.id }}">
+
                 {% if t.status == 'pending' %}
                     <a href="{% url 'start_task' t.id %}"
-                       style="background:#10b981; color:white; padding:6px 12px; border-radius:5px; text-decoration:none;">
+                       style="background:#10b981;color:white;padding:6px 12px;border-radius:5px;text-decoration:none;">
                        ▶ Start
                     </a>
+
                 {% elif t.status == 'started' %}
                     <a href="{% url 'pause_task' t.id %}"
-                       style="background:#f59e0b; color:white; padding:6px 12px; border-radius:5px; margin-right:5px; text-decoration:none;">
+                       style="background:#f59e0b;color:white;padding:6px 12px;border-radius:5px;margin-right:5px;text-decoration:none;">
                        ⏸ Pause
                     </a>
                     <a href="{% url 'stop_task' t.id %}"
-                       style="background:#ef4444; color:white; padding:6px 12px; border-radius:5px; text-decoration:none;">
+                       style="background:#ef4444;color:white;padding:6px 12px;border-radius:5px;text-decoration:none;">
                        ✔ Complete
                     </a>
-                {% elif t.status == 'paused' %}
-                    <a href="{% url 'start_task' t.id %}"
-                       style="background:#3b82f6; color:white; padding:6px 12px; border-radius:5px; margin-right:5px; text-decoration:none;">
-                       ▶ Resume
-                    </a>
-                    <a href="{% url 'stop_task' t.id %}"
-                       style="background:#ef4444; color:white; padding:6px 12px; border-radius:5px; text-decoration:none;">
-                       ✔ Complete
-                    </a>
-                {% elif t.status == 'completed' %}
-                    <span style="color:#10b981; font-weight:bold;">✔ Done</span>
-                {% elif t.status == 'exceeded' %}
-                    <span style="color:#991b1b; font-weight:bold;">⚠ Time Exceeded</span>
-                {% endif %}
-            </div>
 
+                {% elif t.status == 'paused' %}
+
+                    {% if t.awaiting_ext_resume %}
+                        {# Extension approved — first resume not yet done #}
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                            <span class="ext-pill approved">✔ Extension Approved!</span>
+                            <a href="{% url 'start_task' t.id %}" class="btn-continue">
+                                ▶ Continue Task
+                            </a>
+                        </div>
+
+                    {% else %}
+                        {# Normal pause OR mid-extension-session pause #}
+                        <a href="{% url 'start_task' t.id %}"
+                           style="background:#3b82f6;color:white;padding:6px 12px;border-radius:5px;margin-right:5px;text-decoration:none;">
+                           ▶ Resume
+                        </a>
+                        <a href="{% url 'stop_task' t.id %}"
+                           style="background:#ef4444;color:white;padding:6px 12px;border-radius:5px;text-decoration:none;">
+                           ✔ Complete
+                        </a>
+                    {% endif %}
+
+                {% elif t.status == 'completed' %}
+                    <span style="color:#10b981;font-weight:bold;">✔ Done</span>
+
+                {% elif t.status == 'exceeded' %}
+                    <div style="display:flex;flex-direction:column;gap:4px;">
+                        <span style="color:#991b1b;font-weight:bold;font-size:13px;">⚠ Time Exceeded</span>
+
+                        {% if not t.ext_req or t.ext_req.status == 'rejected' %}
+                            {% if t.ext_req and t.ext_req.status == 'rejected' %}
+                                <span class="ext-pill rejected">✖ Request Rejected</span>
+                                {% if t.ext_req.admin_remark %}
+                                <div class="remark-box">💬 {{ t.ext_req.admin_remark }}</div>
+                                {% endif %}
+                                <a href="{% url 'request_extension' t.id %}" class="btn-request-time" style="margin-top:6px;">
+                                    🕐 Request Again
+                                </a>
+                            {% else %}
+                                <a href="{% url 'request_extension' t.id %}" class="btn-request-time">
+                                    🕐 Request More Time
+                                </a>
+                            {% endif %}
+
+                        {% elif t.ext_req.status == 'pending' %}
+                            <span class="ext-pill pending">
+                                <span class="pulse-dot"></span>
+                                Request Sent — Awaiting Admin
+                            </span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            </div>
         </div>
         {% endfor %}
     </div>
 </div>
 
 <script>
+/*
+════════════════════════════════════════════════════════════════════════════
+  TIMER JAVASCRIPT
+════════════════════════════════════════════════════════════════════════════
+
+  KEY CHANGE vs old code:
+  ───────────────────────
+  PAUSED state: show data-worked (server-saved) — NOT computed from start_time.
+  The server's pause_task view now always saves worked_time before each pause,
+  so data-worked is ALWAYS the correct paused display value.
+
+  Old code computed worked from start_time even when paused, which gave 0
+  when worked_time was None (cleared after extension resume by start_task).
+
+  EXTENSION SESSION (data-is-extension="1"):
+  ─────────────────────────────────────────
+  After "Continue Task" click, server sets:
+    start_time  = now  (fresh)
+    total_pause = 0    (fresh)
+    worked_time = None (cleared)
+    extension_resumed = True
+  So live tick = (now − start_time) − 0 = counts from 0 → expected_time.
+  On pause: server saves worked_time = session_worked (0 → some value).
+  On complete: server adds worked_before_extension + session_worked.
+
+════════════════════════════════════════════════════════════════════════════
+*/
+
 function formatTime(totalSeconds) {
     totalSeconds = Math.max(0, Math.floor(totalSeconds));
-    let h = Math.floor(totalSeconds / 3600);
-    let m = Math.floor((totalSeconds % 3600) / 60);
-    let s = totalSeconds % 60;
-    return h + "h " + String(m).padStart(2,'0') + "m " + String(s).padStart(2,'0') + "s";
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    return h + "h " + String(m).padStart(2, '0') + "m " + String(s).padStart(2, '0') + "s";
 }
 
 function updateTimers() {
     const nowMs = Date.now();
 
     document.querySelectorAll('.timer').forEach(el => {
-        const status      = el.dataset.status;
-        const startStr    = el.dataset.start;
-        const pauseStr    = el.dataset.pauseTime;
-        const totalPause  = parseInt(el.dataset.totalPause) || 0;
-        const workedSaved = parseFloat(el.dataset.worked) || 0;
-        const expected    = parseFloat(el.dataset.expected) || 0;
-        const taskId      = el.dataset.taskId;
+        const status             = el.dataset.status;
+        const startStr           = el.dataset.start;
+        const totalPauseSec      = parseInt(el.dataset.totalPause)  || 0;
+        const workedSaved        = parseFloat(el.dataset.worked)    || 0;
+        const expectedSec        = parseFloat(el.dataset.expected)  || 0;
+        const isExt              = el.dataset.isExtension === '1';
+        const awaitingExtResume  = el.dataset.awaitingExtResume === '1';
+        const taskId             = el.dataset.taskId;
 
-        let worked = 0;
-
+        // ── Terminal / static states ────────────────────────────────────────
         if (status === 'completed' || status === 'exceeded') {
-            worked = workedSaved;
-            el.innerHTML = formatTime(worked);
+            el.innerHTML = formatTime(workedSaved);
             return;
-        } else if (status === 'pending' || !startStr || startStr === "None") {
-            el.innerHTML = "-";
-            return;
-        } else {
-            const startMs = new Date(startStr).getTime();
-            if (status === 'paused') {
-                if (!pauseStr || pauseStr === "None") { el.innerHTML = "-"; return; }
-                const pauseMs = new Date(pauseStr).getTime();
-                worked = (pauseMs - startMs) / 1000 - totalPause;
-            } else if (status === 'started') {
-                worked = (nowMs - startMs) / 1000 - totalPause;
-            }
-            el.innerHTML = formatTime(worked);
         }
 
-        // Auto-stop when expected time is reached
-        if (expected > 0 && worked >= expected && status === 'started') {
-            // Mark as stopping to prevent duplicate calls
-            el.dataset.status = '__stopping__';
+        if (status === 'pending' || !startStr || startStr === 'None') {
+            el.innerHTML = '–';
+            return;
+        }
 
-            // Immediately update badge to Exceeded
-            const badgeWrapper = document.getElementById('badge-wrapper-' + taskId);
-            if (badgeWrapper) {
-                badgeWrapper.innerHTML = '<span style="background:#fee2e2; color:#991b1b; padding:5px 10px; border-radius:5px; display:inline-block; font-weight:600;">⚠ Exceeded</span>';
+        // ── Paused — always static, always server value ─────────────────────
+        // FIX: stop trying to compute from start_time when paused.
+        // pause_task now saves worked_time on every pause so this is accurate.
+        if (status === 'paused') {
+            el.innerHTML = formatTime(workedSaved);
+            // Update progress bar for mid-extension pauses
+            if (expectedSec > 0 && isExt && !awaitingExtResume) {
+                updateProgressBar(taskId, workedSaved, expectedSec, true);
+            }
+            return;
+        }
+
+        // ── Started — live tick ─────────────────────────────────────────────
+        if (status === 'started') {
+            const startMs   = new Date(startStr).getTime();
+            const elapsedSec = (nowMs - startMs) / 1000;
+            const displaySec = Math.max(0, elapsedSec - totalPauseSec);
+
+            el.innerHTML = formatTime(displaySec);
+
+            if (expectedSec > 0) {
+                updateProgressBar(taskId, displaySec, expectedSec, isExt);
             }
 
-            // Immediately update action buttons to show exceeded state
-            const actions = document.getElementById('actions-' + taskId);
-            if (actions) {
-                actions.innerHTML = '<span style="color:#991b1b; font-weight:bold;">⚠ Time Exceeded</span>';
-            }
+            // Auto-stop when session reaches/exceeds expected window
+            if (expectedSec > 0 && displaySec >= expectedSec) {
+                el.dataset.status = '__stopping__';
 
-            // Call backend to save exceeded status
-            fetch('/auto-stop-exceeded/')
-                .then(res => res.json())
-                .then(data => {
-                    // Reload after short delay whether or not auto_stopped has items
-                    setTimeout(() => location.reload(), 1500);
-                })
-                .catch(() => {
-                    setTimeout(() => location.reload(), 1500);
-                });
+                const badgeWrapper = document.getElementById('badge-wrapper-' + taskId);
+                if (badgeWrapper) {
+                    badgeWrapper.innerHTML =
+                        '<span style="background:#fee2e2;color:#991b1b;padding:5px 10px;' +
+                        'border-radius:5px;display:inline-block;font-weight:600;">⚠ Exceeded</span>';
+                }
+                const actions = document.getElementById('actions-' + taskId);
+                if (actions) {
+                    actions.innerHTML =
+                        '<span style="color:#991b1b;font-weight:bold;font-size:13px;">⚠ Time Exceeded</span>' +
+                        '<br><span style="font-size:12px;color:#6b7280;">Saving… please wait.</span>';
+                }
+
+                fetch('/auto-stop-exceeded/')
+                    .then(r => r.json())
+                    .then(() => { setTimeout(() => location.reload(), 1500); })
+                    .catch(()  => { setTimeout(() => location.reload(), 1500); });
+            }
         }
     });
+}
+
+function updateProgressBar(taskId, workedSec, expectedSec, isExt) {
+    const fill  = document.getElementById('prog-fill-'  + taskId);
+    const label = document.getElementById('prog-label-' + taskId);
+    if (!fill || !label) return;
+
+    const pct = Math.min(100, Math.round((workedSec / expectedSec) * 100));
+    fill.style.width = pct + '%';
+    fill.classList.toggle('danger', pct >= 90);
+    label.textContent = pct + '% of ' + (isExt ? 'extension' : 'expected') + ' time';
 }
 
 setInterval(updateTimers, 1000);

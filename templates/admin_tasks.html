@@ -1,241 +1,390 @@
 {% extends 'main.html' %}
-{% block title %}Home{% endblock %}
+{% block title %}All Tasks{% endblock %}
 {% load static %}
+{% load time_filters %}
 
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
+    <!-- ico-font-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
+    <!-- Themify icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
+    <!-- Flag icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
+    <!-- Feather icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
+    <!-- Plugins css start-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
+    <!-- Plugins css Ends-->
+    <!-- Bootstrap css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
+    <!-- App css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
+    <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+<style>
+    .page-wrapper {
+        padding: 24px;
+    }
 
-    <style>
-        .exceeded-box {
-            margin-top: 8px;
-            padding: 4px 10px;
-            border: 1px solid #d32f2f;
-            border-radius: 8px;
-            background-color: #ffcdd2;
-            color: #b71c1c;
-            font-size: 12px;
-            font-weight: 600;
-            display: none; /* hidden by default, JS shows it */
-        }
+    .cards-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
 
-        .status-text {
-            font-weight: 600;
-            font-family: 'Inter', sans-serif;
-        }
+    .task-card {
+        width: 260px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 14px;
+        background: #fff;
+        text-decoration: none;
+        color: #333;
+        display: block;
+    }
+    .task-card:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        color: #333;
+    }
 
-        .status-pending   { color: #6b7280; }
-        .status-started   { color: #059669; }
-        .status-paused    { color: #d97706; }
-        .status-completed { color: #1d4ed8; }
-        .status-exceeded  { color: #dc2626; font-weight: 700; }
-    </style>
+    .card-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .card-divider {
+        border: none;
+        border-top: 1px solid #e5e7eb;
+        margin: 8px 0;
+    }
+
+    .card-row {
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+
+    /* Status colours */
+    .status-pending   { color: #6b7280; font-weight: 600; }
+    .status-started   { color: #059669; font-weight: 600; }
+    .status-paused    { color: #d97706; font-weight: 600; }
+    .status-completed { color: #1d4ed8; font-weight: 600; }
+    .status-exceeded  { color: #dc2626; font-weight: 700; }
+
+    /* Extension info box */
+    .ext-info {
+        margin-top: 8px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        line-height: 1.7;
+    }
+    .ext-pending  { background: #fef3c7; color: #92400e; border: 1px dashed #f59e0b; }
+    .ext-approved { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+    .ext-rejected { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .ext-session  { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
+    .ext-waiting  { background: #fff3e0; color: #e65100; border: 1px dashed #fb8c00; }
+
+    /* Exceeded box */
+    .exceeded-box {
+        display: none;
+        margin-top: 6px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: #ffcdd2;
+        color: #b71c1c;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1px solid #d32f2f;
+    }
+
+    /* Inline ext badge next to status */
+    .ext-badge {
+        display: inline-block;
+        padding: 1px 7px;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-left: 4px;
+    }
+    .ext-badge.pending  { background: #fef3c7; color: #92400e; }
+    .ext-badge.approved { background: #d1fae5; color: #065f46; }
+    .ext-badge.rejected { background: #fee2e2; color: #991b1b; }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .pulse-dot {
+        display: inline-block;
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: #f59e0b;
+        animation: pulse 1.2s infinite;
+        margin-right: 3px;
+        vertical-align: middle;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
+<div class="page-wrapper">
+    <h4 style="margin-bottom: 20px;">All Tasks</h4>
 
-<div style="padding:20px;">
-    <h2>Tasks</h2>
-
-    <div style="display:flex; flex-wrap:wrap; gap:15px;">
-
+    <div class="cards-container">
         {% for t in tasks %}
-        <a href="{% url 'task_detail' t.id %}" style="text-decoration:none; color:black;">
+        <a href="{% url 'task_detail' t.id %}" class="task-card">
 
-            <div style="border:1px solid #ccc; padding:15px; width:250px; border-radius:6px;
-                        box-shadow: 4px 6px 10px; background-color: antiquewhite;">
+            <!-- Title -->
+            <div class="card-title">{{ t.title }}</div>
 
-                <b style="font-weight:600; font-family:'Inter', sans-serif;">{{ t.title }}</b><br><br>
+            <hr class="card-divider">
 
-                <span style="font-weight:600; font-family:'Inter', sans-serif;">Staff: {{ t.staff.authuser.username }}</span><br>
-                <span style="font-weight:600; font-family:'Inter', sans-serif;">Assigned: {{ t.assigned_by.username }}</span><br><br>
+            <!-- Staff / Assigned by -->
+            <div class="card-row"><b>Staff:</b> {{ t.staff.authuser.username }}</div>
+            <div class="card-row"><b>Assigned by:</b> {{ t.assigned_by.username }}</div>
 
-                <!-- STATUS -->
-                <span style="font-weight:600; font-family:'Inter', sans-serif;">Status:</span>
-                <span class="status status-text status-{{ t.status }}" data-id="{{ t.id }}">
+            <hr class="card-divider">
+
+            <!-- Status -->
+            <div class="card-row">
+                <b>Status:</b>
+                <span class="status-badge status-{{ t.status }}" data-id="{{ t.id }}">
                     {{ t.get_status_display }}
                 </span>
-                <br><br>
+                {% if t.latest_ext %}
+                    <span class="ext-badge {{ t.latest_ext.status }}">
+                        {% if t.latest_ext.status == 'pending' %}
+                            <span class="pulse-dot"></span>Ext pending
+                        {% elif t.latest_ext.status == 'approved' %}
+                            ✔ Ext approved
+                        {% elif t.latest_ext.status == 'rejected' %}
+                            ✖ Ext rejected
+                        {% endif %}
+                    </span>
+                {% endif %}
+            </div>
 
-                <!-- TIMER -->
-                ⏱
-                <b><span class="timer"
+            <!-- Live timer -->
+            <div class="card-row" style="margin-top: 6px;">
+                ⏱ <span class="timer"
                     data-id="{{ t.id }}"
-                    data-start="{{ t.start_time|date:'c' }}"
                     data-status="{{ t.status }}"
+                    data-start="{{ t.start_time|date:'c' }}"
                     data-end="{{ t.end_time|date:'c' }}"
                     data-pause-time="{{ t.pause_time|date:'c' }}"
                     data-total-pause="{{ t.total_pause_seconds }}"
                     data-worked="{{ t.worked_seconds }}"
                     data-expected="{{ t.expected_seconds }}">
-                </span></b>
+                    —
+                </span>
+            </div>
 
-                <!-- EXCEEDED BOX — hidden by default, shown by JS -->
-                <div class="exceeded-box" id="exceeded-{{ t.id }}">
-                    ⚠ Time Exceeded
+            <!-- Expected / Extension window -->
+            {% if t.expected_time %}
+            <div class="card-row" style="color: #6b7280;">
+                {% if t.worked_before_extension %}
+                    ⏳ Extension window: <b>{{ t.expected_time|duration_format }}</b>
+                {% else %}
+                    ⏳ Expected: <b>{{ t.expected_time|duration_format }}</b>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Exceeded box (shown by JS) -->
+            <div class="exceeded-box" id="exceeded-{{ t.id }}">⚠ Time Exceeded</div>
+
+            <hr class="card-divider">
+
+            <!-- Extension detail section -->
+            {% if t.latest_ext %}
+
+                {% if t.latest_ext.status == 'pending' %}
+                <div class="ext-info ext-pending">
+                    <span class="pulse-dot"></span><b>Extension requested</b><br>
+                    Extra time: <b>{{ t.latest_ext.requested_extra_time|duration_format }}</b><br>
+                    Reason: {{ t.latest_ext.reason|truncatechars:60 }}<br>
+                    By: {{ t.latest_ext.staff.authuser.username }}<br>
+                    <a href="{% url 'admin_extension_requests' %}"
+                       style="color:#92400e; font-size:11px;"
+                       onclick="event.stopPropagation();">→ Review request</a>
                 </div>
 
+                {% elif t.latest_ext.status == 'approved' and not t.extension_resumed %}
+                <div class="ext-info ext-approved">
+                    ✔ <b>Extension approved</b> — awaiting resume<br>
+                    Extra window: <b>{{ t.latest_ext.requested_extra_time|duration_format }}</b><br>
+                    Work before ext: <b>{{ t.worked_before_extension|duration_format }}</b>
+                </div>
+
+                {% elif t.latest_ext.status == 'approved' and t.extension_resumed %}
+                <div class="ext-info ext-session">
+                    ⚡ <b>Extension session active</b><br>
+                    Window: <b>{{ t.expected_time|duration_format }}</b><br>
+                    Work before ext: <b>{{ t.worked_before_extension|duration_format }}</b>
+                </div>
+
+                {% elif t.latest_ext.status == 'rejected' %}
+                <div class="ext-info ext-rejected">
+                    ✖ <b>Extension rejected</b><br>
+                    {% if t.latest_ext.admin_remark %}
+                        Remark: {{ t.latest_ext.admin_remark|truncatechars:60 }}
+                    {% endif %}
+                </div>
+
+                {% endif %}
+
+            {% elif t.status == 'exceeded' %}
+            <div class="ext-info ext-waiting">
+                ⏰ Awaiting extension request from staff
             </div>
+            {% endif %}
+
         </a>
         {% endfor %}
-
     </div>
 </div>
 
 <script>
 function formatTime(seconds) {
     seconds = Math.max(0, Math.floor(seconds));
-    let h = Math.floor(seconds / 3600);
-    let m = Math.floor((seconds % 3600) / 60);
-    let s = seconds % 60;
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
     return h + "h " + String(m).padStart(2,'0') + "m " + String(s).padStart(2,'0') + "s";
 }
 
-function getStatusLabel(status) {
-    const map = {
-        'pending':   'Pending',
-        'started':   'Started',
-        'paused':    'Paused',
-        'completed': 'Completed',
-        'exceeded':  'Exceeded',
-    };
-    return map[status] || status;
-}
+const STATUS_LABELS = {
+    pending: 'Pending', started: 'Started', paused: 'Paused',
+    completed: 'Completed', exceeded: 'Exceeded'
+};
 
 function updateTimer() {
     document.querySelectorAll('.timer').forEach(el => {
-        let status     = el.dataset.status;
-        let start      = el.dataset.start;
-        let end        = el.dataset.end;
-        let pause      = el.dataset.pauseTime;
-        let totalPause = parseInt(el.dataset.totalPause) || 0;
-        let worked     = parseInt(el.dataset.worked) || 0;
-        let expected   = parseInt(el.dataset.expected) || 0;
-        let taskId     = el.dataset.id;
+        const status     = el.dataset.status;
+        const start      = el.dataset.start;
+        const totalPause = parseInt(el.dataset.totalPause) || 0;
+        const worked     = parseInt(el.dataset.worked)     || 0;
+        const expected   = parseInt(el.dataset.expected)   || 0;
+        const taskId     = el.dataset.id;
 
-        let exceededBox  = document.getElementById('exceeded-' + taskId);
-        let statusEl     = document.querySelector(`.status[data-id='${taskId}']`);
+        const exceededBox = document.getElementById('exceeded-' + taskId);
+        const statusEl    = document.querySelector(`.status-badge[data-id='${taskId}']`);
 
-        if (!start || start === "None" || start === "") {
-            el.innerHTML = "-";
-            if (exceededBox) exceededBox.style.display = "none";
+        if (!start || start === 'None' || start === '') {
+            el.textContent = '—';
+            if (exceededBox) exceededBox.style.display = 'none';
             return;
         }
 
         let diff = 0;
-        let startMs = new Date(start).getTime();
-        let now = Date.now();
+        const startMs = new Date(start).getTime();
+        const now = Date.now();
 
-        if (status === 'completed') {
-            // use saved worked_seconds
+        if (status === 'completed' || status === 'exceeded') {
             diff = worked;
-
-        } else if (status === 'exceeded') {
-            // use saved worked_seconds
-            diff = worked;
-
         } else if (status === 'started') {
             diff = (now - startMs) / 1000 - totalPause;
-
         } else if (status === 'paused') {
-            if (!pause || pause === "None") { el.innerHTML = "-"; return; }
-            diff = (new Date(pause).getTime() - startMs) / 1000 - totalPause;
+            diff = worked;
         }
 
         diff = Math.max(0, diff);
-        el.innerHTML = formatTime(diff);
+        el.textContent = formatTime(diff);
 
-        // Show/hide exceeded box and color status red
-        let isExceeded = status === 'exceeded' || (expected > 0 && diff > expected && status === 'started');
+        const isExceeded = status === 'exceeded' ||
+                           (expected > 0 && diff >= expected && status === 'started');
 
         if (exceededBox) {
             if (isExceeded) {
-                let over = (status === 'exceeded' && expected > 0)
-                    ? diff - expected
-                    : (expected > 0 ? diff - expected : 0);
-                exceededBox.style.display = "inline-block";
-                exceededBox.innerHTML = over > 0
-                    ? "⚠ Exceeded by " + formatTime(over)
-                    : "⚠ Time Exceeded";
+                const over = expected > 0 ? Math.max(0, diff - expected) : 0;
+                exceededBox.style.display = 'block';
+                exceededBox.textContent = over > 0
+                    ? '⚠ Exceeded by ' + formatTime(over)
+                    : '⚠ Time Exceeded';
             } else {
-                exceededBox.style.display = "none";
+                exceededBox.style.display = 'none';
             }
         }
 
-        // Update status text color
         if (statusEl) {
-            statusEl.className = 'status status-text status-' + (isExceeded ? 'exceeded' : status);
-            statusEl.innerHTML = isExceeded ? 'Exceeded' : getStatusLabel(status);
+            const eff = isExceeded ? 'exceeded' : status;
+            statusEl.className = 'status-badge status-' + eff;
+            statusEl.setAttribute('data-id', taskId);
+            statusEl.textContent = STATUS_LABELS[eff] || eff;
         }
     });
 }
 
 function updateFromAPI(tasks) {
     tasks.forEach(task => {
-        let timerEl  = document.querySelector(`.timer[data-id='${task.id}']`);
-        let statusEl = document.querySelector(`.status[data-id='${task.id}']`);
-        if (!timerEl) return;
-
-        timerEl.dataset.status     = task.status;
-        timerEl.dataset.start      = task.start || "";
-        timerEl.dataset.end        = task.end || "";
-        timerEl.dataset.pauseTime  = task.pause || "";
-        timerEl.dataset.totalPause = task.total_pause;
-        timerEl.dataset.worked     = task.worked_time;
+        const el = document.querySelector(`.timer[data-id='${task.id}']`);
+        if (!el) return;
+        el.dataset.status     = task.status;
+        el.dataset.start      = task.start      || '';
+        el.dataset.totalPause = task.total_pause;
+        el.dataset.worked     = task.worked_time;
     });
     updateTimer();
 }
 
 function fetchTaskUpdates() {
-    fetch("/task-status-api/")
-        .then(res => res.json())
-        .then(data => updateFromAPI(data.tasks))
-        .catch(err => console.log("API error:", err));
+    fetch('/task-status-api/')
+        .then(r => r.json())
+        .then(d => updateFromAPI(d.tasks))
+        .catch(() => {});
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener('DOMContentLoaded', function () {
     updateTimer();
-    setInterval(updateTimer, 1000);
+    setInterval(updateTimer,      1000);
     setInterval(fetchTaskUpdates, 3000);
 });
 </script>
-
 {% endblock %}
 
 {% block js %}
+    <!-- latest jquery-->
     <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <!-- Bootstrap js-->
     <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <!-- feather icon js-->
     <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
     <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
+    <!-- scrollbar js-->
     <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
     <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
+    <!-- Sidebar jquery-->
     <script src="{% static 'assets/js/config.js' %}"></script>
+    <!-- Plugins JS start-->
     <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
     <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.js' %}"></script>
     <script src="{% static 'assets/js/header-slick.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"> </script>
+    <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/moment.min.js' %}"></script>
     <script src="{% static 'assets/js/notify/bootstrap-notify.min.js' %}"></script>
     <script src="{% static 'assets/js/dashboard/default.js' %}"></script>
+    <script src="{% static 'assets/js/notify/index.js' %}"></script>
     <script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'assets/js/datatable/datatables/datatable.custom.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/datatable.custom1.js' %}"></script>
     <script src="{% static 'assets/js/owlcarousel/owl.carousel.js' %}"></script>
+    <script src="{% static 'assets/js/owlcarousel/owl-custom.js' %}"></script>
     <script src="{% static 'assets/js/typeahead/handlebars.js' %}"></script>
     <script src="{% static 'assets/js/typeahead/typeahead.bundle.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/typeahead.custom.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
     <script src="{% static 'assets/js/height-equal.js' %}"></script>
+    <!-- Plugins JS Ends-->
 {% endblock %}
