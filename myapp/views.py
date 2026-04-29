@@ -238,12 +238,15 @@ def start_task(request, id):
                 open_pause.save()
 
         if is_first_extension_resume:
-            task.pauses.all().delete()
-            task.total_pause = timedelta(0)
+            # Save previous work before starting extension
+            task.worked_before_extension = task.worked_time or timedelta(0)
 
+            # Start fresh session
             task.start_time = now
             task.pause_time = None
+            task.total_pause = timedelta(0)
             task.worked_time = timedelta(0)
+
             task.status = 'started'
             task.extension_resumed = True
 
@@ -290,7 +293,7 @@ def pause_task(request, id):
         task.pause_time = now
         task.status = 'paused'
         task.save()
-        if not task.extension_resumed:
+        if not task.extension_resumed and task.status != 'exceeded':
             TaskPause.objects.create(task=task, pause_start=now)
     return redirect('my_tasks')
 
@@ -346,8 +349,11 @@ def auto_stop_exceeded_tasks(request):
     now = timezone.now()
     stopped = []
 
+    task_id = request.GET.get('task_id')
     started_tasks = Task.objects.filter(
-        status='started', expected_time__isnull=False
+        id=task_id,
+        status='started',
+        expected_time__isnull=False
     ).prefetch_related('pauses')
 
     for task in started_tasks:
@@ -479,7 +485,7 @@ def approve_extension(request, req_id):
     task.save()
 
     # Open pause record — closed when staff resumes
-    TaskPause.objects.create(task=task, pause_start=now)
+
 
     ext_req.status      = 'approved'
     ext_req.reviewed_on = now

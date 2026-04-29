@@ -432,7 +432,7 @@ function updateTimers() {
                 }
 
                 // Wait for server to fully save THEN reload
-                fetch('/auto-stop-exceeded/')
+               fetch(`/auto-stop-exceeded/?task_id=${taskId}`)
                     .then(r => r.json())
                     .then(data => {
                         console.log('Auto-stopped:', data.auto_stopped);
@@ -441,7 +441,7 @@ function updateTimers() {
                     .catch(() => {
                         // Retry once after 2s if fetch failed
                         setTimeout(() => {
-                            fetch('/auto-stop-exceeded/')
+                            fetch(`/auto-stop-exceeded/?task_id=${taskId}`)
                                 .finally(() => location.reload());
                         }, 2000);
                     });
