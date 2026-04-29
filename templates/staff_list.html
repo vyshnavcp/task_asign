@@ -28,51 +28,164 @@
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+   <style>
+/* 1. Table Container */
+.premium-table-wrapper {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #f0f0f0;
+}
+
+/* 2. The Table Styling */
+.premium-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px; /* Adds space between rows if you want a floating look */
+}
+
+.premium-table thead th {
+    background-color: #f8f9fa;
+    color: #4b5563;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 15px;
+    border: none;
+}
+
+.premium-table tbody tr {
+    transition: all 0.2s ease;
+}
+
+/* Subtle Row Hover Effect */
+.premium-table tbody tr:hover {
+    background-color: #f9fafb !important;
+    transform: scale(1.002);
+}
+
+.premium-table td {
+    padding: 15px;
+    vertical-align: middle;
+    background: #fff;
+    border-top: 1px solid #f3f4f6;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+/* 3. Small Profile Image */
+.table-staff-img {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-right: 12px;
+}
+
+.staff-meta h6 {
+    margin-bottom: 0;
+    font-weight: 600;
+    color: #111827;
+}
+
+.staff-meta small {
+    color: #6b7280;
+}
+
+/* 4. Action Buttons */
+.btn-action {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    margin: 0 2px;
+    transition: 0.2s;
+}
+
+.btn-edit { background: #eff6ff; color: #2563eb; }
+.btn-edit:hover { background: #2563eb; color: #fff; }
+
+.btn-delete { background: #fef2f2; color: #dc2626; }
+.btn-delete:hover { background: #dc2626; color: #fff; }
+.premium-table-wrapper {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #f0f0f0;
+    margin-top: 20px;   /* 👈 add this */
+    margin-bottom: 20px; /* 👈 add this */
+}
+</style>
 {% endblock %}
 {% block content %}
-<nav class="navbar navbar-expand-lg  mb-4">
-  <div class="container-fluid">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="premium-table-wrapper">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="mb-0">Staff Management</h4>
+                    <a href="{% url 'staff_add' %}" class="btn btn-primary btn-sm rounded-pill shadow-sm">
+                        <i class="fa fa-plus me-1"></i> Add Staff
+                    </a>
+                </div>
 
-
-    <div class="navbar-nav ms-auto">
-      <a class="nav-link" href="/">Home</a>
-      <a class="nav-link" href="/staff/">Staff</a>
-      <a class="nav-link" href="/profile/">Profile</a>
-      <a class="nav-link text-danger" href="/user_logout/">Logout</a>
+                <div class="table-responsive">
+                    <table class="table premium-table">
+                        <thead>
+                            <tr>
+                                <th>Profile</th>
+                                <th>Email Address</th>
+                                <th>Phone Number</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in staff %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if s.image %}
+                                            <img src="{{ s.image.url }}" class="table-staff-img shadow-sm">
+                                        {% else %}
+                                            <div class="table-staff-img d-flex align-items-center justify-content-center bg-light text-primary fw-bold">
+                                                {{ s.authuser.username|slice:":1"|upper }}
+                                            </div>
+                                        {% endif %}
+                                        <div class="staff-meta">
+                                            <h6>{{ s.authuser.username }}</h6>
+                                            <small>ID: #{{ s.id }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-muted"><i class="fa fa-envelope-o me-2 text-primary"></i>{{ s.authuser.email }}</span>
+                                </td>
+                                <td>
+                                    <span class="text-muted"><i class="fa fa-phone me-2 text-primary"></i>{{ s.phone }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-light-success text-success px-3 py-2 rounded-pill">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'staff_edit' s.id %}" class="btn-action btn-edit" title="Edit">
+                                        <i class="fa fa-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'staff_delete' s.id %}" class="btn-action btn-delete" title="Delete">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</nav>
-<div class="container mt-5">
-    <h3>Staff List</h3>
-
-    <a href="{% url 'staff_add' %}" class="btn btn-success mb-3">Add Staff</a>
-
-    <table class="table table-bordered">
-        <tr>
-            <th>Image</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Actions</th>
-        </tr>
-
-        {% for s in staff %}
-        <tr>
-            <td>
-                {% if s.image %}
-                    <img src="{{ s.image.url }}" width="60">
-                {% endif %}
-            </td>
-            <td>{{ s.authuser.username }}</td>
-            <td>{{ s.authuser.email }}</td>
-            <td>{{ s.phone }}</td>
-            <td>
-                <a href="{% url 'staff_edit' s.id %}" class="btn btn-warning btn-sm">Edit</a>
-                <a href="{% url 'staff_delete' s.id %}" class="btn btn-danger btn-sm">Delete</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
 </div>
 {% endblock %}
 

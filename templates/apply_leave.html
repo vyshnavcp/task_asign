@@ -38,12 +38,16 @@
        
 
         .card {
-            width: 100%;
-            max-width: 420px;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: none;
+            border-radius: 20px; /* Softer corners */
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px); /* Glassmorphism effect */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05); /* Lighter, larger shadow */
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px); /* Subtle lift on hover */
         }
 
         h2 {
@@ -81,16 +85,19 @@
             height: 100px;
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #4facfe, #00c6ff);
+        button[type="submit"] {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             border: none;
-            color: white;
-            font-size: 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
+            border-radius: 12px;
+            padding: 15px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .alert {
+            border-radius: 12px;
+            border: none;
             font-weight: 500;
         }
 
@@ -119,23 +126,144 @@
             background: #f8d7da;
             color: #721c24;
         }
+        body {
+            background-color: #f8fafc; /* Modern light gray/blue */
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+        }
 
+        .container {
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+        .form-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        input[type="date"], textarea {
+            border: 2px solid #f1f5f9;
+            background-color: #f8fafc;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        input:focus, textarea:focus {
+            background-color: #fff;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.15);
+}
+/* Container for the floating effect */
+.nav-container {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Frosted Glass Effect */
+.premium-nav {
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 12px 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Brand Logo Styling */
+.brand-logo {
+    font-size: 1.4rem;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #1e293b 0%, #4facfe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+}
+
+.logo-dot {
+    height: 8px;
+    width: 8px;
+    background: #4facfe;
+    border-radius: 50%;
+    margin-right: 8px;
+    display: inline-block;
+}
+
+/* Animated Nav Links */
+.nav-custom-link {
+    color: #475569 !important;
+    font-weight: 500;
+    padding: 8px 16px !important;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.nav-custom-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 5px;
+    left: 50%;
+    background: #4facfe;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-custom-link:hover::after {
+    width: 20px;
+}
+
+.nav-custom-link:hover {
+    color: #000 !important;
+}
+
+/* Vertical Divider */
+.nav-divider {
+    height: 24px;
+    width: 1px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Premium Logout Button */
+.btn-logout {
+    background: #fff;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+    padding: 8px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background: #ef4444;
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.2);
+    transform: translateY(-2px);
+}
+
+.icon-sm {
+    width: 16px;
+    height: 16px;
+}
     </style>
 {% endblock %}
     
 {% block content %}
-<nav class="navbar navbar-expand-lg  mb-4">
-  <div class="container-fluid">
-
-
-    <div class="navbar-nav ms-auto">
-      <a class="nav-link" href="/">Home</a>
-      <a class="nav-link" href="/staff/">Staff</a>
-      <a class="nav-link" href="/profile/">Profile</a>
-      <a class="nav-link text-danger" href="/user_logout/">Logout</a>
-    </div>
-  </div>
-</nav>
+<div class="nav-container px-3 mt-4">
+   
+</div>
 <div class="container">
     <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
         <div class="col-md-5">

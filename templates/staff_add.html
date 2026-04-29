@@ -29,43 +29,88 @@
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
 {% endblock %}
-
 {% block content %}
-<nav class="navbar navbar-expand-lg  mb-4">
-  <div class="container-fluid">
-
-
-    <div class="navbar-nav ms-auto">
-      <a class="nav-link" href="/">Home</a>
-      <a class="nav-link" href="/staff/">Staff</a>
-      <a class="nav-link" href="/profile/">Profile</a>
-      <a class="nav-link text-danger" href="/user_logout/">Logout</a>
+<div class="container-fluid">
+    <div class="page-title">
+        <div class="row">
+            <div class="col-6">
+                <h3>Staff Management</h3>
+            </div>
+            <div class="col-6">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/"><i data-feather="home"></i></a></li>
+                    <li class="breadcrumb-item">Staff</li>
+                    <li class="breadcrumb-item active">Add New</li>
+                </ol>
+            </div>
+        </div>
     </div>
-  </div>
-</nav>
+</div>
 
-<div class="container mt-5" style="max-width:500px;">
-    <h3>Add Staff</h3>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header pb-0 border-0 bg-white">
+                    <h4 class="card-title mb-0">Add New Staff Member</h4>
+                    <p class="text-muted mt-1">Fill in the details below to create a new staff account.</p>
+                </div>
+                <div class="card-body">
+                    {% if error %}
+                        <div class="alert alert-light-danger border-left-danger" role="alert">
+                            <i class="icon-info-alt"></i> {{ error }}
+                        </div>
+                    {% endif %}
 
-    {% if error %}
-        <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
+                    <form method="POST" enctype="multipart/form-data" class="theme-form">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold text-dark">Username</label>
+                                <input type="text" name="username" class="form-control bg-light border-0" placeholder="e.g. johndoe" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold text-dark">Email Address</label>
+                                <input type="email" name="email" class="form-control bg-light border-0" placeholder="asj@gmail.com" required>
+                            </div>
+                        </div>
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Password</label>
+                            <input type="password" name="password" class="form-control bg-light border-0" placeholder="••••••••" required>
+                        </div>
 
-        <input type="text" name="username" class="form-control mb-2" placeholder="Username" required>
-        <input type="email" name="email" class="form-control mb-2" placeholder="Email" required>
-        <input type="password" name="password" class="form-control mb-2" placeholder="Password" required>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Phone Number</label>
+                            <input type="text" name="phone" class="form-control bg-light border-0" placeholder="enter valid number" required>
+                        </div>
 
-        <input type="text" name="phone" class="form-control mb-2" placeholder="Phone" required>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Address</label>
+                            <textarea name="address" rows="3" class="form-control bg-light border-0" placeholder="Street, City, Zip Code" required></textarea>
+                        </div>
 
-        <textarea name="address" class="form-control mb-2" placeholder="Address" required></textarea>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Profile Picture</label>
+                            <div class="px-3 py-4 border-dashed rounded-3 text-center bg-light">
+                                <input type="file" name="image" class="form-control d-none" id="staffImage">
+                                <label for="staffImage" class="cursor-pointer mb-0">
+                                    <i class="fa fa-cloud-upload text-primary mb-2 fa-2x"></i>
+                                    <p class="mb-0 text-muted">Click to upload or drag and drop</p>
+                                </label>
+                            </div>
+                        </div>
 
-        <input type="file" name="image" class="form-control mb-3">
-
-        <button class="btn btn-success w-100">Add Staff</button>
-    </form>
+                        <div class="card-footer px-0 bg-transparent border-0 d-flex justify-content-end gap-2">
+                            <button type="reset" class="btn btn-light px-4">Clear</button>
+                            <button type="submit" class="btn btn-primary px-5 shadow-sm">Save Staff Member</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
