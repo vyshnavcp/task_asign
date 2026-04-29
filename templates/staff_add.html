@@ -28,6 +28,7 @@
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+   
 {% endblock %}
 {% block content %}
 <div class="container-fluid">
@@ -51,9 +52,9 @@
     <div class="row justify-content-center">
         <div class="col-xl-6 col-lg-8">
             <div class="card shadow-sm border-0">
-                <div class="card-header pb-0 border-0 bg-white">
-                    <h4 class="card-title mb-0">Add New Staff Member</h4>
-                    <p class="text-muted mt-1">Fill in the details below to create a new staff account.</p>
+                <div class="card-header pb-0 border-0 " style="background-color: black;">
+                    <h4 class="card-title mb-0" style="color: white;">Add New Staff Member</h4>
+                    <p  style="color: white;">Fill in the details below to create a new staff account.</p>
                 </div>
                 <div class="card-body">
                     {% if error %}
@@ -104,7 +105,9 @@
 
                         <div class="card-footer px-0 bg-transparent border-0 d-flex justify-content-end gap-2">
                             <button type="reset" class="btn btn-light px-4">Clear</button>
-                            <button type="submit" class="btn btn-primary px-5 shadow-sm">Save Staff Member</button>
+                            <button type="submit" class="btn px-5 shadow-sm" style="background:black; color:white;">
+                                Save Staff Member
+                            </button>
                         </div>
                     </form>
                 </div>
