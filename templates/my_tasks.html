@@ -21,6 +21,85 @@
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
 
     <style>
+        /* ===== PREMIUM NAVBAR ===== */
+
+
+.nav-left h3 {
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-badge {
+    background: rgba(255,255,255,0.08);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+.logout-btn {
+    background: #ef4444;
+    padding: 6px 14px;
+    border-radius: 6px;
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.logout-btn:hover {
+    background: #dc2626;
+}
+
+
+/* ===== PREMIUM CARD ===== */
+.premium-card {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(14px);
+    border-radius: 16px;
+    padding: 20px;
+    width: 300px;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hover glow */
+.premium-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+/* Top gradient line */
+.premium-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 4px;
+    width: 100%;
+    background: linear-gradient(90deg, #10b981, #3b82f6, #7c3aed);
+}
+
+/* Title upgrade */
+.premium-card h4 {
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+/* Description text */
+.premium-card p {
+    line-height: 1.5;
+}
         .ext-pill {
             display: inline-flex; align-items: center; gap: 6px;
             padding: 5px 12px; border-radius: 20px;
@@ -88,13 +167,7 @@
     {% endfor %}
 {% endif %}
 
-<div style="background:#111827;color:white;padding:15px 25px;display:flex;justify-content:space-between;align-items:center;">
-    <h3 style="margin:0;">Task Manager</h3>
-    <div>
-        <span style="margin-right:15px;">👤 {{ request.user.username }}</span>
-        <a href="/user_logout/" style="color:#f87171;text-decoration:none;">Logout</a>
-    </div>
-</div>
+
 
 <div style="padding:25px;background:#f3f4f6;min-height:100vh;">
     <h2 style="margin-bottom:20px;">My Tasks</h2>
@@ -102,9 +175,7 @@
     <div style="display:flex;flex-wrap:wrap;gap:20px;">
         {% for t in tasks %}
 
-        <div id="task-card-{{ t.id }}"
-             style="background:white;padding:20px;border-radius:10px;
-                    box-shadow:0 2px 8px rgba(0,0,0,0.05);width:300px;">
+        <div id="task-card-{{ t.id }}" class="premium-card">
 
             <h4 style="margin-bottom:10px;">{{ t.title }}</h4>
             <p style="color:#6b7280;font-size:14px;">{{ t.description }}</p>
@@ -140,28 +211,7 @@
                 {% endif %}
             </div>
 
-            <!--
-            ════════════════════════════════════════════════════════════════════
-            TIMER DATA ATTRIBUTES
-            ════════════════════════════════════════════════════════════════════
-            data-status              → task.status
-            data-start               → task.start_time (ISO); reset on extension resume
-            data-total-pause         → task.total_pause_seconds; reset to 0 on ext resume
-            data-worked              → task.worked_seconds
-                                       NOW saved by pause_task on every pause → always accurate
-            data-expected            → task.expected_seconds
-                                       = full expected (normal) OR extra window (extension)
-            data-is-extension        → "1" if extension_resumed=True (in ext session)
-            data-awaiting-ext-resume → "1" if approved but not yet resumed (show Continue Task)
-
-            JS TIMER RULES:
-              pending / no start → show "–"
-              paused             → show data-worked (static, saved each pause by server)
-              completed/exceeded → show data-worked (static final)
-              started            → live tick: elapsed = (now − start) − total_pause
-                                   auto-stop when elapsed ≥ expected (if expected set)
-            ════════════════════════════════════════════════════════════════════
-            -->
+          
             <div style="font-size:18px;font-weight:bold;margin:10px 0;">
                 {% if t.status == 'paused' %}
                     <span class="paused-label">⏸ Paused at:</span>
@@ -280,33 +330,6 @@
 </div>
 
 <script>
-/*
-════════════════════════════════════════════════════════════════════════════
-  TIMER JAVASCRIPT
-════════════════════════════════════════════════════════════════════════════
-
-  KEY CHANGE vs old code:
-  ───────────────────────
-  PAUSED state: show data-worked (server-saved) — NOT computed from start_time.
-  The server's pause_task view now always saves worked_time before each pause,
-  so data-worked is ALWAYS the correct paused display value.
-
-  Old code computed worked from start_time even when paused, which gave 0
-  when worked_time was None (cleared after extension resume by start_task).
-
-  EXTENSION SESSION (data-is-extension="1"):
-  ─────────────────────────────────────────
-  After "Continue Task" click, server sets:
-    start_time  = now  (fresh)
-    total_pause = 0    (fresh)
-    worked_time = None (cleared)
-    extension_resumed = True
-  So live tick = (now − start_time) − 0 = counts from 0 → expected_time.
-  On pause: server saves worked_time = session_worked (0 → some value).
-  On complete: server adds worked_before_extension + session_worked.
-
-════════════════════════════════════════════════════════════════════════════
-*/
 
 function formatTime(totalSeconds) {
     totalSeconds = Math.max(0, Math.floor(totalSeconds));
