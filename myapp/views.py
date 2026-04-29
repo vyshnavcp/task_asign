@@ -547,14 +547,15 @@ def admin_task_view(request):
     return render(request, 'admin_tasks.html', {'tasks': tasks})
 
 def task_detail(request, id):
-    task = get_object_or_404(Task.objects.prefetch_related('pauses'), id=id)
-
+    task = get_object_or_404(Task.objects.prefetch_related('pauses', 'extension_requests'), id=id)
     pauses = task.pauses.all()
+    extension_requests = task.extension_requests.all().order_by('-requested_on')
 
     context = {
         'task': task,
         'pauses': pauses,
         'pause_count': pauses.count(),
+        'extension_requests': extension_requests,
     }
 
     return render(request, 'task_detail.html', context)

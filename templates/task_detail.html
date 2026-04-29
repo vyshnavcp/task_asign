@@ -1,53 +1,49 @@
-
 {% extends 'main.html' %}
 {% block title %}Home{% endblock %}
 {% load static %}
 {% load time_filters %}
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
-    <!-- ico-font-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
-    <!-- Themify icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
-    <!-- Flag icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
-    <!-- Feather icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
-    <!-- Plugins css start-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
-    <!-- Plugins css Ends-->
-    <!-- Bootstrap css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
-    <!-- App css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
-    <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
     <style>
-.exceeded-box{
-    margin-top: -13px;
-    padding: 6px 12px;
+        .exceeded-box {
+            margin-top: -13px;
+            padding: 6px 12px;
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
 
-    background-color: #ffebee;  
-    color: #c62828;              
-
-    border: 1px solid #ef9a9a;
-   
-
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-
-    display: inline-block;
-}
-</style>
+        .ext-status-badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+        .ext-pending  { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .ext-approved { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .ext-rejected { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
 {% endblock %}
-
 
 
 {% block content %}
@@ -56,31 +52,26 @@
 
     <h2 style="text-align:center;"> Task Overview</h2>
 
-
-    <div style="border:1px solid #ccc; padding:15px; border-radius:8px; margin-top:20px; box-shadow: 6px 6px 10px;border-radius: 20px;" >
+    <div style="border:1px solid #ccc; padding:15px; border-radius:8px; margin-top:20px; box-shadow: 6px 6px 10px; border-radius: 20px;">
         <p style="font-weight: 600; font-family: 'Inter', sans-serif;">
-    <b>Status:</b> 
-    <span style="
-        color: {% if task.status == 'exceeded' %}#c62828{% else %}green{% endif %};
-        font-weight: 700;
-    ">
-        {{ task.status }}
-    </span>
-</p>
-              {% if task.is_time_exceeded %}
-                <div class="exceeded-box">
-                    ⚠ Time Exceeded ({{ task.exceeded_time_calc|duration_format }})
-                </div>
+            <b>Status:</b>
+            <span style="color: {% if task.status == 'exceeded' %}#c62828{% else %}green{% endif %}; font-weight: 700;">
+                {{ task.status }}
+            </span>
+        </p>
 
-            {% elif task.is_time_reached %}
-                <div class="exceeded-box" style="background:#fff3cd; color:#856404; border-color:#ffeeba;">
-                    ⏳ Time Limit Reached
-                </div>
-            {% endif %}
-        
-        <p style="font-weight: 600; font-family:'Inter', sans-serif;" ><b>Assigned To:</b> {{ task.staff }}</p>
+        {% if task.is_time_exceeded %}
+            <div class="exceeded-box">
+                ⚠ Time Exceeded ({{ task.exceeded_time_calc|duration_format }})
+            </div>
+        {% elif task.is_time_reached %}
+            <div class="exceeded-box" style="background:#fff3cd; color:#856404; border-color:#ffeeba;">
+                ⏳ Time Limit Reached
+            </div>
+        {% endif %}
+
+        <p style="font-weight: 600; font-family:'Inter', sans-serif;"><b>Assigned To:</b> {{ task.staff }}</p>
         <p style="font-weight: 600; font-family: 'Inter', sans-serif;"><b>Created By:</b> {{ task.assigned_by }}</p>
-
         <p style="font-weight: 600; font-family: 'Inter', sans-serif;"><b>Start Time:</b> {{ task.start_time|default:"-" }}</p>
         <p style="font-weight: 600; font-family: 'Inter', sans-serif;"><b>End Time:</b> {{ task.end_time|default:"-" }}</p>
 
@@ -91,25 +82,25 @@
         <p><b>Worked Time:</b> {{ task.worked_time|duration_format }}</p>
         {% if task.exceeded_time_calc > 0 %}
             <div class="exceeded-box">
-                ⚠ Time Exceeded 
-                ({{ task.exceeded_time_calc|duration_format }})
+                ⚠ Time Exceeded ({{ task.exceeded_time_calc|duration_format }})
             </div>
         {% endif %}
-
         <p><b>Expected Time:</b> {{ task.expected_time|duration_format }}</p>
-
+        {% if task.worked_before_extension %}
+            <p><b>Work Before Extension:</b> {{ task.worked_before_extension|duration_format }}</p>
+        {% endif %}
     </div>
 
+
+    <!-- Pause History -->
     <h3 style="margin-top:30px;">⏸ Pause History</h3>
 
     <table border="1" width="100%" cellpadding="8" style="margin-top:10px; border-collapse:collapse; box-shadow: 6px 6px 10px;">
-
         <tr style="background:#eee;">
             <th>Pause Start</th>
             <th>Pause End</th>
             <th>Duration</th>
         </tr>
-
         {% for p in pauses %}
         <tr>
             <td>{{ p.pause_start }}</td>
@@ -121,7 +112,39 @@
             <td colspan="3" style="text-align:center;">No pauses</td>
         </tr>
         {% endfor %}
+    </table>
 
+
+    <!-- Time Extension Requests -->
+    <h3 style="margin-top:30px;">🕐 Time Extension Requests</h3>
+
+    <table border="1" width="100%" cellpadding="8" style="margin-top:10px; border-collapse:collapse; box-shadow: 6px 6px 10px;">
+        <tr style="background:#eee;">
+            <th>#</th>
+            <th>Requested On</th>
+            <th>Extra Time</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Admin Remark</th>
+            <th>Reviewed On</th>
+        </tr>
+        {% for ext in extension_requests %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ ext.requested_on }}</td>
+            <td>{{ ext.requested_extra_time|duration_format }}</td>
+            <td>{{ ext.reason }}</td>
+            <td>
+                <span class="ext-status-badge ext-{{ ext.status }}">{{ ext.status }}</span>
+            </td>
+            <td>{{ ext.admin_remark|default:"—" }}</td>
+            <td>{{ ext.reviewed_on|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" style="text-align:center;">No extension requests</td>
+        </tr>
+        {% endfor %}
     </table>
 
 </div>
@@ -129,26 +152,20 @@
 {% endblock %}
 
 {% block js %}
-    <!-- latest jquery-->
     <script src="{% static 'assets/js/jquery.min.js' %}"></script>
-    <!-- Bootstrap js-->
     <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
-    <!-- feather icon js-->
     <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
     <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
-    <!-- scrollbar js-->
     <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
     <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
-    <!-- Sidebar jquery-->
     <script src="{% static 'assets/js/config.js' %}"></script>
-    <!-- Plugins JS start-->
     <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
     <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.js' %}"></script>
     <script src="{% static 'assets/js/header-slick.js' %}"></script>
     <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
-    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"> </script>
+    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"></script>
     <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
@@ -167,6 +184,4 @@
     <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
     <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
     <script src="{% static 'assets/js/height-equal.js' %}"></script>
-
-    <!-- Plugins JS Ends-->
 {% endblock %}

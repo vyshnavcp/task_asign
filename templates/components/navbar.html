@@ -1,4 +1,54 @@
 {% load static %}
+
+<style>
+    /* Scrollbar for webkit */
+    #notif-list::-webkit-scrollbar { width: 4px; }
+    #notif-list::-webkit-scrollbar-track { background: #f4f4ff; }
+    #notif-list::-webkit-scrollbar-thumb { background: #c8c4ff; border-radius: 4px; }
+
+    /* Notification items */
+    #notif-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        padding: 9px 14px;
+        border-bottom: 1px solid #f2f2ff;
+        transition: background .15s;
+        cursor: default;
+    }
+    #notif-list li:last-child { border-bottom: none; }
+    #notif-list li:hover { background: #f8f7ff; }
+
+    .notif-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        margin-top: 4px;
+    }
+    .notif-dot.unread  { background: #7366ff; box-shadow: 0 0 5px #7366ff88; }
+    .notif-dot.read    { background: #d0d0d0; }
+
+    .notif-text {
+        font-size: 12px;
+        color: #444;
+        line-height: 1.45;
+        font-weight: 500;
+    }
+    .notif-text.unread { color: #222; font-weight: 600; }
+
+    /* Bell shake animation */
+    @keyframes bell-shake {
+        0%,100% { transform: rotate(0); }
+        20%      { transform: rotate(-18deg); }
+        40%      { transform: rotate(18deg); }
+        60%      { transform: rotate(-10deg); }
+        80%      { transform: rotate(10deg); }
+    }
+    .bell-shake { animation: bell-shake .5s ease; }
+
+    #notif-toggle:hover { background: #f4f3ff; }
+    #mark-read-btn:hover { background: #7366ff28 !important; }
+</style>
 <div class="sidebar-wrapper" data-layout="stroke-svg">
           <div>
             <div class="logo-wrapper"><a href="{% static 'index.html' %}"> <img class="img-fluid for-light" src="{% static 'assets/images/logo/logo.png' %}" alt=""><img class="img-fluid for-dark" src="{% static 'assets/images/logo/logo_dark.png' %}" alt=""></a>
@@ -52,34 +102,68 @@
                       <span>Tasks</span>
                   </a>
                   <ul class="sidebar-submenu">
-                      {% if not request.user.is_superuser %}
-                      <li>
-                          <a href="{% url 'my_tasks' %}" style="display:flex; justify-content:space-between; align-items:center;">
-                              My Task
-                              <span id="notif-badge"
-                                    style="display:none; background:#dc3545; color:#fff;
-                                          border-radius:50%; padding:2px 7px;
-                                          font-size:11px; margin-left:8px;">0</span>
-                          </a>
-                      </li>
-                      <li>
-                          <a href="#" id="notif-toggle">🔔 Notifications</a>
-                          <ul id="notif-list"
-                              style="display:none; list-style:none;
-                                    padding-left:10px; max-height:200px;
-                                    overflow-y:auto;"></ul>
-                          <a href="#" id="mark-read-btn"
-                            style="display:none; font-size:11px;
-                                    padding-left:10px; color:#7366ff;">
-                              ✔ Mark all as read
-                          </a>
-                      </li>
-                      {% endif %}
-                      {% if request.user.is_superuser %}
-                      <li><a href="{% url 'admin_task_view' %}">Admin task view</a></li>
-                      <li><a href="{% url 'admin_extension_requests' %}">Time extent request</a></li>
-                      {% endif %}
-                  </ul>
+                    {% if not request.user.is_superuser %}
+                        <li>
+                            <a href="{% url 'my_tasks' %}">
+                                My Task
+                            </a>
+                        </li>
+
+                        <li style="position:relative;">
+                            <a href="#" id="notif-toggle"
+                              style="display:flex; align-items:center; gap:8px; padding:6px 10px;
+                                      border-radius:8px; transition:background .2s;">
+                                <span id="notif-bell-icon" style="font-size:15px; transition:transform .3s;">🔔</span>
+                                <span style="font-weight:600; font-size:13px;">Notifications</span>
+                                <span id="notif-count-pill"
+                                      style="display:none; margin-left:auto;
+                                            background:linear-gradient(135deg,#7366ff,#563fff);
+                                            color:#fff; border-radius:10px;
+                                            padding:1px 8px; font-size:10px; font-weight:700;
+                                            box-shadow:0 2px 8px rgba(115,102,255,.4);">0</span>
+                            </a>
+
+                            <div id="notif-panel"
+                                style="display:none; margin:6px 0 4px 4px; background:#fff;
+                                        border:1px solid #ebebff; border-radius:12px;
+                                        box-shadow:0 8px 24px rgba(115,102,255,.13);
+                                        overflow:hidden; transition:all .25s ease;">
+
+                                <div style="display:flex; align-items:center; justify-content:space-between;
+                                            padding:10px 14px 8px;
+                                            background:linear-gradient(135deg,#7366ff15,#563fff08);
+                                            border-bottom:1px solid #ebebff;">
+                                    <span style="font-size:12px; font-weight:700; color:#7366ff;
+                                                  letter-spacing:.4px; text-transform:uppercase;">Recent</span>
+                                    <a href="#" id="mark-read-btn"
+                                      style="display:none; font-size:11px; font-weight:600;
+                                              color:#7366ff; text-decoration:none;
+                                              background:#7366ff18; border-radius:20px;
+                                              padding:2px 10px; transition:background .2s;">
+                                        ✔ Mark all read
+                                    </a>
+                                </div>
+
+                                <ul id="notif-list"
+                                    style="list-style:none; margin:0; padding:0;
+                                          max-height:220px; overflow-y:auto;
+                                          scrollbar-width:thin; scrollbar-color:#c8c4ff #f4f4ff;"></ul>
+
+                                <div id="notif-empty"
+                                    style="display:none; text-align:center; padding:18px 10px;">
+                                    <div style="font-size:24px; margin-bottom:4px;">🎉</div>
+                                    <div style="font-size:12px; color:#aaa; font-weight:500;">You're all caught up!</div>
+                                </div>
+                            </div>
+                        </li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser %}
+                        <li><a href="{% url 'admin_task_view' %}">Admin task view</a></li>
+                        <li><a href="{% url 'admin_extension_requests' %}">Time extent request</a></li>
+                    {% endif %}
+                    </ul>
+
               </li>
 
                    <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
@@ -112,31 +196,46 @@
 {% if not request.user.is_superuser %}
 <script>
 (function(){
-    const badge   = document.getElementById('notif-badge');
-    const list    = document.getElementById('notif-list');
-    const markBtn = document.getElementById('mark-read-btn');
-    const toggle  = document.getElementById('notif-toggle');
+    const pill     = document.getElementById('notif-count-pill');
+    const list     = document.getElementById('notif-list');
+    const markBtn  = document.getElementById('mark-read-btn');
+    const toggle   = document.getElementById('notif-toggle');
+    const panel    = document.getElementById('notif-panel');
+    const bellIcon = document.getElementById('notif-bell-icon');
+    const empty    = document.getElementById('notif-empty');
 
     function updateBadge(count){
-        badge.textContent   = count > 99 ? '99+' : count;
-        badge.style.display = count > 0 ? 'inline-block' : 'none';
+        const label = count > 99 ? '99+' : count;
+        pill.textContent   = label;
+        pill.style.display = count > 0 ? 'inline-block' : 'none';
+        if(count > 0){
+            bellIcon.classList.remove('bell-shake');
+            void bellIcon.offsetWidth;
+            bellIcon.classList.add('bell-shake');
+        }
     }
 
     function renderList(notifs){
         list.innerHTML = '';
         if(!notifs.length){
-            list.innerHTML = '<li style="font-size:12px;color:#aaa;padding:4px 0">No tasks</li>';
+            empty.style.display   = 'block';
             markBtn.style.display = 'none';
             return;
         }
+        empty.style.display   = 'none';
+        markBtn.style.display = 'block';
+
         notifs.forEach(function(n){
-            const li       = document.createElement('li');
-            li.style.cssText = 'font-size:12px; padding:4px 0;' +
-                               'border-bottom:1px solid #eee; color:#333;';
-            li.textContent = (n.is_read ? '⚪ ' : '🔴 ') + n.message;
+            const li  = document.createElement('li');
+            const dot = document.createElement('span');
+            dot.className = 'notif-dot ' + (n.is_read ? 'read' : 'unread');
+            const txt = document.createElement('span');
+            txt.className = 'notif-text ' + (n.is_read ? '' : 'unread');
+            txt.textContent = n.message;
+            li.appendChild(dot);
+            li.appendChild(txt);
             list.appendChild(li);
         });
-        markBtn.style.display = 'block';
     }
 
     function fetchNotifs(){
@@ -144,51 +243,41 @@
         .then(r => r.json())
         .then(function(data){
             updateBadge(data.unread);
-            if(list.style.display === 'block'){
-                renderList(data.notifications);
-            }
+            if(panel.style.display === 'block') renderList(data.notifications);
         });
     }
 
-    // Toggle open/close
     toggle.addEventListener('click', function(e){
         e.preventDefault();
-        if(list.style.display === 'none'){
+        if(panel.style.display === 'none' || panel.style.display === ''){
             fetch("{% url 'get_notifications' %}")
             .then(r => r.json())
             .then(function(data){
                 updateBadge(data.unread);
                 renderList(data.notifications);
-                list.style.display = 'block';
+                panel.style.display = 'block';
             });
         } else {
-            list.style.display    = 'none';
+            panel.style.display   = 'none';
             markBtn.style.display = 'none';
         }
     });
 
-    // Mark all as read
     markBtn.addEventListener('click', function(e){
         e.preventDefault();
         fetch("{% url 'mark_notifications_read' %}", {
             method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'Content-Type': 'application/json'
-            }
+            headers:{ 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json' }
         }).then(function(){
             updateBadge(0);
             markBtn.style.display = 'none';
-            list.querySelectorAll('li').forEach(function(li){
-                li.textContent = li.textContent.replace('🔴', '⚪');
-            });
+            list.querySelectorAll('.notif-dot').forEach(d => d.className = 'notif-dot read');
+            list.querySelectorAll('.notif-text').forEach(t => t.classList.remove('unread'));
         });
     });
 
-    // Poll every 5 seconds
     fetchNotifs();
     setInterval(fetchNotifs, 5000);
-
 })();
 </script>
 {% endif %}
