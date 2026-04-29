@@ -29,104 +29,151 @@
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
 <style>
+    /* Main Layout */
     .page-wrapper {
-        padding: 24px;
+        padding: 30px;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
     .cards-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
     }
 
+    /* Premium Task Card */
     .task-card {
-        width: 260px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        padding: 14px;
-        background: #fff;
-        text-decoration: none;
-        color: #333;
+        width: 100%;
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: 16px;
+        padding: 20px;
+        background: #ffffff;
+        text-decoration: none !important;
+        color: #2d3748;
         display: block;
-    }
-    .task-card:hover {
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        color: #333;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        position: relative;
+        overflow: hidden;
     }
 
+    .task-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        border-color: rgba(0,0,0,0.1);
+    }
+
+    /* Typography Refinements */
     .card-title {
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: #1a202c;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     .card-divider {
-        border: none;
-        border-top: 1px solid #e5e7eb;
-        margin: 8px 0;
+        border: 0;
+        height: 1px;
+        background: linear-gradient(to right, rgba(0,0,0,0.08), rgba(0,0,0,0.01));
+        margin: 12px 0;
     }
 
     .card-row {
-        font-size: 12px;
-        margin-bottom: 4px;
+        font-size: 13px;
+        margin-bottom: 6px;
+        color: #4a5568;
+        display: flex;
+        align-items: center;
+        gap: 5px;
     }
 
-    /* Status colours */
-    .status-pending   { color: #6b7280; font-weight: 600; }
-    .status-started   { color: #059669; font-weight: 600; }
-    .status-paused    { color: #d97706; font-weight: 600; }
-    .status-completed { color: #1d4ed8; font-weight: 600; }
-    .status-exceeded  { color: #dc2626; font-weight: 700; }
+    .card-row b {
+        color: #718096;
+        font-weight: 600;
+        min-width: 85px;
+    }
 
-    /* Extension info box */
+    /* Status & Badge Styling */
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-pending   { background: #f3f4f6; color: #4b5563; }
+    .status-started   { background: #ecfdf5; color: #059669; }
+    .status-paused    { background: #fffbeb; color: #d97706; }
+    .status-completed { background: #eff6ff; color: #2563eb; }
+    .status-exceeded  { background: #fef2f2; color: #dc2626; }
+
+    /* Modern Extension Info Boxes */
     .ext-info {
-        margin-top: 8px;
-        padding: 6px 10px;
-        border-radius: 6px;
-        font-size: 11px;
-        line-height: 1.7;
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        line-height: 1.6;
+        border: 1px solid transparent;
     }
-    .ext-pending  { background: #fef3c7; color: #92400e; border: 1px dashed #f59e0b; }
-    .ext-approved { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
-    .ext-rejected { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-    .ext-session  { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
-    .ext-waiting  { background: #fff3e0; color: #e65100; border: 1px dashed #fb8c00; }
+    
+    .ext-pending  { background: #fffaf0; color: #9c4221; border-color: #feebc8; }
+    .ext-approved { background: #f0fff4; color: #22543d; border-color: #c6f6d5; }
+    .ext-rejected { background: #fff5f5; color: #822727; border-color: #fed7d7; }
+    .ext-session  { background: #faf5ff; color: #553c9a; border-color: #e9d8fd; border-style: solid; }
+    .ext-waiting  { background: #fffaf0; color: #7b341e; border-color: #fbd38d; border-style: dashed; }
 
-    /* Exceeded box */
+    /* Exceeded Alert */
     .exceeded-box {
-        display: none;
-        margin-top: 6px;
-        padding: 4px 10px;
-        border-radius: 6px;
-        background: #ffcdd2;
-        color: #b71c1c;
+        margin-top: 10px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: #e53e3e;
+        color: #fff;
         font-size: 12px;
         font-weight: 600;
-        border: 1px solid #d32f2f;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(229, 62, 62, 0.2);
     }
 
-    /* Inline ext badge next to status */
+    /* Live Timer Glow */
+    .timer {
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: 700;
+        color: #2d3748;
+        background: #f7fafc;
+        padding: 2px 8px;
+        border-radius: 4px;
+        letter-spacing: 0.5px;
+    }
+
+    /* Extension Badge (Inline) */
     .ext-badge {
-        display: inline-block;
-        padding: 1px 7px;
-        border-radius: 10px;
-        font-size: 11px;
-        font-weight: 600;
-        margin-left: 4px;
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 10px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        margin-left: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
-    .ext-badge.pending  { background: #fef3c7; color: #92400e; }
-    .ext-badge.approved { background: #d1fae5; color: #065f46; }
-    .ext-badge.rejected { background: #fee2e2; color: #991b1b; }
 
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    /* Animation */
+    @keyframes pulse { 0%,100%{opacity:1; transform: scale(1);} 50%{opacity:.4; transform: scale(1.2);} }
     .pulse-dot {
         display: inline-block;
-        width: 6px; height: 6px;
+        width: 8px; height: 8px;
         border-radius: 50%;
-        background: #f59e0b;
-        animation: pulse 1.2s infinite;
-        margin-right: 3px;
-        vertical-align: middle;
+        background: #ed8936;
+        animation: pulse 1.5s infinite;
+        margin-right: 6px;
     }
 </style>
 
@@ -224,8 +271,8 @@
 
                 {% elif t.latest_ext.status == 'approved' and t.extension_resumed %}
                 <div class="ext-info ext-session">
-                    ⚡ <b>Extension session active</b><br>
-                    Window: <b>{{ t.expected_time|duration_format }}</b><br>
+                     <b>Extension session active</b><br>
+                    Extra time limit: <b>{{ t.expected_time|duration_format }}</b><br>
                     Work before ext: <b>{{ t.worked_before_extension|duration_format }}</b>
                 </div>
 
