@@ -351,7 +351,6 @@
         {% endfor %}
     </div>
 </div>
-
 <script>
 
 function formatTime(totalSeconds) {
@@ -361,6 +360,9 @@ function formatTime(totalSeconds) {
     const s = totalSeconds % 60;
     return h + "h " + String(m).padStart(2, '0') + "m " + String(s).padStart(2, '0') + "s";
 }
+
+// Track tasks currently being auto-stopped to prevent duplicate calls
+const stoppingTasks = new Set();
 
 function updateTimers() {
     const nowMs = Date.now();
@@ -375,7 +377,7 @@ function updateTimers() {
         const awaitingExtResume  = el.dataset.awaitingExtResume === '1';
         const taskId             = el.dataset.taskId;
 
-        // ── Terminal / static states ────────────────────────────────────────
+        // Terminal / static states
         if (status === 'completed' || status === 'exceeded') {
             el.innerHTML = formatTime(workedSaved);
             return;
@@ -386,21 +388,18 @@ function updateTimers() {
             return;
         }
 
-        // ── Paused — always static, always server value ─────────────────────
-        // FIX: stop trying to compute from start_time when paused.
-        // pause_task now saves worked_time on every pause so this is accurate.
+        // Paused — static, server value
         if (status === 'paused') {
             el.innerHTML = formatTime(workedSaved);
-            // Update progress bar for mid-extension pauses
             if (expectedSec > 0 && isExt && !awaitingExtResume) {
                 updateProgressBar(taskId, workedSaved, expectedSec, true);
             }
             return;
         }
 
-        // ── Started — live tick ─────────────────────────────────────────────
+        // Started — live tick
         if (status === 'started') {
-            const startMs   = new Date(startStr).getTime();
+            const startMs    = new Date(startStr).getTime();
             const elapsedSec = (nowMs - startMs) / 1000;
             const displaySec = Math.max(0, elapsedSec - totalPauseSec);
 
@@ -411,9 +410,12 @@ function updateTimers() {
             }
 
             // Auto-stop when session reaches/exceeds expected window
-            if (expectedSec > 0 && displaySec >= expectedSec) {
+            if (expectedSec > 0 && displaySec >= expectedSec && !stoppingTasks.has(taskId)) {
+                // Mark immediately so no duplicate calls
+                stoppingTasks.add(taskId);
                 el.dataset.status = '__stopping__';
 
+                // Update UI instantly
                 const badgeWrapper = document.getElementById('badge-wrapper-' + taskId);
                 if (badgeWrapper) {
                     badgeWrapper.innerHTML =
@@ -424,13 +426,23 @@ function updateTimers() {
                 if (actions) {
                     actions.innerHTML =
                         '<span style="color:#991b1b;font-weight:bold;font-size:13px;">⚠ Time Exceeded</span>' +
-                        '<br><span style="font-size:12px;color:#6b7280;">Saving… please wait.</span>';
+                        '<br><span style="font-size:12px;color:#6b7280;">Saving…</span>';
                 }
 
+                // Wait for server to fully save THEN reload
                 fetch('/auto-stop-exceeded/')
                     .then(r => r.json())
-                    .then(() => { setTimeout(() => location.reload(), 1500); })
-                    .catch(()  => { setTimeout(() => location.reload(), 1500); });
+                    .then(data => {
+                        console.log('Auto-stopped:', data.auto_stopped);
+                        location.reload();
+                    })
+                    .catch(() => {
+                        // Retry once after 2s if fetch failed
+                        setTimeout(() => {
+                            fetch('/auto-stop-exceeded/')
+                                .finally(() => location.reload());
+                        }, 2000);
+                    });
             }
         }
     });

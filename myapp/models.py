@@ -40,23 +40,8 @@ class Task(models.Model):
                                     related_name='assigned_tasks')
     expected_time = models.DurationField(null=True, blank=True)
     exceeded_time = models.DurationField(null=True, blank=True)
-
-    # Stores work done before an extension was granted.
-    # When set, expected_time = only the extra window granted.
-    # Total expected = worked_before_extension + expected_time.
     worked_before_extension = models.DurationField(null=True, blank=True)
 
-    # ── NEW FIELD ──────────────────────────────────────────────────────────────
-    # Tracks whether the staff has already clicked "Continue Task" once after
-    # an extension was approved.
-    #
-    #   False (default) → extension approved but NOT yet resumed by staff.
-    #                      show "Continue Task" button, fresh-clock resume logic.
-    #   True            → staff already clicked "Continue Task" at least once.
-    #                      subsequent pause/resumes are NORMAL (no clock reset).
-    #
-    # Reset to False when a NEW extension is approved (approve_extension view).
-    # ──────────────────────────────────────────────────────────────────────────
     extension_resumed = models.BooleanField(default=False)
 
     def __str__(self):
@@ -101,6 +86,21 @@ class Task(models.Model):
         if self.worked_time and self.expected_time:
             return self.worked_time >= self.expected_time
         return False
+    @property
+    def approved_extension_time(self):
+        """Total approved extension duration"""
+        from datetime import timedelta
+        total = timedelta(0)
+        for ext in self.extension_requests.filter(status='approved'):
+            total += ext.requested_extra_time
+        return total
+
+    @property
+    def total_worked_with_extension(self):
+        """worked_before_extension + approved extension time"""
+        from datetime import timedelta
+        base = self.worked_before_extension or timedelta(0)
+        return base + self.approved_extension_time
 
 
 class TaskPause(models.Model):
