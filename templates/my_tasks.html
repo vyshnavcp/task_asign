@@ -154,6 +154,24 @@
             font-size:11px; color:#92400e; font-weight:600;
             margin-bottom:2px; display:block;
         }
+        .tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.tasks-header h2 {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.tasks-header p {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 4px;
+}
     </style>
 {% endblock %}
 
@@ -170,7 +188,12 @@
 
 
 <div style="padding:25px;background:#f3f4f6;min-height:100vh;">
-    <h2 style="margin-bottom:20px;">My Tasks</h2>
+    <div class="tasks-header">
+    <div>
+        <h2>My Tasks</h2>
+        <p>Track, manage and complete your work efficiently</p>
+    </div>
+</div>
 
     <div style="display:flex;flex-wrap:wrap;gap:20px;">
         {% for t in tasks %}
