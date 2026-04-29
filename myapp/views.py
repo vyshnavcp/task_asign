@@ -209,7 +209,6 @@ def my_tasks(request):
         )
     return render(request, 'my_tasks.html', {'tasks': tasks})
 
-
 @login_required(login_url='user_login')
 def start_task(request, id):
     task = get_object_or_404(Task, id=id)
@@ -218,55 +217,49 @@ def start_task(request, id):
     if task.status == 'pending':
         task.start_time = now
         task.status = 'started'
+        task.total_pause = timedelta(0)
+        task.pause_time = None
+        task.save()
 
     elif task.status == 'paused':
-        # Close any open pause record first
-        open_pause = task.pauses.filter(pause_end__isnull=True).last()
-        if open_pause:
-            open_pause.pause_end = now
-            open_pause.save()
-
-        # ── Determine if this is the FIRST resume after extension approval ────
-        #
-        # extension_resumed=False → first-time "Continue Task" click → fresh clock
-        # extension_resumed=True  → normal mid-session resume → keep accumulated time
-        #
         latest_ext = task.extension_requests.order_by('-requested_on').first()
+
         is_first_extension_resume = (
             latest_ext is not None
             and latest_ext.status == 'approved'
             and task.worked_before_extension is not None
-            and not task.extension_resumed           # ← only True on FIRST resume
+            and not task.extension_resumed
         )
 
+        if not is_first_extension_resume:
+            open_pause = task.pauses.filter(pause_end__isnull=True).last()
+            if open_pause:
+                open_pause.pause_end = now
+                open_pause.save()
+
         if is_first_extension_resume:
-            # ── Fresh clock for the extension window ──────────────────────────
-            # Timer counts from 0 up to expected_time (= extra time granted).
-            # worked_time is cleared so the JS timer shows the live extension tick.
-            # worked_before_extension holds the pre-extension total for stop_task.
-            task.start_time      = now
-            task.total_pause     = timedelta(0)
-            task.pause_time      = None
-            task.worked_time     = None        # cleared → JS ticks from 0
-            task.status          = 'started'
-            task.extension_resumed = True      # ← mark as resumed; no more fresh-clock resets
+            task.pauses.all().delete()
+            task.total_pause = timedelta(0)
+
+            task.start_time = now
+            task.pause_time = None
+            task.worked_time = timedelta(0)
+            task.status = 'started'
+            task.extension_resumed = True
 
         else:
-            # ── Normal resume (including mid-extension-session pause/resume) ──
-            # Recompute total_pause from all closed pause records.
             total_pause = sum(
                 (p.duration for p in task.pauses.all() if p.pause_end),
                 timedelta()
             )
+
             task.total_pause = total_pause
-            task.pause_time  = None
-            task.status      = 'started'
-            # Note: worked_time stays None during extension session (set on complete).
-            # During normal flow, worked_time is also None until complete.
+            task.pause_time = None
+            task.status = 'started'
 
-    task.save()
+        task.save()
+
     return redirect('my_tasks')
-
 
 @login_required(login_url='user_login')
 def pause_task(request, id):
@@ -297,7 +290,8 @@ def pause_task(request, id):
         task.pause_time = now
         task.status = 'paused'
         task.save()
-        TaskPause.objects.create(task=task, pause_start=now)
+        if not task.extension_resumed:
+            TaskPause.objects.create(task=task, pause_start=now)
     return redirect('my_tasks')
 
 
@@ -360,7 +354,10 @@ def auto_stop_exceeded_tasks(request):
         if not task.start_time:
             continue
 
-        total_pause    = task.total_pause or timedelta(0)
+        if task.extension_resumed:
+            total_pause = timedelta(0)
+        else:
+            total_pause = task.total_pause or timedelta(0)
         session_worked = now - task.start_time - total_pause
         prior          = task.worked_before_extension or timedelta(0)
 

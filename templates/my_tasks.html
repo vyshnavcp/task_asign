@@ -401,7 +401,9 @@ function updateTimers() {
         if (status === 'started') {
             const startMs    = new Date(startStr).getTime();
             const elapsedSec = (nowMs - startMs) / 1000;
-            const displaySec = Math.max(0, elapsedSec - totalPauseSec);
+            const displaySec = isExt
+                ? Math.max(0, elapsedSec)   // 🔥 ignore pause in extension
+                : Math.max(0, elapsedSec - totalPauseSec);
 
             el.innerHTML = formatTime(displaySec);
 
