@@ -76,8 +76,6 @@
         <p style="font-weight: 600; font-family: 'Inter', sans-serif;"><b>End Time:</b> {{ task.end_time|default:"-" }}</p>
 
         <hr>
-
-        <p><b>Total Time:</b> {{ task.total_time|duration_format }}</p>
         <p><b>Total Pause Time:</b> {{ task.total_pause|duration_format }}</p>
 
         {% if task.worked_before_extension %}
