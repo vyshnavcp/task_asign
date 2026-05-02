@@ -184,6 +184,27 @@
                      
                     </ul>
                   </li>
+                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
+                      <svg class="stroke-icon">
+                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
+                      </svg>
+                      <svg class="fill-icon">
+                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
+                      </svg><span>Proposal</span></a>
+                    <ul class="sidebar-submenu">
+                         {% if request.user.is_superuser %}
+                      <li><a href="{% url "client_add" %}">Client</a></li>
+                      <li><a href="{% url "client_list" %}">Client list</a></li>
+                      <li><a href="{% url "create_proposal" %}">Create Proposal</a></li>
+                      <li><a href="{% url "proposal_list" %}">Proposal List</a></li>
+
+                      {% endif %}
+                      {% if request.user.is_superuser %}
+                      <li><a href="{% url "leave_requests" %}">Leave request</a></li>
+                      {% endif %}
+                     
+                    </ul>
+                  </li>
 
                 </ul>
               </div>

@@ -1,3 +1,5 @@
+from email.policy import default
+from enum import unique
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
@@ -154,3 +156,45 @@ class TimeExtensionRequest(models.Model):
 
     def __str__(self):
         return f"{self.staff.authuser.username} → '{self.task.title}' [{self.status}]"
+    
+class Client(models.Model):
+    name=models.CharField(max_length=150)
+    company_name=models.CharField(max_length=200)
+    address=models.TextField()
+    phone = models.CharField(max_length=15, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"{self.name} ({self.company_name})"
+class Proposal(models.Model):
+    STATUS_CHOICES =[
+        ('draft','Draft'),
+        ('accepted','Accepted'),
+        ('rejected','Rejected'),
+    ]
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='proposals')
+    proposal_number= models.CharField(max_length=20,unique=True)
+    proposal_title = models.CharField(max_length=255, blank=True, default='') 
+    overview = models.TextField(blank=True, default='')
+    date=models.DateField(auto_now_add=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    def __str__(self):
+        return self.proposal_number
+    @property
+    def half_amount(self):
+        return self.total_amount / 2
+    
+class ProposalItem(models.Model):
+    proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE, related_name='items')
+    service_name=models.CharField(max_length=255)
+    service_detail = models.TextField(blank=True)
+    quantity=models.IntegerField(default=1)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    @property
+    def line_total(self):
+        return self.quantity * self.amount
+    
+
+    
+    

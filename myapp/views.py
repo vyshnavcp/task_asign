@@ -1,3 +1,5 @@
+from myapp.models import Proposal
+from myapp.models import Client
 from myapp.models import LeaveRequest
 from myapp.models import Staff
 from django.shortcuts import render
@@ -269,25 +271,15 @@ def pause_task(request, id):
     task = get_object_or_404(Task, id=id)
     if task.status == 'started':
         now = timezone.now()
-
-        # ── Compute current worked time and save it ───────────────────────────
-        # This is the KEY FIX for the "paused shows 0h 00m 00s" bug.
-        # We calculate how much was worked in this session and save it to worked_time
-        # so the paused display can show the correct time from the DB.
         if task.start_time:
             total_pause_so_far = task.total_pause or timedelta(0)
             session_worked = now - task.start_time - total_pause_so_far
             session_worked = max(session_worked, timedelta(0))
-
-            # If in extension session, total worked = prior + this session
             prior = task.worked_before_extension or timedelta(0)
 
             if task.extension_resumed:
-                # In extension session: save only the extension session time
-                # (JS timer shows 0 → expected_time, so worked_time = session only)
                 task.worked_time = session_worked
             else:
-                # Normal session: total = prior (0 usually) + session
                 task.worked_time = prior + session_worked
 
         task.pause_time = now
@@ -320,17 +312,11 @@ def stop_task(request, id):
     task.end_time    = now
     total_time       = task.end_time - task.start_time
     session_worked   = max(total_time - total_pause, timedelta(0))
-
-    # Total = previous sessions (before extension) + current session
     prior        = task.worked_before_extension or timedelta(0)
     total_worked = prior + session_worked
 
     task.total_time  = total_time
     task.worked_time = total_worked
-
-    # Compare against the full expected time.
-    # After extension: expected_time = extra time only.
-    # Full expected = worked_before_extension + expected_time.
     full_expected = prior + (task.expected_time or timedelta(0))
 
     if task.expected_time and total_worked > full_expected:
@@ -435,10 +421,6 @@ def request_extension(request, task_id):
     return render(request, 'request_extension.html', {'task': task})
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  ADMIN VIEWS
-# ─────────────────────────────────────────────────────────────────────────────
-
 @login_required(login_url='user_login')
 def admin_extension_requests(request):
     if not request.user.is_staff:
@@ -465,28 +447,14 @@ def approve_extension(request, req_id):
 
     task = ext_req.task
     now  = timezone.now()
-
-    # ── Store how much was already worked ─────────────────────────────────────
     task.worked_before_extension = task.worked_time or timedelta(0)
-
-    # ── Set expected_time = ONLY the extra time granted ───────────────────────
     task.expected_time = ext_req.requested_extra_time
-
-    # ── Reset extension_resumed so "Continue Task" shows again ───────────────
-    # This is important if this is a SECOND extension on the same task.
     task.extension_resumed = False
-
-    # ── Pause so staff must click "Continue Task" ─────────────────────────────
     task.status        = 'paused'
     task.pause_time    = now
     task.end_time      = None
     task.exceeded_time = None
-    # Keep worked_time so the paused display shows historical time
     task.save()
-
-    # Open pause record — closed when staff resumes
-
-
     ext_req.status      = 'approved'
     ext_req.reviewed_on = now
     ext_req.save()
@@ -658,3 +626,105 @@ def mark_notifications_read(request):
         return JsonResponse({'status': 'ok'})
     except Staff.DoesNotExist:
         return JsonResponse({'status': 'error'}, status=400)
+
+def client_add(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        company = request.POST.get('company_name')
+        address = request.POST.get('address')
+        phone = request.POST.get('phone')
+        email = request.POST.get('email')
+
+        Client.objects.create(
+            name=name,
+            company_name=company,
+            address=address,
+            phone=phone,
+            email=email
+        )
+        return redirect('client_list')
+
+    return render(request, 'client_form.html')
+
+def client_list(request):
+    clients = Client.objects.all().order_by('id')
+    return render(request,'client_list.html',{'clients':clients})
+
+def client_delete(request, id):
+    client = get_object_or_404(Client, id=id)
+    client.delete()
+    return redirect('client_list')   
+     
+def client_delete(request,id):
+    client=get_object_or_404(Client,id=id)
+    Client.delete()
+    return redirect('client_list')
+
+def generate_proposal_number():
+    last = Proposal.objects.order_by('-id').first()
+    if last:
+        try:
+            last_number = int(last.proposal_number.split('-')[-1])
+        except:
+            last_number = 0
+        new_number = last_number + 1
+    else:
+        new_number = 1
+    return f"PROP-{new_number:04d}"
+
+def get_client(request):
+    client_id = request.GET.get('client_id')
+    client = get_object_or_404(Client, id=client_id)
+
+    return JsonResponse({
+        'name': client.name,
+        'address': client.address
+    })
+
+def create_proposal(request):
+    clients = Client.objects.all()
+
+    if request.method == "POST":
+        client_id = request.POST.get('client')
+
+        proposal = Proposal.objects.create(
+            client_id=client_id,
+            proposal_number=generate_proposal_number(),
+            proposal_title=request.POST.get('proposal_title'),
+            overview=request.POST.get('overview'),
+        )
+
+        service_names = request.POST.getlist('service_name[]')
+        quantities = request.POST.getlist('quantity[]')
+        amounts = request.POST.getlist('amount[]')
+        details = request.POST.getlist('service_detail[]')
+
+        total = 0
+
+        for i in range(len(service_names)):
+            qty = int(quantities[i]) if quantities[i] else 0
+            amt = float(amounts[i]) if amounts[i] else 0
+
+            item = ProposalItem.objects.create(
+                proposal=proposal,
+                service_name=service_names[i],
+                service_detail=details[i],
+                quantity=qty,
+                amount=amt,
+            )
+
+            total += item.line_total
+
+        proposal.total_amount = total
+        proposal.save()
+
+        return redirect('proposal_list')
+
+    return render(request, 'proposal_form.html', {
+        'clients': clients,
+        'proposal_number': generate_proposal_number(),
+    })
+
+def proposal_list(request):
+    proposals = Proposal.objects.select_related('client').all().order_by('-id')
+    return render(request, 'proposal_list.html', {'proposals': proposals})

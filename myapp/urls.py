@@ -32,5 +32,11 @@ urlpatterns = [
     path('notifications/mark-read/', views.mark_notifications_read, name='mark_notifications_read'),
     path('task-status-api/', views.task_status_api),
     path('auto-stop-exceeded/', views.auto_stop_exceeded_tasks, name='auto_stop_exceeded'),
+    path('clients/',views.client_list,name='client_list'),
+    path('clients/add/',views.client_add,name='client_add'),
+    path('clients/delete/<int:id>/',views.client_delete,name='client_delete'),
+    path('proposals/', views.proposal_list, name='proposal_list'),
+    path('proposals/create/', views.create_proposal, name='create_proposal'),
+    path('get-client/', views.get_client, name='get_client'),
 
 ]
