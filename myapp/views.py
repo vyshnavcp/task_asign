@@ -747,3 +747,48 @@ def proposal_print(request, id):
         id=id
     )
     return render(request, 'proposal_print.html', {'proposal': proposal})
+
+def edit_proposal(request, pk):
+    proposal = get_object_or_404(Proposal, pk=pk)
+    clients = Client.objects.all()
+
+    if request.method == "POST":
+        proposal.client_id = request.POST.get('client')
+        proposal.proposal_title = request.POST.get('proposal_title')
+        proposal.overview = request.POST.get('overview')
+        proposal.status = request.POST.get('status') or 'draft'
+
+        # delete old items
+        proposal.items.all().delete()
+
+        service_names = request.POST.getlist('service_name[]')
+        quantities = request.POST.getlist('quantity[]')
+        amounts = request.POST.getlist('amount[]')
+        details = request.POST.getlist('service_detail[]')
+
+        total = 0
+
+        for i in range(len(service_names)):
+            if service_names[i]:  # avoid empty rows
+                qty = int(quantities[i]) if quantities[i] else 0
+                amt = float(amounts[i]) if amounts[i] else 0
+
+                item = ProposalItem.objects.create(
+                    proposal=proposal,
+                    service_name=service_names[i],
+                    service_detail=details[i],
+                    quantity=qty,
+                    amount=amt,
+                )
+
+                total += item.line_total
+
+        proposal.total_amount = total
+        proposal.save()
+
+        return redirect('proposal_list')
+
+    return render(request, 'proposal_form_edit.html', {
+        'proposal': proposal,
+        'clients': clients,
+    })

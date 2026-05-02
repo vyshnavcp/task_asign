@@ -136,7 +136,7 @@
                                     <a href="" class="act-btn">💰 Invoice</a>
                                 {% endif %}
                             {% else %}
-                                <a href="" class="act-btn">✏️ Edit</a>
+                                <a href="{% url 'edit_proposal' p.id %}" class="act-btn">✏️ Edit</a>
                             {% endif %}
 
                             {% for proposal in proposals %}

@@ -5,591 +5,848 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Proposal {{ proposal.proposal_number }} — Trendo</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-  :root {
-    --ink:       #0b0f1a;
-    --accent:    #c8a96e;
-    --accent2:   #e8c98e;
-    --muted:     #6b7280;
-    --light:     #f7f5f0;
-    --border:    #e4ddd0;
-    --white:     #ffffff;
-  }
+/* ═══════════════════════════════════════════
+   VARIABLES & RESET
+═══════════════════════════════════════════ */
+:root {
+  --ink:     #0b0f1a;
+  --accent:  #c8a96e;
+  --accent2: #e8c98e;
+  --muted:   #6b7280;
+  --light:   #f7f5f0;
+  --border:  #e4ddd0;
+  --white:   #ffffff;
+}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body {
-    font-family: 'Outfit', sans-serif;
-    background: #eee9e0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px 20px;
-    color: var(--ink);
-  }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: #ddd8cf;
+  color: var(--ink);
+}
 
-  /* ── PRINT BUTTON (screen only) ──────────── */
-  .print-bar {
-    width: 860px;
-    max-width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-bottom: 18px;
-  }
-  .print-bar a, .print-bar button {
-    font-family: 'Outfit', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    padding: 9px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    text-decoration: none;
-    border: none;
-    transition: all 0.2s;
-  }
-  .btn-back-link {
-    background: var(--white);
-    color: var(--ink);
-    border: 1px solid var(--border) !important;
-  }
-  .btn-back-link:hover { background: var(--light); }
-  .btn-print-action {
-    background: var(--ink);
-    color: var(--white);
-  }
-  .btn-print-action:hover { background: #1e2535; }
+/* ═══════════════════════════════════════════
+   SCREEN PRINT BAR
+═══════════════════════════════════════════ */
+.print-bar {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px 20px;
+  background: #c8c3ba;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+.print-bar a, .print-bar button {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  transition: all 0.2s;
+}
+.btn-back { background: var(--white); color: var(--ink); border: 1px solid #bbb !important; }
+.btn-back:hover { background: var(--light); }
+.btn-print { background: var(--ink); color: var(--white); }
+.btn-print:hover { background: #1e2535; }
 
-  /* ── PAPER ───────────────────────────────── */
-  .paper {
-    width: 860px;
-    max-width: 100%;
-    background: var(--white);
-    box-shadow: 0 20px 80px rgba(0,0,0,0.18);
-    border-radius: 4px;
-    overflow: hidden;
-    position: relative;
-  }
+/* ═══════════════════════════════════════════
+   PAGE SHELL
+═══════════════════════════════════════════ */
+.pages-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 30px 20px 60px;
+}
 
-  /* ── COVER HEADER ────────────────────────── */
-  .cover {
-    background: var(--ink);
-    padding: 0;
-    position: relative;
-    overflow: hidden;
-    min-height: 220px;
-    display: flex;
-    flex-direction: column;
-  }
+.page {
+  width: 794px;
+  max-width: 100%;
+  background: var(--white);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
 
-  /* Geometric decorations */
-  .cover::before {
-    content: '';
-    position: absolute;
-    top: -60px; right: -60px;
-    width: 280px; height: 280px;
-    border-radius: 50%;
-    border: 40px solid rgba(200,169,110,0.12);
-  }
-  .cover::after {
-    content: '';
-    position: absolute;
-    bottom: -30px; left: 200px;
-    width: 160px; height: 160px;
-    border-radius: 50%;
-    background: rgba(200,169,110,0.07);
-  }
-  .cover-geo1 {
-    position: absolute;
-    top: 0; right: 140px;
-    width: 1px; height: 100%;
-    background: rgba(200,169,110,0.15);
-  }
-  .cover-geo2 {
-    position: absolute;
-    bottom: 0; left: 0;
-    width: 100%; height: 3px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2), transparent);
-  }
+/* ═══════════════════════════════════════════
+   PAGE 1 — COVER
+═══════════════════════════════════════════ */
+.cover-page { min-height: 1050px; }
 
-  .cover-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 36px 48px 0;
-    position: relative;
-    z-index: 2;
-  }
+.cover-topbar {
+  background: var(--ink);
+  padding: 22px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.cover-topbar::after {
+  content: '';
+  position: absolute;
+  right: -30px; top: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  border: 20px solid rgba(200,169,110,0.15);
+}
+.topbar-brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 3px;
+}
+.topbar-brand span { color: var(--accent); }
+.topbar-web { font-size: 11px; color: rgba(255,255,255,0.40); letter-spacing: 1px; }
 
-  /* Brand */
-  .brand-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 42px;
-    font-weight: 700;
-    color: var(--white);
-    letter-spacing: 2px;
-    line-height: 1;
-  }
-  .brand-name span {
-    color: var(--accent);
-  }
-  .brand-tagline {
-    font-size: 9px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.35);
-    margin-top: 5px;
-  }
-  .brand-address {
-    font-size: 11px;
-    color: rgba(255,255,255,0.45);
-    margin-top: 12px;
-    line-height: 1.8;
-  }
+/* Illustration zone */
+.cover-illustration {
+  flex: 1;
+  background: linear-gradient(160deg, #f0ece4 0%, #e8e2d8 60%, #ddd8cf 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+  position: relative;
+  overflow: hidden;
+}
+.cover-illustration::before {
+  content: '';
+  position: absolute;
+  right: -80px; top: -80px;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  border: 60px solid rgba(200,169,110,0.10);
+}
+.cover-illustration::after {
+  content: '';
+  position: absolute;
+  left: -40px; bottom: -40px;
+  width: 250px; height: 250px;
+  border-radius: 50%;
+  background: rgba(200,169,110,0.06);
+}
+.illus-inner {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+.illus-circle {
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(200,169,110,0.18), rgba(200,169,110,0.04));
+  border: 2px solid rgba(200,169,110,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+.illus-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(11,15,26,0.30);
+}
 
-  /* Meta (right side) */
-  .cover-meta {
-    text-align: right;
-    z-index: 2;
-  }
-  .meta-badge {
-    background: rgba(200,169,110,0.15);
-    border: 1px solid rgba(200,169,110,0.30);
-    border-radius: 6px;
-    padding: 12px 18px;
-    display: inline-block;
-  }
-  .meta-badge .lbl {
-    font-size: 9px;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: var(--accent);
-    display: block;
-    margin-bottom: 4px;
-  }
-  .meta-badge .prop-no {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--white);
-    display: block;
-  }
-  .meta-badge .prop-date {
-    font-size: 11px;
-    color: rgba(255,255,255,0.50);
-    display: block;
-    margin-top: 4px;
-  }
+/* Cover main */
+.cover-main {
+  padding: 36px 48px 0;
+  background: var(--white);
+}
+.cover-project-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 62px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.cover-project-label .accent-word { display: block; color: var(--accent); }
 
-  /* Big PROPOSAL text */
-  .cover-bottom {
-    padding: 24px 48px 36px;
-    position: relative;
-    z-index: 2;
-  }
-  .cover-heading {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 56px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.08);
-    letter-spacing: 6px;
-    text-transform: uppercase;
-    line-height: 1;
-    position: absolute;
-    bottom: 14px;
-    left: 48px;
-    pointer-events: none;
-  }
-  .cover-project-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 26px;
-    font-weight: 600;
-    color: var(--accent);
-    letter-spacing: 0.5px;
-  }
+.cover-divider {
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2), rgba(200,169,110,0.10));
+  margin: 20px 0;
+}
+.cover-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 28px;
+}
+.to-label {
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.to-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.to-detail {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.7;
+}
+.prop-badge {
+  background: var(--light);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 18px;
+  display: inline-block;
+  text-align: right;
+}
+.prop-badge .pb-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 3px;
+}
+.prop-badge .pb-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  display: block;
+}
+.prop-badge .pb-date {
+  font-size: 11px;
+  color: var(--muted);
+  display: block;
+  margin-top: 3px;
+}
 
-  /* ── BODY ─────────────────────────────────── */
-  .body-wrap {
-    padding: 44px 48px 52px;
-  }
+.cover-title-banner {
+  background: linear-gradient(135deg, var(--ink) 0%, #1a2540 100%);
+  padding: 20px 48px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.project-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+}
+.prepared-by {
+  text-align: right;
+  font-size: 10px;
+  color: rgba(255,255,255,0.40);
+  line-height: 1.9;
+}
+.prepared-by strong {
+  display: block;
+  color: rgba(255,255,255,0.75);
+  font-size: 11.5px;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
 
-  /* Section headers */
-  .sec-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 14px;
-    margin-top: 36px;
-  }
-  .sec-head:first-of-type { margin-top: 0; }
-  .sec-dot {
-    width: 8px; height: 8px;
-    background: var(--accent);
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .sec-title {
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-  .sec-line {
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+.cover-footer {
+  background: var(--ink);
+  padding: 12px 48px;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid rgba(200,169,110,0.18);
+}
+.cf-contact { font-size: 11px; color: rgba(255,255,255,0.38); }
 
-  /* Proposal title */
-  .prop-main-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--ink);
-    line-height: 1.2;
-    margin-bottom: 8px;
-  }
-  .prop-sub {
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 28px;
-  }
-  .prop-sub span {
-    display: inline-block;
-    background: var(--light);
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11.5px;
-    border: 1px solid var(--border);
-    margin-right: 6px;
-  }
+/* ═══════════════════════════════════════════
+   SHARED INNER PAGE ELEMENTS
+═══════════════════════════════════════════ */
+.page-header {
+  background: var(--ink);
+  padding: 16px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.page-header::after {
+  content: '';
+  position: absolute;
+  right: -20px; top: -20px;
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  border: 15px solid rgba(200,169,110,0.12);
+}
+.ph-brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 2px;
+}
+.ph-brand span { color: var(--accent); }
+.ph-client { text-align: right; }
+.ph-client .ph-to {
+  font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.35); display: block;
+}
+.ph-client .ph-name {
+  font-size: 13px; font-weight: 600; color: var(--white); display: block;
+}
+.ph-client .ph-addr {
+  font-size: 10px; color: rgba(255,255,255,0.40); display: block; line-height: 1.5;
+}
 
-  /* Client card */
-  .client-card {
-    background: var(--light);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    border-radius: 8px;
-    padding: 18px 22px;
-    font-size: 13px;
-    line-height: 1.85;
-    color: #374151;
-    margin-bottom: 6px;
-  }
-  .client-card .client-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 19px;
-    font-weight: 700;
-    color: var(--ink);
-    display: block;
-    margin-bottom: 2px;
-  }
-  .client-card .client-company {
-    font-weight: 600;
-    color: #374151;
-    font-size: 13px;
-  }
-  .client-card .contact-row {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 4px;
-  }
+.accent-bar {
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2), rgba(200,169,110,0.15));
+}
 
-  /* Overview */
-  .overview-box {
-    background: var(--light);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 18px 22px;
-    font-size: 13px;
-    color: #4b5563;
-    line-height: 1.85;
-  }
+.section-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--accent);
+  padding: 28px 48px 0;
+  position: relative;
+  padding-bottom: 16px;
+}
+.section-heading::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 48px;
+  width: 50px; height: 2px;
+  background: var(--accent);
+}
 
-  /* Services table */
-  .svc-table {
+.page-body {
+  padding: 24px 48px 36px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-footer {
+  background: var(--ink);
+  padding: 12px 48px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+}
+.page-footer div { font-size: 10.5px; color: rgba(255,255,255,0.38); }
+
+/* ═══════════════════════════════════════════
+   PAGE 2 — OVERVIEW
+═══════════════════════════════════════════ */
+.overview-box {
+  background: linear-gradient(135deg, #f0ece4, #f7f5f0);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  padding: 26px 28px;
+  font-size: 13.5px;
+  color: #374151;
+  line-height: 1.9;
+}
+.services-intro-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 28px 0 16px;
+}
+.service-bullet {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding: 16px 18px;
+  background: var(--light);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.sb-dot {
+  width: 8px; height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+.sb-name { font-weight: 600; font-size: 13.5px; color: var(--ink); margin-bottom: 4px; }
+.sb-desc { font-size: 12px; color: var(--muted); line-height: 1.75; }
+.overview-cta {
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 12.5px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════
+   SERVICES & MILESTONE TABLES
+═══════════════════════════════════════════ */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.data-table thead tr { background: var(--ink); }
+.data-table thead th {
+  padding: 13px 18px;
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: rgba(255,255,255,0.55);
+  text-align: left;
+}
+.data-table tbody tr { border-bottom: 1px solid var(--border); }
+.data-table tbody tr:last-child { border-bottom: none; }
+.data-table tbody tr:nth-child(even) { background: #fdfcfa; }
+.data-table td {
+  padding: 16px 18px;
+  vertical-align: top;
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.7;
+}
+
+/* Services table specifics */
+.svc-num { text-align: center; font-weight: 700; color: var(--accent); font-size: 13px; width: 56px; }
+.svc-qty { text-align: center; width: 70px; font-weight: 600; color: var(--ink); }
+.svc-td-name { font-weight: 700; color: var(--ink); font-size: 13.5px; margin-bottom: 5px; }
+.svc-td-desc { font-size: 12px; color: var(--muted); line-height: 1.75; }
+
+/* Milestone specifics */
+.ms-name-cell {
+  font-weight: 600;
+  color: var(--ink);
+  width: 200px;
+  border-right: 1px solid var(--border);
+  background: rgba(200,169,110,0.04);
+}
+
+/* ═══════════════════════════════════════════
+   PAGE 5 — PRICING
+═══════════════════════════════════════════ */
+.price-total-row { background: linear-gradient(135deg, var(--ink) 0%, #1a2540 100%) !important; }
+.price-total-row td {
+  color: var(--white) !important;
+  font-weight: 700 !important;
+  padding: 16px 18px !important;
+}
+.price-grand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent) !important;
+  text-align: right;
+}
+.price-total-label {
+  text-align: right;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45) !important;
+  font-weight: 400 !important;
+}
+
+.payment-section { margin-top: 30px; }
+.payment-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.payment-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.payment-card {
+  background: var(--light);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+.pc-label {
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+}
+.pc-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ink);
+  display: block;
+  margin-bottom: 4px;
+}
+.pc-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+.thankyou-block {
+  margin-top: 28px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #f0ece4, #f7f5f0);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.8;
+  font-style: italic;
+}
+
+.signoff { margin-top: 28px; }
+.signoff-line {
+  display: inline-block;
+  border-top: 2px solid var(--ink);
+  padding-top: 10px;
+  min-width: 200px;
+}
+.signoff-name { font-weight: 700; font-size: 14px; color: var(--ink); }
+.signoff-role { font-size: 12px; color: var(--muted); font-style: italic; }
+.signoff-co   { font-size: 12px; color: var(--muted); font-style: italic; }
+
+/* ═══════════════════════════════════════════
+   PRINT
+═══════════════════════════════════════════ */
+@media print {
+  @page { size: A4; margin: 0; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+  body { background: #fff; }
+  .print-bar { display: none !important; }
+  .pages-wrap { padding: 0; gap: 0; }
+
+  .page {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    font-size: 13px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
+    max-width: 100%;
+    box-shadow: none;
+    border-radius: 0;
+    page-break-after: always;
+    break-after: page;
+    min-height: 297mm;
   }
-  .svc-table thead tr {
-    background: var(--ink);
-  }
-  .svc-table thead th {
-    padding: 11px 16px;
-    font-size: 9px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-weight: 600;
-    color: rgba(255,255,255,0.55);
-    text-align: left;
-  }
-  .svc-table thead th:last-child { text-align: right; }
-  .svc-table thead th:nth-child(3),
-  .svc-table thead th:nth-child(4) { text-align: center; }
-
-  .svc-table tbody tr {
-    border-bottom: 1px solid var(--border);
-  }
-  .svc-table tbody tr:last-child { border-bottom: none; }
-  .svc-table tbody tr:nth-child(even) { background: #fdfcfa; }
-
-  .svc-table td {
-    padding: 14px 16px;
-    vertical-align: top;
-    color: #374151;
-  }
-  .svc-table td:last-child { text-align: right; }
-  .svc-table td:nth-child(3),
-  .svc-table td:nth-child(4) { text-align: center; }
-
-  .svc-name {
-    font-weight: 600;
-    color: var(--ink);
-    font-size: 13.5px;
-    display: block;
-  }
-  .svc-detail {
-    font-size: 11.5px;
-    color: var(--muted);
-    margin-top: 3px;
-    display: block;
-    line-height: 1.6;
-  }
-
-  /* Total row */
-  .total-row {
-    background: linear-gradient(135deg, var(--ink) 0%, #1a2540 100%) !important;
-  }
-  .total-row td {
-    color: var(--white) !important;
-    font-weight: 600;
-    font-size: 14px;
-    padding: 15px 16px !important;
-  }
-  .total-row .total-label {
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.50) !important;
-  }
-  .total-row .total-amount {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--accent) !important;
-  }
-
-  /* Half amount note */
-  .half-note {
-    font-size: 12px;
-    color: var(--muted);
-    text-align: right;
-    margin-top: 8px;
-    font-style: italic;
-  }
-
-  /* ── FOOTER ───────────────────────────────── */
-  .footer {
-    background: var(--ink);
-    padding: 20px 48px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: auto;
-  }
-  .footer-brand {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--accent);
-    letter-spacing: 1px;
-  }
-  .footer-contact {
-    font-size: 11px;
-    color: rgba(255,255,255,0.40);
-    text-align: right;
-    line-height: 1.7;
-  }
-  .footer-divider {
-    width: 1px;
-    height: 30px;
-    background: rgba(255,255,255,0.12);
-  }
-
-  /* ── PRINT ────────────────────────────────── */
-  @media print {
-    @page { size: A4; margin: 0; }
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-
-    body { background: #fff; padding: 0; display: block; }
-    .print-bar { display: none !important; }
-
-    .paper {
-      width: 100%;
-      max-width: 100%;
-      box-shadow: none;
-      border-radius: 0;
-    }
-
-    .cover { min-height: 200px; }
-
-    .body-wrap { padding: 36px 48px 44px; }
-
-    .svc-table tbody tr { page-break-inside: avoid; }
-  }
+  .page:last-child { page-break-after: avoid; break-after: avoid; }
+  .cover-page { min-height: 297mm; }
+  .data-table tbody tr { page-break-inside: avoid; }
+}
 </style>
 </head>
 <body>
 
-<!-- Screen-only action bar -->
+<!-- ── SCREEN PRINT BAR ── -->
 <div class="print-bar">
-  <a href="{% url 'proposal_list' %}" class="btn-back-link">← Back to Proposals</a>
-  <button class="btn-print-action" onclick="window.print()">🖨 Download / Print PDF</button>
+  <a href="{% url 'proposal_list' %}" class="btn-back">← Back to Proposals</a>
+  <button class="btn-print" onclick="window.print()">🖨 Download / Print PDF</button>
 </div>
 
-<div class="paper">
+<div class="pages-wrap">
 
-  <!-- ── COVER HEADER ── -->
-  <div class="cover">
-    <div class="cover-geo1"></div>
-    <div class="cover-geo2"></div>
+<!-- ══════════════════════════════════════
+     PAGE 1 — COVER
+══════════════════════════════════════ -->
+<div class="page cover-page">
 
-    <div class="cover-top">
-      <!-- Brand -->
-      <div>
-        <div class="brand-name">TREN<span>DO</span></div>
-        <div class="brand-tagline">Design &amp; Technology Studio</div>
-        <div class="brand-address">
-          1/166 F, 1st Floor, Basuri Arcade<br>
-          Kalleri, Poovattuparamba<br>
-          Kozhikode, Kerala 673008<br>
-          +91 9846331415
-        </div>
+  <div class="cover-topbar">
+    <div class="topbar-brand">TREN<span>DO</span></div>
+    <div class="topbar-web">trendo.com</div>
+  </div>
+
+  <div class="cover-illustration">
+    <div class="illus-inner">
+      <div class="illus-circle">
+        <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="12" y="22" width="64" height="44" rx="5" stroke="#c8a96e" stroke-width="2.5"/>
+          <rect x="22" y="32" width="22" height="3.5" rx="1.75" fill="#c8a96e"/>
+          <rect x="22" y="39" width="38" height="2.5" rx="1.25" fill="#c8a96e" opacity="0.45"/>
+          <rect x="22" y="45" width="30" height="2.5" rx="1.25" fill="#c8a96e" opacity="0.45"/>
+          <rect x="22" y="51" width="34" height="2.5" rx="1.25" fill="#c8a96e" opacity="0.45"/>
+          <circle cx="62" cy="56" r="12" stroke="#c8a96e" stroke-width="2.5"/>
+          <path d="M57 56l4 4 7-7" stroke="#c8a96e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
-
-      <!-- Proposal meta -->
-      <div class="cover-meta">
-        <div class="meta-badge">
-          <span class="lbl">Proposal No</span>
-          <span class="prop-no">{{ proposal.proposal_number }}</span>
-          <span class="prop-date">{{ proposal.date|date:"d F Y" }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="cover-bottom">
-      <div class="cover-project-title">
-        {{ proposal.proposal_title|default:"Project Proposal" }}
-      </div>
-      <div class="cover-heading">PROPOSAL</div>
+      <div class="illus-text">Project Proposal</div>
     </div>
   </div>
 
-  <!-- ── BODY ── -->
-  <div class="body-wrap">
-
-    <!-- Proposal title & ref -->
-    <div class="prop-main-title">{{ proposal.proposal_title|default:"Project Proposal" }}</div>
-    <div class="prop-sub">
-      <span>{{ proposal.proposal_number }}</span>
-      <span>{{ proposal.date|date:"d M Y" }}</span>
+  <div class="cover-main">
+    <div class="cover-project-label">
+      PROJECT
+      <span class="accent-word">PROPOSAL</span>
     </div>
-
-    <!-- CLIENT -->
-    <div class="sec-head">
-      <div class="sec-dot"></div>
-      <div class="sec-title">Proposal To</div>
-      <div class="sec-line"></div>
-    </div>
-
-    <div class="client-card">
-      <span class="client-name">{{ proposal.client.name }}</span>
-      {% if proposal.client.company_name %}
-        <span class="client-company">{{ proposal.client.company_name }}</span><br>
-      {% endif %}
-      {{ proposal.client.address }}
-      <div class="contact-row">
-        {% if proposal.client.phone %}📞 {{ proposal.client.phone }}{% endif %}
-        {% if proposal.client.email %} &nbsp;|&nbsp; ✉ {{ proposal.client.email }}{% endif %}
+    <div class="cover-divider"></div>
+    <div class="cover-meta-row">
+      <div>
+        <div class="to-label">Proposal To</div>
+        <div class="to-name">{{ proposal.client.name }}</div>
+        <div class="to-detail">
+          {% if proposal.client.company_name %}{{ proposal.client.company_name }}<br>{% endif %}
+          {{ proposal.client.address }}
+          {% if proposal.client.phone %}<br>{{ proposal.client.phone }}{% endif %}
+        </div>
+      </div>
+      <div class="prop-badge">
+        <span class="pb-label">Proposal No</span>
+        <span class="pb-num">{{ proposal.proposal_number }}</span>
+        <span class="pb-date">Date : {{ proposal.date|date:"d - m - Y" }}</span>
       </div>
     </div>
+  </div>
 
-    <!-- OVERVIEW -->
-    {% if proposal.overview %}
-    <div class="sec-head">
-      <div class="sec-dot"></div>
-      <div class="sec-title">Overview</div>
-      <div class="sec-line"></div>
+  <div class="cover-title-banner">
+    <div class="project-title">{{ proposal.proposal_title|default:"Project Proposal" }}</div>
+    <div class="prepared-by">
+      Prepared By:
+      <strong>TRENDO</strong>
+      1/166 F, 1st Floor, Basuri Arcade<br>
+      Kalleri, Poovattuparamba<br>
+      Kozhikode, Kerala 673008<br>
+      +91 9846331415
     </div>
-    <div class="overview-box">{{ proposal.overview }}</div>
+  </div>
+
+  <div class="cover-footer">
+    <div class="cf-contact">trendo.com</div>
+    <div class="cf-contact">+91 9846331415</div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 2 — OVERVIEW & SERVICES INTRO
+══════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="ph-brand">TREN<span>DO</span></div>
+    <div class="ph-client">
+      <span class="ph-to">Proposal To</span>
+      <span class="ph-name">{{ proposal.client.name }}</span>
+      <span class="ph-addr">{% if proposal.client.company_name %}{{ proposal.client.company_name }}, {% endif %}{{ proposal.client.address }}</span>
+    </div>
+  </div>
+  <div class="accent-bar"></div>
+  <div class="section-heading">{{ proposal.proposal_title|default:"Overview" }}</div>
+
+  <div class="page-body">
+    {% if proposal.overview %}
+    <div class="overview-box">{{ proposal.overview|linebreaksbr }}</div>
     {% endif %}
 
-    <!-- SERVICES -->
-    <div class="sec-head">
-      <div class="sec-dot"></div>
-      <div class="sec-title">Proposed Services</div>
-      <div class="sec-line"></div>
+    {% if proposal.items.all %}
+    <div class="services-intro-label">Our Services Include:</div>
+    {% for item in proposal.items.all %}
+    <div class="service-bullet">
+      <div class="sb-dot"></div>
+      <div>
+        <div class="sb-name">{{ item.service_name }}</div>
+        {% if item.service_detail %}<div class="sb-desc">{{ item.service_detail }}</div>{% endif %}
+      </div>
     </div>
+    {% endfor %}
+    {% endif %}
 
-    <table class="svc-table">
+    <div class="overview-cta">
+      We partner with clients to deliver innovative solutions that drive success. &nbsp;·&nbsp;
+      Visit <strong>trendo.com</strong> for more details.
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div>info@trendo.com &nbsp;|&nbsp; +91 9846331415</div>
+    <div>trendo.com</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 3 — PROPOSED SERVICES TABLE
+══════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="ph-brand">TREN<span>DO</span></div>
+    <div class="ph-client">
+      <span class="ph-to">Proposal To</span>
+      <span class="ph-name">{{ proposal.client.name }}</span>
+      <span class="ph-addr">{% if proposal.client.company_name %}{{ proposal.client.company_name }}, {% endif %}{{ proposal.client.address }}</span>
+    </div>
+  </div>
+  <div class="accent-bar"></div>
+  <div class="section-heading">Proposed Services</div>
+
+  <div class="page-body">
+    <table class="data-table">
       <thead>
         <tr>
-          <th>#</th>
-          <th>Service</th>
-          <th>Qty</th>
-          <th>Rate (₹)</th>
-          <th>Total (₹)</th>
+          <th style="width:56px; text-align:center;">S.No</th>
+          <th>Description</th>
+          <th style="width:70px; text-align:center;">Qty</th>
         </tr>
       </thead>
       <tbody>
         {% for item in proposal.items.all %}
         <tr>
-          <td style="color:var(--muted); font-size:12px;">{{ forloop.counter }}</td>
+          <td class="svc-num">{{ forloop.counter }}</td>
           <td>
-            <span class="svc-name">{{ item.service_name }}</span>
-            {% if item.service_detail %}
-              <span class="svc-detail">{{ item.service_detail }}</span>
-            {% endif %}
+            <div class="svc-td-name">{{ item.service_name }}</div>
+            {% if item.service_detail %}<div class="svc-td-desc">{{ item.service_detail }}</div>{% endif %}
           </td>
-          <td>{{ item.quantity }}</td>
-          <td>{{ item.amount }}</td>
-          <td><strong>{{ item.line_total }}</strong></td>
+          <td class="svc-qty">{{ item.quantity }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-footer">
+    <div>info@trendo.com &nbsp;|&nbsp; +91 9846331415</div>
+    <div>trendo.com</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 4 — MILESTONES
+══════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="ph-brand">TREN<span>DO</span></div>
+    <div class="ph-client">
+      <span class="ph-to">Proposal To</span>
+      <span class="ph-name">{{ proposal.client.name }}</span>
+      <span class="ph-addr">{% if proposal.client.company_name %}{{ proposal.client.company_name }}, {% endif %}{{ proposal.client.address }}</span>
+    </div>
+  </div>
+  <div class="accent-bar"></div>
+  <div class="section-heading">Milestone</div>
+
+  <div class="page-body">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:200px;">Milestone</th>
+          <th>Tasks</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in proposal.items.all %}
+        <tr>
+          <td class="ms-name-cell">{{ item.service_name }}</td>
+          <td>{{ item.service_detail|default:"—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-footer">
+    <div>info@trendo.com &nbsp;|&nbsp; +91 9846331415</div>
+    <div>trendo.com</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 5 — DETAILED PRICE & SIGN-OFF
+══════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="ph-brand">TREN<span>DO</span></div>
+    <div class="ph-client">
+      <span class="ph-to">Proposal To</span>
+      <span class="ph-name">{{ proposal.client.name }}</span>
+      <span class="ph-addr">{% if proposal.client.company_name %}{{ proposal.client.company_name }}, {% endif %}{{ proposal.client.address }}</span>
+    </div>
+  </div>
+  <div class="accent-bar"></div>
+  <div class="section-heading">Detailed Price</div>
+
+  <div class="page-body">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:56px; text-align:center;">S.No</th>
+          <th>Service</th>
+          <th style="text-align:right;">Pricing</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in proposal.items.all %}
+        <tr>
+          <td class="svc-num">{{ forloop.counter }}</td>
+          <td>{{ item.service_name }}</td>
+          <td style="text-align:right; font-weight:600; color:var(--ink);">₹{{ item.line_total }}</td>
         </tr>
         {% endfor %}
       </tbody>
       <tfoot>
-        <tr class="total-row">
-          <td colspan="3"></td>
-          <td><span class="total-label">Grand Total</span></td>
-          <td><span class="total-amount">₹{{ proposal.total_amount }}</span></td>
+        <tr class="price-total-row">
+          <td></td>
+          <td class="price-total-label">Grand Total</td>
+          <td class="price-grand">₹{{ proposal.total_amount }}</td>
         </tr>
       </tfoot>
     </table>
 
-    <div class="half-note">50% advance: ₹{{ proposal.half_amount }} &nbsp;|&nbsp; Balance: ₹{{ proposal.half_amount }}</div>
+    <div class="payment-section">
+      <div class="payment-title">Payment Structure</div>
+      <div class="payment-cards">
+        <div class="payment-card">
+          <span class="pc-label">Initial Deposit</span>
+          <span class="pc-value">₹{{ proposal.half_amount }}</span>
+          <span class="pc-desc">50% advance at the start of the project to begin work.</span>
+        </div>
+        <div class="payment-card">
+          <span class="pc-label">Final Payment</span>
+          <span class="pc-value">₹{{ proposal.half_amount }}</span>
+          <span class="pc-desc">50% balance due upon completion of all deliverables.</span>
+        </div>
+      </div>
+    </div>
 
-  </div>
+    <div class="thankyou-block">
+      Thank you for reviewing our proposal. We are excited about the opportunity to collaborate
+      with you and look forward to working together.
+    </div>
 
-  <!-- ── FOOTER ── -->
-  <div class="footer">
-    <div class="footer-brand">TRENDO</div>
-    <div class="footer-divider"></div>
-    <div class="footer-contact">
-      1/166 F, Basuri Arcade, Kalleri, Poovattuparamba, Kozhikode, Kerala 673008<br>
-      +91 9846331415
+    <div class="signoff">
+      <div class="signoff-line">
+        <div class="signoff-name">Trendo</div>
+        <div class="signoff-role">Business Development</div>
+        <div class="signoff-co">Trendo</div>
+      </div>
     </div>
   </div>
 
-</div><!-- /paper -->
+  <div class="page-footer">
+    <div>info@trendo.com &nbsp;|&nbsp; +91 9846331415</div>
+    <div>trendo.com</div>
+  </div>
+</div>
 
+</div><!-- /pages-wrap -->
 </body>
 </html>

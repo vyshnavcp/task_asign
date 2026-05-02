@@ -1,0 +1,88 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block title %}Edit Proposal{% endblock %}
+
+{% block content %}
+<div style="padding:40px;">
+
+<div style="max-width:900px;margin:auto;background:#fff;padding:30px;border-radius:12px;">
+
+<h2>Edit Proposal</h2>
+
+<form method="POST">
+{% csrf_token %}
+
+<!-- CLIENT -->
+<label>Client</label>
+<select name="client" style="width:100%;padding:10px;margin-top:5px;">
+    {% for c in clients %}
+    <option value="{{ c.id }}"
+        {% if proposal.client.id == c.id %}selected{% endif %}>
+        {{ c.company_name }}
+    </option>
+    {% endfor %}
+</select>
+
+<!-- TITLE -->
+<label style="margin-top:15px;">Title</label>
+<input type="text" name="proposal_title"
+value="{{ proposal.proposal_title }}"
+style="width:100%;padding:10px;">
+
+<!-- OVERVIEW -->
+<label style="margin-top:15px;">Overview</label>
+<textarea name="overview" style="width:100%;padding:10px;">
+{{ proposal.overview }}
+</textarea>
+
+<!-- STATUS -->
+<label style="margin-top:15px;">Status</label>
+<select name="status" style="width:100%;padding:10px;">
+    <option value="draft" {% if proposal.status == 'draft' %}selected{% endif %}>Draft</option>
+    <option value="accepted" {% if proposal.status == 'accepted' %}selected{% endif %}>Accepted</option>
+    <option value="rejected" {% if proposal.status == 'rejected' %}selected{% endif %}>Rejected</option>
+</select>
+
+<!-- SERVICES -->
+<h3 style="margin-top:20px;">Services</h3>
+
+<div id="items">
+{% for item in proposal.items.all %}
+<div style="border:1px solid #ddd;padding:10px;margin-top:10px;">
+    <input name="service_name[]" value="{{ item.service_name }}" placeholder="Service" style="width:100%;padding:8px;">
+    <textarea name="service_detail[]" placeholder="Details" style="width:100%;padding:8px;">{{ item.service_detail }}</textarea>
+    <input type="number" name="quantity[]" value="{{ item.quantity }}" style="width:100%;padding:8px;">
+    <input type="number" name="amount[]" value="{{ item.amount }}" style="width:100%;padding:8px;">
+</div>
+{% endfor %}
+</div>
+
+<button type="button" onclick="addItem()" style="margin-top:10px;">+ Add Item</button>
+
+<br><br>
+
+<button type="submit" style="padding:10px 20px;background:black;color:white;">
+Update
+</button>
+
+</form>
+
+</div>
+</div>
+
+<script>
+function addItem(){
+    let html = `
+    <div style="border:1px solid #ddd;padding:10px;margin-top:10px;">
+        <input name="service_name[]" placeholder="Service" style="width:100%;padding:8px;">
+        <textarea name="service_detail[]" placeholder="Details" style="width:100%;padding:8px;"></textarea>
+        <input type="number" name="quantity[]" value="1" style="width:100%;padding:8px;">
+        <input type="number" name="amount[]" placeholder="Amount" style="width:100%;padding:8px;">
+    </div>
+    `;
+    document.getElementById('items').insertAdjacentHTML('beforeend', html);
+}
+</script>
+
+{% endblock %}

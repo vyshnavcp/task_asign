@@ -41,6 +41,7 @@ urlpatterns = [
     path('proposals/delete/<int:id>/', views.proposal_delete, name='proposal_delete'),
     path('proposals/view/<int:id>/', views.proposal_view, name='proposal_view'),
     path('proposals/print/<int:id>/', views.proposal_print, name='proposal_print'),
+    path('proposals/edit/<int:pk>/', views.edit_proposal, name='edit_proposal'),
 
 
 ]
