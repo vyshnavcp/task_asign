@@ -1,60 +1,36 @@
-
 {% extends 'main.html' %}
-{% block title %}Home{% endblock %}
+{% block title %}Proposals{% endblock %}
 {% load static %}
 
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
-    <!-- ico-font-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
-    <!-- Themify icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
-    <!-- Flag icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
-    <!-- Feather icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
-    <!-- Plugins css start-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
-    <!-- Plugins css Ends-->
-    <!-- Bootstrap css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
-    <!-- App css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
-    <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
-
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'DM Sans', sans-serif; background: #f4f5f7; min-height: 100vh; color: #111827; }
 
-        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; background: #111827; display: flex; flex-direction: column; padding: 2rem 1.5rem; z-index: 100; }
-        .sidebar-brand { font-family: 'DM Serif Display', serif; font-size: 24px; color: #fff; margin-bottom: 2.5rem; }
-        .sidebar-brand span { display: block; font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 2px; color: #6b7280; margin-top: 2px; }
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; color: #9ca3af; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.15s; margin-bottom: 4px; }
-        .nav-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
-        .nav-item.active { background: rgba(255,255,255,0.1); color: #fff; }
-
-        .main { margin-left: 220px; padding: 2.5rem; }
+        .proposal-main { padding: 2.5rem; }
 
         .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
-        .page-title { font-family: 'DM Serif Display', serif; font-size: 32px; letter-spacing: -0.5px; }
+        .page-title { font-family: 'DM Serif Display', serif; font-size: 32px; letter-spacing: -0.5px; color: #111827; }
         .page-sub { font-size: 13px; color: #6b7280; margin-top: 4px; }
 
-        .new-btn { background: #111827; color: #fff; border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 11px 22px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.15s; }
-        .new-btn:hover { opacity: 0.85; }
-
-        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 2rem; }
-        .stat { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.25rem 1.5rem; }
-        .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #9ca3af; margin-bottom: 6px; }
-        .stat-val { font-family: 'DM Serif Display', serif; font-size: 28px; color: #111827; }
-        .stat-sub { font-size: 12px; color: #6b7280; margin-top: 2px; }
+        .new-btn { background: #111827; color: #fff !important; border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 11px 22px; cursor: pointer; text-decoration: none !important; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.15s; }
+        .new-btn:hover { opacity: 0.85; color: #fff !important; }
 
         .filter-bar { display: flex; gap: 12px; margin-bottom: 1.5rem; }
         .search-wrap { position: relative; flex: 1; max-width: 340px; }
@@ -62,15 +38,28 @@
         .search-input { width: 100%; padding: 9px 13px 9px 36px; border: 1px solid #e5e7eb; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; background: #fff; color: #111827; outline: none; transition: border-color 0.15s; }
         .search-input:focus { border-color: #6b7280; }
 
-        .table-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; }
+        .table-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; width: 100%; }
 
-        .prop-table { width: 100%; border-collapse: collapse; }
-        .prop-table thead tr { border-bottom: 1px solid #f3f4f6; }
-        .prop-table thead th { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: #9ca3af; font-weight: 600; padding: 14px 20px; text-align: left; background: #fafafa; }
+        .prop-table { width: 100%; border-collapse: collapse; table-layout: auto; }
+
+        .prop-table thead { background: #111827; }
+        .prop-table thead tr { border-bottom: none; }
+        .prop-table thead th {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #ffffff !important;
+            font-weight: 600;
+            padding: 14px 20px;
+            text-align: left;
+            background: #111827 !important;
+            white-space: nowrap;
+        }
+
         .prop-table tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.1s; }
         .prop-table tbody tr:last-child { border-bottom: none; }
         .prop-table tbody tr:hover { background: #fafafa; }
-        .prop-table td { padding: 14px 20px; font-size: 14px; vertical-align: middle; }
+        .prop-table td { padding: 14px 20px; font-size: 14px; vertical-align: middle; color: #111827; }
 
         .prop-num { font-family: 'DM Mono', monospace; font-size: 13px; color: #374151; font-weight: 500; }
         .prop-client { font-weight: 500; color: #111827; }
@@ -78,12 +67,16 @@
         .prop-date { font-family: 'DM Mono', monospace; font-size: 12px; color: #6b7280; }
         .prop-amount { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; color: #111827; }
 
-        .badge { display: inline-block; border-radius: 20px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; padding: 3px 10px; background: #f3f4f6; color: #6b7280; }
+        .badge { display: inline-block; border-radius: 20px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; padding: 4px 12px; background: #f3f4f6; color: #6b7280; }
+        .badge.draft { background: #fef3c7; color: #92400e; }
+        .badge.accepted { background: #dcfce7; color: #166534; }
+        .badge.rejected { background: #fee2e2; color: #991b1b; }
 
-        .action-btns { display: flex; align-items: center; gap: 6px; }
-        .act-btn { border: 1px solid #e5e7eb; background: #fff; border-radius: 7px; color: #6b7280; font-size: 12px; font-family: 'DM Sans', sans-serif; font-weight: 500; padding: 6px 12px; cursor: pointer; text-decoration: none; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
-        .act-btn:hover { border-color: #6b7280; color: #111827; }
-        .act-btn.danger:hover { border-color: #e24b4a; color: #e24b4a; background: #fef2f2; }
+        .action-btns { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
+        .act-btn { border: 1px solid #e5e7eb; background: #fff; border-radius: 7px; color: #6b7280 !important; font-size: 12px; font-family: 'DM Sans', sans-serif; font-weight: 500; padding: 6px 12px; cursor: pointer; text-decoration: none !important; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+        .act-btn:hover { border-color: #6b7280; color: #111827 !important; }
+        .act-btn.danger { border: 1px solid #e5e7eb; background: #fff; }
+        .act-btn.danger:hover { border-color: #e24b4a; color: #e24b4a !important; background: #fef2f2; }
 
         .empty-state { text-align: center; padding: 4rem 2rem; }
         .empty-icon { font-size: 48px; opacity: 0.25; margin-bottom: 1rem; }
@@ -91,43 +84,15 @@
         .empty-sub { font-size: 14px; color: #9ca3af; }
 
         @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .main { margin-left: 0; padding: 1.5rem; }
-            .stats { grid-template-columns: 1fr; }
+            .proposal-main { padding: 1.5rem; }
+            .action-btns { flex-wrap: wrap; }
         }
-        .badge.draft { background: #fef3c7; color: #92400e; }
-        .badge.accepted { background: #dcfce7; color: #166534; }
-        .badge.rejected { background: #fee2e2; color: #991b1b; }
     </style>
 {% endblock %}
 
 {% block content %}
-<main class="main">
-    <div class="page-header">
-        <div>
-            <h1 class="page-title">Proposals</h1>
-            <p class="page-sub">{{ proposals.count }} proposal{{ proposals.count|pluralize }} total</p>
-        </div>
-        <a href="{% url 'create_proposal' %}" class="new-btn">＋ New Proposal</a>
-    </div>
-
-    <div class="stats">
-        <div class="stat">
-            <p class="stat-label">Total Proposals</p>
-            <p class="stat-val">{{ proposals.count }}</p>
-            <p class="stat-sub">All time</p>
-        </div>
-        <div class="stat">
-            <p class="stat-label">Total Value</p>
-            <p class="stat-val">₹{{ total_value|floatformat:0 }}</p>
-            <p class="stat-sub">Combined amount</p>
-        </div>
-        <div class="stat">
-            <p class="stat-label">This Month</p>
-            <p class="stat-val">{{ this_month_count }}</p>
-            <p class="stat-sub">New proposals</p>
-        </div>
-    </div>
+<main class="proposal-main">
+    
 
     <div class="filter-bar">
         <div class="search-wrap">
@@ -146,7 +111,7 @@
                     <th>Date</th>
                     <th>Amount</th>
                     <th>Status</th>
-                    <th></th>
+                    <th style="min-width:220px;"></th>
                 </tr>
             </thead>
             <tbody>
@@ -160,7 +125,6 @@
                     <td><span class="prop-date">{{ p.date|date:"d M Y" }}</span></td>
                     <td><span class="prop-amount">₹{{ p.total_amount|floatformat:2 }}</span></td>
                     <td><span class="badge {{ p.status }}">{{ p.get_status_display }}</span></td>
-                    
                     <td>
                         <div class="action-btns">
                             <a href="" class="act-btn">👁 View</a>
@@ -177,10 +141,10 @@
 
                             <a href="" class="act-btn" target="_blank">🖨 Print</a>
 
-                            <a href="" 
-                            class="act-btn danger"
-                            onclick="return confirm('Delete {{ p.proposal_number }}?')">
-                            ✕
+                            <a href=""
+                               class="act-btn danger"
+                               onclick="return confirm('Delete {{ p.proposal_number }}?')">
+                                ✕
                             </a>
                         </div>
                     </td>
@@ -199,29 +163,21 @@
 </main>
 {% endblock %}
 
-
 {% block js %}
-
-    <!-- latest jquery-->
     <script src="{% static 'assets/js/jquery.min.js' %}"></script>
-    <!-- Bootstrap js-->
     <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
-    <!-- feather icon js-->
     <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
     <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
-    <!-- scrollbar js-->
     <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
     <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
-    <!-- Sidebar jquery-->
     <script src="{% static 'assets/js/config.js' %}"></script>
-    <!-- Plugins JS start-->
     <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
     <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.js' %}"></script>
     <script src="{% static 'assets/js/header-slick.js' %}"></script>
     <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
-    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"> </script>
+    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"></script>
     <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
@@ -240,13 +196,12 @@
     <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
     <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
     <script src="{% static 'assets/js/height-equal.js' %}"></script>
-    <!-- Plugins JS Ends-->
-     <script>
-function filterTable(q) {
-    q = q.toLowerCase();
-    document.querySelectorAll('#prop-table tbody tr').forEach(row => {
-        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-    });
-}
-</script>
+    <script>
+        function filterTable(q) {
+            q = q.toLowerCase();
+            document.querySelectorAll('#prop-table tbody tr').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+    </script>
 {% endblock %}
