@@ -746,7 +746,11 @@ def proposal_print(request, id):
         Proposal.objects.prefetch_related('items', 'client'),
         id=id
     )
-    return render(request, 'proposal_print.html', {'proposal': proposal})
+    services = CompanyService.objects.all()  
+    return render(request, 'proposal_print.html', {
+        'proposal': proposal,
+        'services': services,   
+    })
 
 def edit_proposal(request, pk):
     proposal = get_object_or_404(Proposal, pk=pk)
@@ -792,3 +796,20 @@ def edit_proposal(request, pk):
         'proposal': proposal,
         'clients': clients,
     })
+
+def add_service(request):
+    if request.method == "POST":
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+
+        CompanyService.objects.create(
+            title=title,
+            description=description
+        )
+        return redirect('service_list')
+
+    return render(request, 'service_form.html')
+
+def service_list(request):
+    services = CompanyService.objects.all()
+    return render(request, 'service_list.html', {'services': services})

@@ -139,10 +139,7 @@
                                 <a href="{% url 'edit_proposal' p.id %}" class="act-btn">✏️ Edit</a>
                             {% endif %}
 
-                            {% for proposal in proposals %}
-  
-                                <a href="{% url 'proposal_print' proposal.id %}" class="act-btn" target="_blank">🖨 Print</a>
-                            {% endfor %}
+                           <a href="{% url 'proposal_print' p.id %}" class="act-btn" target="_blank">🖨 Print</a>
 
                             <a href="{% url 'proposal_delete' p.id %}"
                                class="act-btn danger"

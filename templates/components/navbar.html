@@ -193,6 +193,8 @@
                       </svg><span>Proposal</span></a>
                     <ul class="sidebar-submenu">
                          {% if request.user.is_superuser %}
+                         <li><a href="{% url 'add_service' %}">Service</a></li>
+                         <li><a href="{% url 'service_list' %}">Service List</a></li>
                       <li><a href="{% url "client_add" %}">Client</a></li>
                       <li><a href="{% url "client_list" %}">Client list</a></li>
                       <li><a href="{% url "create_proposal" %}">Create Proposal</a></li>

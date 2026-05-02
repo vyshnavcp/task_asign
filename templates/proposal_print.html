@@ -400,17 +400,7 @@ body {
   font-style: italic;
 }
 
-/* ═══════════════════════════════════════════
-   SERVICES & MILESTONE TABLES
-═══════════════════════════════════════════ */
-.data-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-}
+
 .data-table thead tr { background: var(--ink); }
 .data-table thead th {
   padding: 13px 18px;
@@ -557,7 +547,6 @@ body {
 </head>
 <body>
 
-<!-- ── SCREEN PRINT BAR ── -->
 <div class="print-bar">
   <a href="{% url 'proposal_list' %}" class="btn-back">← Back to Proposals</a>
   <button class="btn-print" onclick="window.print()">🖨 Download / Print PDF</button>
@@ -637,7 +626,7 @@ body {
 
 
 <!-- ══════════════════════════════════════
-     PAGE 2 — OVERVIEW & SERVICES INTRO
+     PAGE 2 — OVERVIEW & COMPANY SERVICES
 ══════════════════════════════════════ -->
 <div class="page">
   <div class="page-header">
@@ -652,18 +641,22 @@ body {
   <div class="section-heading">{{ proposal.proposal_title|default:"Overview" }}</div>
 
   <div class="page-body">
+
     {% if proposal.overview %}
     <div class="overview-box">{{ proposal.overview|linebreaksbr }}</div>
     {% endif %}
 
-    {% if proposal.items.all %}
+    <!-- ✅ Now uses CompanyService instead of proposal items -->
+    {% if services %}
     <div class="services-intro-label">Our Services Include:</div>
-    {% for item in proposal.items.all %}
+    {% for service in services %}
     <div class="service-bullet">
       <div class="sb-dot"></div>
       <div>
-        <div class="sb-name">{{ item.service_name }}</div>
-        {% if item.service_detail %}<div class="sb-desc">{{ item.service_detail }}</div>{% endif %}
+        <div class="sb-name">{{ service.title }}</div>
+        {% if service.description %}
+        <div class="sb-desc">{{ service.description }}</div>
+        {% endif %}
       </div>
     </div>
     {% endfor %}
@@ -728,50 +721,8 @@ body {
 </div>
 
 
-<!-- ══════════════════════════════════════
-     PAGE 4 — MILESTONES
-══════════════════════════════════════ -->
-<div class="page">
-  <div class="page-header">
-    <div class="ph-brand">TREN<span>DO</span></div>
-    <div class="ph-client">
-      <span class="ph-to">Proposal To</span>
-      <span class="ph-name">{{ proposal.client.name }}</span>
-      <span class="ph-addr">{% if proposal.client.company_name %}{{ proposal.client.company_name }}, {% endif %}{{ proposal.client.address }}</span>
-    </div>
-  </div>
-  <div class="accent-bar"></div>
-  <div class="section-heading">Milestone</div>
-
-  <div class="page-body">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th style="width:200px;">Milestone</th>
-          <th>Tasks</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item in proposal.items.all %}
-        <tr>
-          <td class="ms-name-cell">{{ item.service_name }}</td>
-          <td>{{ item.service_detail|default:"—" }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  <div class="page-footer">
-    <div>info@trendo.com &nbsp;|&nbsp; +91 9846331415</div>
-    <div>trendo.com</div>
-  </div>
-</div>
 
 
-<!-- ══════════════════════════════════════
-     PAGE 5 — DETAILED PRICE & SIGN-OFF
-══════════════════════════════════════ -->
 <div class="page">
   <div class="page-header">
     <div class="ph-brand">TREN<span>DO</span></div>
