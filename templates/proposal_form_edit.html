@@ -1,21 +1,184 @@
+
 {% extends 'main.html' %}
+{% block title %}Home{% endblock %}
 {% load static %}
 
-{% block title %}Edit Proposal{% endblock %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
+    <!-- ico-font-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
+    <!-- Themify icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
+    <!-- Flag icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
+    <!-- Feather icon-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
+    <!-- Plugins css start-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
+    <!-- Plugins css Ends-->
+    <!-- Bootstrap css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
+    <!-- App css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
+    <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
+    <!-- Responsive css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+
+<style>
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f4f5f7;
+}
+
+/* MAIN */
+.edit-main {
+    padding: 2.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.card {
+    width: 100%;
+    max-width: 950px;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+}
+
+/* HEADER */
+.card-header {
+    background: #111827;
+    color: #fff;
+    padding: 2rem;
+}
+
+.card-title {
+    font-family: 'DM Serif Display';
+    font-size: 32px;
+}
+
+/* BODY */
+.card-body {
+    padding: 2rem;
+}
+
+/* LABEL */
+.label {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* INPUT */
+.field {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #f9fafb;
+}
+
+.field:focus {
+    outline: none;
+    border-color: #6b7280;
+    background: #fff;
+}
+
+/* SERVICE CARD */
+.service-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.service-header {
+    background: #f9fafb;
+    padding: 10px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.service-body {
+    padding: 12px;
+}
+
+/* GRID */
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* BUTTONS */
+.add-btn {
+    margin-top: 12px;
+    padding: 10px;
+    border: 1px dashed #9ca3af;
+    background: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.add-btn:hover {
+    background: #f9fafb;
+}
+
+.save-btn {
+    background: #111827;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.save-btn:hover {
+    opacity: 0.9;
+}
+
+/* REMOVE BTN */
+.remove-btn {
+    float: right;
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div style="padding:40px;">
 
-<div style="max-width:900px;margin:auto;background:#fff;padding:30px;border-radius:12px;">
+<div class="edit-main">
+<div class="card">
 
-<h2>Edit Proposal</h2>
+<!-- HEADER -->
+<div class="card-header">
+    <div class="card-title">Edit Proposal</div>
+    <small># {{ proposal.proposal_number }}</small>
+</div>
+
+<!-- BODY -->
+<div class="card-body">
 
 <form method="POST">
 {% csrf_token %}
 
 <!-- CLIENT -->
-<label>Client</label>
-<select name="client" style="width:100%;padding:10px;margin-top:5px;">
+<label class="label">Client</label>
+<select name="client" class="field">
     {% for c in clients %}
     <option value="{{ c.id }}"
         {% if proposal.client.id == c.id %}selected{% endif %}>
@@ -25,64 +188,138 @@
 </select>
 
 <!-- TITLE -->
-<label style="margin-top:15px;">Title</label>
+<label class="label">Proposal Title</label>
 <input type="text" name="proposal_title"
 value="{{ proposal.proposal_title }}"
-style="width:100%;padding:10px;">
+class="field">
 
 <!-- OVERVIEW -->
-<label style="margin-top:15px;">Overview</label>
-<textarea name="overview" style="width:100%;padding:10px;">
-{{ proposal.overview }}
-</textarea>
+<label class="label">Overview</label>
+<textarea name="overview" class="field">{{ proposal.overview }}</textarea>
 
 <!-- STATUS -->
-<label style="margin-top:15px;">Status</label>
-<select name="status" style="width:100%;padding:10px;">
+<label class="label">Status</label>
+<select name="status" class="field">
     <option value="draft" {% if proposal.status == 'draft' %}selected{% endif %}>Draft</option>
     <option value="accepted" {% if proposal.status == 'accepted' %}selected{% endif %}>Accepted</option>
     <option value="rejected" {% if proposal.status == 'rejected' %}selected{% endif %}>Rejected</option>
 </select>
 
 <!-- SERVICES -->
-<h3 style="margin-top:20px;">Services</h3>
+<h3 style="margin-top:25px;">Services</h3>
 
 <div id="items">
+
 {% for item in proposal.items.all %}
-<div style="border:1px solid #ddd;padding:10px;margin-top:10px;">
-    <input name="service_name[]" value="{{ item.service_name }}" placeholder="Service" style="width:100%;padding:8px;">
-    <textarea name="service_detail[]" placeholder="Details" style="width:100%;padding:8px;">{{ item.service_detail }}</textarea>
-    <input type="number" name="quantity[]" value="{{ item.quantity }}" style="width:100%;padding:8px;">
-    <input type="number" name="amount[]" value="{{ item.amount }}" style="width:100%;padding:8px;">
+<div class="service-item">
+
+<div class="service-header">
+Service {{ forloop.counter }}
+<button type="button" class="remove-btn" onclick="removeItem(this)">✕</button>
+</div>
+
+<div class="service-body">
+
+<input name="service_name[]" value="{{ item.service_name }}" class="field" placeholder="Service name">
+
+<textarea name="service_detail[]" class="field" placeholder="Details">{{ item.service_detail }}</textarea>
+
+<div class="row">
+<input type="number" name="quantity[]" value="{{ item.quantity }}" class="field">
+<input type="number" name="amount[]" value="{{ item.amount }}" class="field">
+</div>
+
+</div>
 </div>
 {% endfor %}
+
 </div>
 
-<button type="button" onclick="addItem()" style="margin-top:10px;">+ Add Item</button>
+<button type="button" class="add-btn" onclick="addItem()">+ Add Service</button>
 
-<br><br>
-
-<button type="submit" style="padding:10px 20px;background:black;color:white;">
-Update
-</button>
+<button type="submit" class="save-btn">Update Proposal</button>
 
 </form>
 
 </div>
 </div>
+</div>
 
 <script>
 function addItem(){
+    let count = document.querySelectorAll('.service-item').length + 1;
+
     let html = `
-    <div style="border:1px solid #ddd;padding:10px;margin-top:10px;">
-        <input name="service_name[]" placeholder="Service" style="width:100%;padding:8px;">
-        <textarea name="service_detail[]" placeholder="Details" style="width:100%;padding:8px;"></textarea>
-        <input type="number" name="quantity[]" value="1" style="width:100%;padding:8px;">
-        <input type="number" name="amount[]" placeholder="Amount" style="width:100%;padding:8px;">
+    <div class="service-item">
+
+    <div class="service-header">
+    Service ${count}
+    <button type="button" class="remove-btn" onclick="removeItem(this)">✕</button>
+    </div>
+
+    <div class="service-body">
+
+    <input name="service_name[]" class="field" placeholder="Service name">
+
+    <textarea name="service_detail[]" class="field" placeholder="Details"></textarea>
+
+    <div class="row">
+    <input type="number" name="quantity[]" value="1" class="field">
+    <input type="number" name="amount[]" placeholder="Amount" class="field">
+    </div>
+
+    </div>
     </div>
     `;
+
     document.getElementById('items').insertAdjacentHTML('beforeend', html);
+}
+
+function removeItem(btn){
+    btn.closest('.service-item').remove();
 }
 </script>
 
+{% endblock %}
+
+{% block js %}
+    <!-- latest jquery-->
+    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <!-- Bootstrap js-->
+    <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <!-- feather icon js-->
+    <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
+    <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
+    <!-- scrollbar js-->
+    <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
+    <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
+    <!-- Sidebar jquery-->
+    <script src="{% static 'assets/js/config.js' %}"></script>
+    <!-- Plugins JS start-->
+    <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
+    <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.js' %}"></script>
+    <script src="{% static 'assets/js/header-slick.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"> </script>
+    <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/moment.min.js' %}"></script>
+    <script src="{% static 'assets/js/notify/bootstrap-notify.min.js' %}"></script>
+    <script src="{% static 'assets/js/dashboard/default.js' %}"></script>
+    <script src="{% static 'assets/js/notify/index.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/datatable.custom.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/datatable.custom1.js' %}"></script>
+    <script src="{% static 'assets/js/owlcarousel/owl.carousel.js' %}"></script>
+    <script src="{% static 'assets/js/owlcarousel/owl-custom.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/handlebars.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/typeahead.bundle.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/typeahead.custom.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
+    <script src="{% static 'assets/js/height-equal.js' %}"></script>
+    <!-- Plugins JS Ends-->
 {% endblock %}
