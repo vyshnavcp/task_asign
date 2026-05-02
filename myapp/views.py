@@ -728,3 +728,22 @@ def create_proposal(request):
 def proposal_list(request):
     proposals = Proposal.objects.select_related('client').all().order_by('-id')
     return render(request, 'proposal_list.html', {'proposals': proposals})
+
+def proposal_delete(request,id):
+    proposal=get_object_or_404(Proposal,id=id)
+    proposal.delete()
+    return redirect('proposal_list')
+
+def proposal_view(request, id):
+    proposal = get_object_or_404(
+        Proposal.objects.prefetch_related('items', 'client'),
+        id=id
+    )
+    return render(request, 'proposal_view.html', {'proposal': proposal})
+
+def proposal_print(request, id):
+    proposal = get_object_or_404(
+        Proposal.objects.prefetch_related('items', 'client'),
+        id=id
+    )
+    return render(request, 'proposal_print.html', {'proposal': proposal})

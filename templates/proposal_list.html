@@ -127,7 +127,7 @@
                     <td><span class="badge {{ p.status }}">{{ p.get_status_display }}</span></td>
                     <td>
                         <div class="action-btns">
-                            <a href="" class="act-btn">👁 View</a>
+                            <a href="{% url 'proposal_view' p.id %}" class="act-btn">👁 View</a>
 
                             {% if p.status == 'accepted' %}
                                 {% if p.invoice %}
@@ -139,9 +139,12 @@
                                 <a href="" class="act-btn">✏️ Edit</a>
                             {% endif %}
 
-                            <a href="" class="act-btn" target="_blank">🖨 Print</a>
+                            {% for proposal in proposals %}
+  
+                                <a href="{% url 'proposal_print' proposal.id %}" class="act-btn" target="_blank">🖨 Print</a>
+                            {% endfor %}
 
-                            <a href=""
+                            <a href="{% url 'proposal_delete' p.id %}"
                                class="act-btn danger"
                                onclick="return confirm('Delete {{ p.proposal_number }}?')">
                                 ✕

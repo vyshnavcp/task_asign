@@ -38,5 +38,9 @@ urlpatterns = [
     path('proposals/', views.proposal_list, name='proposal_list'),
     path('proposals/create/', views.create_proposal, name='create_proposal'),
     path('get-client/', views.get_client, name='get_client'),
+    path('proposals/delete/<int:id>/', views.proposal_delete, name='proposal_delete'),
+    path('proposals/view/<int:id>/', views.proposal_view, name='proposal_view'),
+    path('proposals/print/<int:id>/', views.proposal_print, name='proposal_print'),
+
 
 ]

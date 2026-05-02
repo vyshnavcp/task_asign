@@ -1,0 +1,595 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proposal {{ proposal.proposal_number }} — Trendo</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink:       #0b0f1a;
+    --accent:    #c8a96e;
+    --accent2:   #e8c98e;
+    --muted:     #6b7280;
+    --light:     #f7f5f0;
+    --border:    #e4ddd0;
+    --white:     #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: #eee9e0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    color: var(--ink);
+  }
+
+  /* ── PRINT BUTTON (screen only) ──────────── */
+  .print-bar {
+    width: 860px;
+    max-width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .print-bar a, .print-bar button {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 9px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    transition: all 0.2s;
+  }
+  .btn-back-link {
+    background: var(--white);
+    color: var(--ink);
+    border: 1px solid var(--border) !important;
+  }
+  .btn-back-link:hover { background: var(--light); }
+  .btn-print-action {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .btn-print-action:hover { background: #1e2535; }
+
+  /* ── PAPER ───────────────────────────────── */
+  .paper {
+    width: 860px;
+    max-width: 100%;
+    background: var(--white);
+    box-shadow: 0 20px 80px rgba(0,0,0,0.18);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ── COVER HEADER ────────────────────────── */
+  .cover {
+    background: var(--ink);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Geometric decorations */
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    border: 40px solid rgba(200,169,110,0.12);
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: 200px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(200,169,110,0.07);
+  }
+  .cover-geo1 {
+    position: absolute;
+    top: 0; right: 140px;
+    width: 1px; height: 100%;
+    background: rgba(200,169,110,0.15);
+  }
+  .cover-geo2 {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), transparent);
+  }
+
+  .cover-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 36px 48px 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Brand */
+  .brand-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .brand-name span {
+    color: var(--accent);
+  }
+  .brand-tagline {
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-top: 5px;
+  }
+  .brand-address {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    margin-top: 12px;
+    line-height: 1.8;
+  }
+
+  /* Meta (right side) */
+  .cover-meta {
+    text-align: right;
+    z-index: 2;
+  }
+  .meta-badge {
+    background: rgba(200,169,110,0.15);
+    border: 1px solid rgba(200,169,110,0.30);
+    border-radius: 6px;
+    padding: 12px 18px;
+    display: inline-block;
+  }
+  .meta-badge .lbl {
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .meta-badge .prop-no {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    display: block;
+  }
+  .meta-badge .prop-date {
+    font-size: 11px;
+    color: rgba(255,255,255,0.50);
+    display: block;
+    margin-top: 4px;
+  }
+
+  /* Big PROPOSAL text */
+  .cover-bottom {
+    padding: 24px 48px 36px;
+    position: relative;
+    z-index: 2;
+  }
+  .cover-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 56px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.08);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    line-height: 1;
+    position: absolute;
+    bottom: 14px;
+    left: 48px;
+    pointer-events: none;
+  }
+  .cover-project-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+  }
+
+  /* ── BODY ─────────────────────────────────── */
+  .body-wrap {
+    padding: 44px 48px 52px;
+  }
+
+  /* Section headers */
+  .sec-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    margin-top: 36px;
+  }
+  .sec-head:first-of-type { margin-top: 0; }
+  .sec-dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .sec-title {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .sec-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Proposal title */
+  .prop-main-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .prop-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+  .prop-sub span {
+    display: inline-block;
+    background: var(--light);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    border: 1px solid var(--border);
+    margin-right: 6px;
+  }
+
+  /* Client card */
+  .client-card {
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 18px 22px;
+    font-size: 13px;
+    line-height: 1.85;
+    color: #374151;
+    margin-bottom: 6px;
+  }
+  .client-card .client-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--ink);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .client-card .client-company {
+    font-weight: 600;
+    color: #374151;
+    font-size: 13px;
+  }
+  .client-card .contact-row {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* Overview */
+  .overview-box {
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 22px;
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.85;
+  }
+
+  /* Services table */
+  .svc-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .svc-table thead tr {
+    background: var(--ink);
+  }
+  .svc-table thead th {
+    padding: 11px 16px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: rgba(255,255,255,0.55);
+    text-align: left;
+  }
+  .svc-table thead th:last-child { text-align: right; }
+  .svc-table thead th:nth-child(3),
+  .svc-table thead th:nth-child(4) { text-align: center; }
+
+  .svc-table tbody tr {
+    border-bottom: 1px solid var(--border);
+  }
+  .svc-table tbody tr:last-child { border-bottom: none; }
+  .svc-table tbody tr:nth-child(even) { background: #fdfcfa; }
+
+  .svc-table td {
+    padding: 14px 16px;
+    vertical-align: top;
+    color: #374151;
+  }
+  .svc-table td:last-child { text-align: right; }
+  .svc-table td:nth-child(3),
+  .svc-table td:nth-child(4) { text-align: center; }
+
+  .svc-name {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 13.5px;
+    display: block;
+  }
+  .svc-detail {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 3px;
+    display: block;
+    line-height: 1.6;
+  }
+
+  /* Total row */
+  .total-row {
+    background: linear-gradient(135deg, var(--ink) 0%, #1a2540 100%) !important;
+  }
+  .total-row td {
+    color: var(--white) !important;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 15px 16px !important;
+  }
+  .total-row .total-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.50) !important;
+  }
+  .total-row .total-amount {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent) !important;
+  }
+
+  /* Half amount note */
+  .half-note {
+    font-size: 12px;
+    color: var(--muted);
+    text-align: right;
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  /* ── FOOTER ───────────────────────────────── */
+  .footer {
+    background: var(--ink);
+    padding: 20px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+  }
+  .footer-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+  .footer-contact {
+    font-size: 11px;
+    color: rgba(255,255,255,0.40);
+    text-align: right;
+    line-height: 1.7;
+  }
+  .footer-divider {
+    width: 1px;
+    height: 30px;
+    background: rgba(255,255,255,0.12);
+  }
+
+  /* ── PRINT ────────────────────────────────── */
+  @media print {
+    @page { size: A4; margin: 0; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    body { background: #fff; padding: 0; display: block; }
+    .print-bar { display: none !important; }
+
+    .paper {
+      width: 100%;
+      max-width: 100%;
+      box-shadow: none;
+      border-radius: 0;
+    }
+
+    .cover { min-height: 200px; }
+
+    .body-wrap { padding: 36px 48px 44px; }
+
+    .svc-table tbody tr { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Screen-only action bar -->
+<div class="print-bar">
+  <a href="{% url 'proposal_list' %}" class="btn-back-link">← Back to Proposals</a>
+  <button class="btn-print-action" onclick="window.print()">🖨 Download / Print PDF</button>
+</div>
+
+<div class="paper">
+
+  <!-- ── COVER HEADER ── -->
+  <div class="cover">
+    <div class="cover-geo1"></div>
+    <div class="cover-geo2"></div>
+
+    <div class="cover-top">
+      <!-- Brand -->
+      <div>
+        <div class="brand-name">TREN<span>DO</span></div>
+        <div class="brand-tagline">Design &amp; Technology Studio</div>
+        <div class="brand-address">
+          1/166 F, 1st Floor, Basuri Arcade<br>
+          Kalleri, Poovattuparamba<br>
+          Kozhikode, Kerala 673008<br>
+          +91 9846331415
+        </div>
+      </div>
+
+      <!-- Proposal meta -->
+      <div class="cover-meta">
+        <div class="meta-badge">
+          <span class="lbl">Proposal No</span>
+          <span class="prop-no">{{ proposal.proposal_number }}</span>
+          <span class="prop-date">{{ proposal.date|date:"d F Y" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-bottom">
+      <div class="cover-project-title">
+        {{ proposal.proposal_title|default:"Project Proposal" }}
+      </div>
+      <div class="cover-heading">PROPOSAL</div>
+    </div>
+  </div>
+
+  <!-- ── BODY ── -->
+  <div class="body-wrap">
+
+    <!-- Proposal title & ref -->
+    <div class="prop-main-title">{{ proposal.proposal_title|default:"Project Proposal" }}</div>
+    <div class="prop-sub">
+      <span>{{ proposal.proposal_number }}</span>
+      <span>{{ proposal.date|date:"d M Y" }}</span>
+    </div>
+
+    <!-- CLIENT -->
+    <div class="sec-head">
+      <div class="sec-dot"></div>
+      <div class="sec-title">Proposal To</div>
+      <div class="sec-line"></div>
+    </div>
+
+    <div class="client-card">
+      <span class="client-name">{{ proposal.client.name }}</span>
+      {% if proposal.client.company_name %}
+        <span class="client-company">{{ proposal.client.company_name }}</span><br>
+      {% endif %}
+      {{ proposal.client.address }}
+      <div class="contact-row">
+        {% if proposal.client.phone %}📞 {{ proposal.client.phone }}{% endif %}
+        {% if proposal.client.email %} &nbsp;|&nbsp; ✉ {{ proposal.client.email }}{% endif %}
+      </div>
+    </div>
+
+    <!-- OVERVIEW -->
+    {% if proposal.overview %}
+    <div class="sec-head">
+      <div class="sec-dot"></div>
+      <div class="sec-title">Overview</div>
+      <div class="sec-line"></div>
+    </div>
+    <div class="overview-box">{{ proposal.overview }}</div>
+    {% endif %}
+
+    <!-- SERVICES -->
+    <div class="sec-head">
+      <div class="sec-dot"></div>
+      <div class="sec-title">Proposed Services</div>
+      <div class="sec-line"></div>
+    </div>
+
+    <table class="svc-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Service</th>
+          <th>Qty</th>
+          <th>Rate (₹)</th>
+          <th>Total (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in proposal.items.all %}
+        <tr>
+          <td style="color:var(--muted); font-size:12px;">{{ forloop.counter }}</td>
+          <td>
+            <span class="svc-name">{{ item.service_name }}</span>
+            {% if item.service_detail %}
+              <span class="svc-detail">{{ item.service_detail }}</span>
+            {% endif %}
+          </td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.amount }}</td>
+          <td><strong>{{ item.line_total }}</strong></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr class="total-row">
+          <td colspan="3"></td>
+          <td><span class="total-label">Grand Total</span></td>
+          <td><span class="total-amount">₹{{ proposal.total_amount }}</span></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="half-note">50% advance: ₹{{ proposal.half_amount }} &nbsp;|&nbsp; Balance: ₹{{ proposal.half_amount }}</div>
+
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <div class="footer">
+    <div class="footer-brand">TRENDO</div>
+    <div class="footer-divider"></div>
+    <div class="footer-contact">
+      1/166 F, Basuri Arcade, Kalleri, Poovattuparamba, Kozhikode, Kerala 673008<br>
+      +91 9846331415
+    </div>
+  </div>
+
+</div><!-- /paper -->
+
+</body>
+</html>
