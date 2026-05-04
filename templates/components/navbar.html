@@ -48,11 +48,16 @@
 
     #notif-toggle:hover { background: #f4f3ff; }
     #mark-read-btn:hover { background: #7366ff28 !important; }
+    .img-fluid{
+      max-width: 30%;
+    height: auto;
+}
+    
 </style>
 
 <div class="sidebar-wrapper" data-layout="stroke-svg">
           <div>
-            <div class="logo-wrapper"><a href="{% static 'index.html' %}"> <img class="img-fluid for-light" src="{% static 'assets/images/logo/logo.png' %}" alt=""><img class="img-fluid for-dark" src="{% static 'assets/images/logo/logo_dark.png' %}" alt=""></a>
+            <div class="logo-wrapper"><a href="{% static 'index.html' %}"> <img class="img-fluid for-light" src="{% static 'assets/images/pdf/ecodians_logo.png' %}" alt=""><img class="img-fluid for-dark" src="{% static 'assets/images/pdf/ecodians_logo.png' %}" alt=""></a>
              
             </div>
             <div class="logo-icon-wrapper"><a href="{% static 'index.html' %}"><img class="img-fluid" src="{% static 'assets/images/logo/logo-icon.png' %}" alt=""></a></div>
@@ -63,41 +68,14 @@
                   <li class="back-btn"><a href="{% static 'index.html' %}"><img class="img-fluid" src="{% static 'assets/images/logo/logo-icon.png' %}" alt=""></a>
                     <div class="mobile-back text-end"><span>Back</span><i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
                   </li>
-                
-                  <li class="sidebar-main-title">
+                   <li class="sidebar-main-title">
                     <div>
-                        {% if request.user.is_superuser %}
-                      <h6 class="lan-1">Staff Management </h6>
-                      {% endif %}
-                    </div>
-                  </li>
-                   {% if request.user.is_superuser %}
-                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
-                      <svg class="stroke-icon">
-                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
-                      </svg>
-                      <svg class="fill-icon">
-                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
-                        
-                      <i class="bi bi-person me-2" style="font-size:medium;"></i><span>Staff</span></a>
-                    <ul class="sidebar-submenu">
                        
-                      <li><a href="{% url "staff_add" %}">Create staff</a></li>
-                      <li> <a href="{% url "staff_list" %}">Staff list</a></li>
-                      
-                    </ul>
-                  </li>
-                  {% endif %}
-                  
-                  <li class="sidebar-main-title">
-                    <div>
-                        {% if request.user.is_superuser %}
-                      <h6 class="lan-1">Assigned Task </h6>
-                      {% endif %}
+                      <h6 class="lan-1">General </h6>
+                 
                     </div>
                   </li>
-                 
-                <li class="sidebar-list"><i></i>
+                  <li class="sidebar-list"><i></i>
                   <a class="sidebar-link sidebar-title" href="#">
                       <svg class="stroke-icon"><use href="../assets/svg/icon-sprite.svg#stroke-widget"></use></svg>
                       <svg class="fill-icon"><use href="../assets/svg/icon-sprite.svg#fill-product"></use></svg>
@@ -167,8 +145,71 @@
                     {% endif %}
                     </ul>
 
-              </li>
+                  </li>
+                  {% if request.user.is_superuser %}
+                  <li class="sidebar-main-title">
+                    <div>
+                        
+                      <h6 class="lan-1">Sales </h6>
+                     
+                    </div>
+                  </li>
+                   <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
+                      <svg class="stroke-icon">
+                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
+                      </svg>
+                      <svg class="fill-icon">
+                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
+                      <i class="bi bi-file-earmark-text" style="font-size:medium;"></i><span>Proposal</span></a>
+                    <ul class="sidebar-submenu">
+                        
+                         <li><a href="{% url 'add_service' %}">Service</a></li>
+                         <li><a href="{% url 'service_list' %}">Service List</a></li>
+                      <li><a href="{% url "client_add" %}">Client</a></li>
+                      <li><a href="{% url "client_list" %}">Client list</a></li>
+                      <li><a href="{% url "create_proposal" %}">Create Proposal</a></li>
+                      <li><a href="{% url "proposal_list" %}">Proposal List</a></li>
 
+                      
+                     
+                    </ul>
+                  </li>
+                   {% endif %}
+                 
+                 {% if request.user.is_superuser %}
+                  <li class="sidebar-main-title">
+                    <div>
+                       
+                      <h6 class="lan-1">Staff Management </h6>
+                   
+                    </div>
+                  </li>
+                 
+                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
+                      <svg class="stroke-icon">
+                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
+                      </svg>
+                      <svg class="fill-icon">
+                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
+                        
+                      <i class="bi bi-person me-2" style="font-size:medium;"></i><span>Staff</span></a>
+                    <ul class="sidebar-submenu">
+                       
+                      <li><a href="{% url "staff_add" %}">Create staff</a></li>
+                      <li> <a href="{% url "staff_list" %}">Staff list</a></li>
+                      
+                    </ul>
+                  </li>
+                  {% endif %}
+                  
+                  <li class="sidebar-main-title">
+                    <div>
+                       
+                      <h6 class="lan-1">Leave </h6>
+                     
+                    </div>
+                  </li>
+        
                    <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
                       <svg class="stroke-icon">
                         <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
@@ -187,27 +228,7 @@
                      
                     </ul>
                   </li>
-                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
-                      <svg class="stroke-icon">
-                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
-                      </svg>
-                      <svg class="fill-icon">
-                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
-                      <i class="bi bi-calendar-x" style="font-size:medium;"></i><span>Proposal</span></a>
-                    <ul class="sidebar-submenu">
-                         {% if request.user.is_superuser %}
-                         <li><a href="{% url 'add_service' %}">Service</a></li>
-                         <li><a href="{% url 'service_list' %}">Service List</a></li>
-                      <li><a href="{% url "client_add" %}">Client</a></li>
-                      <li><a href="{% url "client_list" %}">Client list</a></li>
-                      <li><a href="{% url "create_proposal" %}">Create Proposal</a></li>
-                      <li><a href="{% url "proposal_list" %}">Proposal List</a></li>
-
-                      {% endif %}
-                      
-                     
-                    </ul>
-                  </li>
+                  
 
                 </ul>
               </div>
