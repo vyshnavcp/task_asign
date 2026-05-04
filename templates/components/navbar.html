@@ -49,6 +49,7 @@
     #notif-toggle:hover { background: #f4f3ff; }
     #mark-read-btn:hover { background: #7366ff28 !important; }
 </style>
+
 <div class="sidebar-wrapper" data-layout="stroke-svg">
           <div>
             <div class="logo-wrapper"><a href="{% static 'index.html' %}"> <img class="img-fluid for-light" src="{% static 'assets/images/logo/logo.png' %}" alt=""><img class="img-fluid for-dark" src="{% static 'assets/images/logo/logo_dark.png' %}" alt=""></a>
@@ -77,12 +78,13 @@
                       </svg>
                       <svg class="fill-icon">
                         <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
-                      </svg><span>Staff</span></a>
+                        
+                      <i class="bi bi-person me-2" style="font-size:medium;"></i><span>Staff</span></a>
                     <ul class="sidebar-submenu">
                        
                       <li><a href="{% url "staff_add" %}">Create staff</a></li>
                       <li> <a href="{% url "staff_list" %}">Staff list</a></li>
-                      <li> <a href="{% url "assign_task" %}">Assign task</a></li>
+                      
                     </ul>
                   </li>
                   {% endif %}
@@ -99,7 +101,7 @@
                   <a class="sidebar-link sidebar-title" href="#">
                       <svg class="stroke-icon"><use href="../assets/svg/icon-sprite.svg#stroke-widget"></use></svg>
                       <svg class="fill-icon"><use href="../assets/svg/icon-sprite.svg#fill-product"></use></svg>
-                      <span>Tasks</span>
+                      <i class="bi bi-list-task me-2" style="font-size:medium;"></i><span>Task</span></a>
                   </a>
                   <ul class="sidebar-submenu">
                     {% if not request.user.is_superuser %}
@@ -159,6 +161,7 @@
                     {% endif %}
 
                     {% if request.user.is_superuser %}
+                        <li> <a href="{% url "assign_task" %}">Assign task</a></li>
                         <li><a href="{% url 'admin_task_view' %}">Admin task view</a></li>
                         <li><a href="{% url 'admin_extension_requests' %}">Time extent request</a></li>
                     {% endif %}
@@ -172,7 +175,7 @@
                       </svg>
                       <svg class="fill-icon">
                         <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
-                      </svg><span>Leave</span></a>
+                      <i class="bi bi-calendar-x" style="font-size:medium;"></i><span>Leave</span></a>
                     <ul class="sidebar-submenu">
                          {% if not request.user.is_superuser %}
                       <li><a href="{% url "apply_leave" %}">Send Leave request</a></li>
@@ -190,7 +193,7 @@
                       </svg>
                       <svg class="fill-icon">
                         <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
-                      </svg><span>Proposal</span></a>
+                      <i class="bi bi-calendar-x" style="font-size:medium;"></i><span>Proposal</span></a>
                     <ul class="sidebar-submenu">
                          {% if request.user.is_superuser %}
                          <li><a href="{% url 'add_service' %}">Service</a></li>
@@ -201,9 +204,7 @@
                       <li><a href="{% url "proposal_list" %}">Proposal List</a></li>
 
                       {% endif %}
-                      {% if request.user.is_superuser %}
-                      <li><a href="{% url "leave_requests" %}">Leave request</a></li>
-                      {% endif %}
+                      
                      
                     </ul>
                   </li>
