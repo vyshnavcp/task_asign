@@ -1,183 +1,455 @@
+
 {% extends 'main.html' %}
-{% block title %}Proposals{% endblock %}
+{% block title %}Home{% endblock %}
 {% load static %}
 
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
+    <!-- ico-font-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
+    <!-- Themify icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
+    <!-- Flag icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
+    <!-- Feather icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
+    <!-- Plugins css start-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
+    <!-- Plugins css Ends-->
+    <!-- Bootstrap css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
+    <!-- App css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
+    <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
 
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'DM Sans', sans-serif; background: #f4f5f7; min-height: 100vh; color: #111827; }
-
-        .proposal-main { padding: 2.5rem; }
-
-        .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
-        .page-title { font-family: 'DM Serif Display', serif; font-size: 32px; letter-spacing: -0.5px; color: #111827; }
-        .page-sub { font-size: 13px; color: #6b7280; margin-top: 4px; }
-
-        .new-btn { background: #111827; color: #fff !important; border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 11px 22px; cursor: pointer; text-decoration: none !important; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.15s; }
-        .new-btn:hover { opacity: 0.85; color: #fff !important; }
-
-        .filter-bar { display: flex; gap: 12px; margin-bottom: 1.5rem; }
-        .search-wrap { position: relative; flex: 1; max-width: 340px; }
-        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 15px; }
-        .search-input { width: 100%; padding: 9px 13px 9px 36px; border: 1px solid #e5e7eb; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; background: #fff; color: #111827; outline: none; transition: border-color 0.15s; }
-        .search-input:focus { border-color: #6b7280; }
-
-        .table-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; width: 100%; }
-
-        .prop-table { width: 100%; border-collapse: collapse; table-layout: auto; }
-
-        .prop-table thead { background: #111827; }
-        .prop-table thead tr { border-bottom: none; }
-        .prop-table thead th {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: #ffffff !important;
-            font-weight: 600;
-            padding: 14px 20px;
-            text-align: left;
-            background: #111827 !important;
-            white-space: nowrap;
-        }
-
-        .prop-table tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.1s; }
-        .prop-table tbody tr:last-child { border-bottom: none; }
-        .prop-table tbody tr:hover { background: #fafafa; }
-        .prop-table td { padding: 14px 20px; font-size: 14px; vertical-align: middle; color: #111827; }
-
-        .prop-num { font-family: 'DM Mono', monospace; font-size: 13px; color: #374151; font-weight: 500; }
-        .prop-client { font-weight: 500; color: #111827; }
-        .prop-title { font-size: 12px; color: #9ca3af; margin-top: 2px; }
-        .prop-date { font-family: 'DM Mono', monospace; font-size: 12px; color: #6b7280; }
-        .prop-amount { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; color: #111827; }
-
-        .badge { display: inline-block; border-radius: 20px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; padding: 4px 12px; background: #f3f4f6; color: #6b7280; }
-        .badge.draft { background: #fef3c7; color: #92400e; }
-        .badge.accepted { background: #dcfce7; color: #166534; }
-        .badge.rejected { background: #fee2e2; color: #991b1b; }
-
-        .action-btns { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
-        .act-btn { border: 1px solid #e5e7eb; background: #fff; border-radius: 7px; color: #6b7280 !important; font-size: 12px; font-family: 'DM Sans', sans-serif; font-weight: 500; padding: 6px 12px; cursor: pointer; text-decoration: none !important; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
-        .act-btn:hover { border-color: #6b7280; color: #111827 !important; }
-        .act-btn.danger { border: 1px solid #e5e7eb; background: #fff; }
-        .act-btn.danger:hover { border-color: #e24b4a; color: #e24b4a !important; background: #fef2f2; }
-
-        .empty-state { text-align: center; padding: 4rem 2rem; }
-        .empty-icon { font-size: 48px; opacity: 0.25; margin-bottom: 1rem; }
-        .empty-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: #374151; margin-bottom: 8px; }
-        .empty-sub { font-size: 14px; color: #9ca3af; }
-
-        @media (max-width: 768px) {
-            .proposal-main { padding: 1.5rem; }
-            .action-btns { flex-wrap: wrap; }
-        }
-    </style>
+ 
+<style>
+  /* ───── PAGE WRAPPER ───── */
+  .pl-wrap {
+    padding: 28px 28px;
+    background: #f4f5f7;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+ 
+  /* ───── TOP BAR ───── */
+  .pl-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    background-color: white;
+    padding: 22px;
+  }
+  .pl-topbar h4 {
+    font-size: 21px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+  }
+  .pl-btn-create {
+    background: #22c55e;
+    color: #fff !important;
+    border: none;
+    border-radius: 7px;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 9px 22px;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.15s;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .pl-btn-create:hover { background: #16a34a; color: #fff !important; }
+ 
+  /* ───── CARD ───── */
+  .pl-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+    overflow: hidden;
+  }
+ 
+  /* ───── SEARCH ROW (top-right, like Image 2) ───── */
+  .pl-searchrow {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 14px 20px;
+    gap: 8px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .pl-searchrow label {
+    font-size: 13px;
+    color: #555;
+    font-weight: 500;
+    margin: 0;
+  }
+  .pl-searchrow input {
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    padding: 5px 12px;
+    font-size: 13px;
+    color: #333;
+    outline: none;
+    min-width: 200px;
+    transition: border-color 0.15s;
+    background: #fff;
+  }
+  .pl-searchrow input:focus { border-color: #22c55e; }
+ 
+  /* ───── TABLE ───── */
+  .pl-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    table-layout: auto;
+  }
+ 
+  /* Header row — plain white/light, bold dark labels like Image 1 & 2 */
+  .pl-table thead tr {
+    border-bottom: 1.5px solid #e8e8e8;
+    background: #fff;
+  }
+  .pl-table thead th {
+    padding: 13px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #222;
+    text-align: left;
+    white-space: nowrap;
+    letter-spacing: 0;
+  }
+ 
+  /* Body rows */
+  .pl-table tbody tr {
+    border-bottom: 1px solid #f2f2f2;
+    transition: background 0.1s;
+  }
+  .pl-table tbody tr:last-child { border-bottom: none; }
+  .pl-table tbody tr:hover { background: #f9fffe; }
+  .pl-table td {
+    padding: 16px 18px;
+    color: #374151;
+    vertical-align: middle;
+    line-height: 1.4;
+  }
+ 
+  /* ── Proposal # — green bold, single line ── */
+  .pl-propnum {
+    color: #2b5b64;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 13.5px;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  .pl-propnum:hover { text-decoration: underline; color: #16a34a; }
+ 
+  /* ── Client name — green bold, single line ── */
+  .pl-client {
+    color: #2b5b64;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 13.5px;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  .pl-client:hover { text-decoration: underline; color: #16a34a; }
+ 
+  /* force min-width on proposal # and client columns */
+  .pl-table thead th:nth-child(1),
+  .pl-table tbody td:nth-child(1) { min-width: 130px; }
+  .pl-table thead th:nth-child(2),
+  .pl-table tbody td:nth-child(2) { min-width: 150px; }
+ 
+  /* ── Project — normal dark text ── */
+  .pl-project {
+    color: #374151;
+    font-size: 13.5px;
+    max-width: 340px;
+  }
+ 
+  /* ── Total ── */
+  .pl-total {
+    color: #222;
+    font-size: 13.5px;
+    white-space: nowrap;
+  }
+ 
+  /* ── Status badges ── */
+  .pl-badge {
+    display: inline-block;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 16px;
+    white-space: nowrap;
+    letter-spacing: 0.1px;
+  }
+  /* green for Approved / Accepted / Sent */
+  .pl-badge.approved,
+  .pl-badge.accepted,
+  .pl-badge.sent     { background: #22c55e; color: #fff; }
+  /* orange for Draft */
+  .pl-badge.draft    { background: #f97316; color: #fff; }
+  /* red for Rejected */
+  .pl-badge.rejected { background: #ef4444; color: #fff; }
+  /* yellow for Pending */
+  .pl-badge.pending  { background: #eab308; color: #fff; }
+ 
+  /* ── Date ── */
+  .pl-date {
+    color: #555;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+ 
+  /* ── Action icons ── */
+  .pl-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+  }
+  .pl-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.13s, color 0.13s;
+    padding: 0;
+  }
+  .pl-icon svg { display: block; }
+  .pl-icon:hover          { background: #f3f4f6; color: #222; }
+  .pl-icon.del:hover      { background: #fef2f2; color: #ef4444; }
+ 
+  /* ── Converted column ── */
+  .pl-btn-invoice {
+    background: #1e293b;
+    color: #fff !important;
+    border: none;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 7px 16px;
+    text-decoration: none !important;
+    white-space: nowrap;
+    display: inline-block;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .pl-btn-invoice:hover { opacity: 0.85; color: #fff !important; }
+ 
+  .pl-btn-convert {
+    background: #22c55e;
+    color: #fff !important;
+    border: none;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 7px 16px;
+    text-decoration: none !important;
+    white-space: nowrap;
+    display: inline-block;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .pl-btn-convert:hover { opacity: 0.85; color: #fff !important; }
+ 
+  /* ───── LOADING / EMPTY ───── */
+  .pl-loading, .pl-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #9ca3af;
+    font-size: 14px;
+  }
+  .pl-spinner {
+    display: inline-block;
+    width: 26px; height: 26px;
+    border: 3px solid #e5e7eb;
+    border-top-color: #22c55e;
+    border-radius: 50%;
+    animation: pl-spin 0.7s linear infinite;
+    margin-bottom: 10px;
+  }
+  @keyframes pl-spin { to { transform: rotate(360deg); } }
+ 
+  /* ───── PAGINATION ───── */
+  .pl-pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 13px 18px;
+    gap: 4px;
+    border-top: 1px solid #f0f0f0;
+  }
+  .pl-pgbtn {
+    border: 1px solid #d1d5db;
+    background: #fff;
+    border-radius: 5px;
+    padding: 5px 11px;
+    font-size: 13px;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.13s;
+    min-width: 33px;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .pl-pgbtn:hover, .pl-pgbtn.active {
+    background: #22c55e; color: #fff; border-color: #22c55e;
+  }
+  .pl-pgbtn:disabled { opacity: 0.4; cursor: not-allowed; }
+ 
+  /* ───── DELETE MODAL ───── */
+  #pl-del-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.38);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+  }
+  #pl-del-modal.show { display: flex; }
+  .pl-modal-box {
+    background: #fff;
+    border-radius: 10px;
+    padding: 26px 28px;
+    max-width: 370px;
+    width: 92%;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  }
+  .pl-modal-box h6 {
+    font-size: 15px; font-weight: 700; color: #111; margin: 0 0 10px;
+  }
+  .pl-modal-box p {
+    font-size: 13.5px; color: #6b7280; margin: 0 0 20px;
+  }
+  .pl-modal-foot {
+    display: flex; gap: 10px; justify-content: flex-end;
+  }
+  .pl-modal-cancel {
+    border: 1px solid #d1d5db; background: #fff; border-radius: 6px;
+    padding: 7px 18px; font-size: 13px; cursor: pointer; color: #374151;
+  }
+  .pl-modal-cancel:hover { background: #f9fafb; }
+  .pl-modal-del {
+    background: #ef4444; color: #fff; border: none; border-radius: 6px;
+    padding: 7px 18px; font-size: 13px; font-weight: 600; cursor: pointer;
+    text-decoration: none; display: inline-block;
+  }
+  .pl-modal-del:hover { background: #dc2626; color: #fff; text-decoration: none; }
+</style>
 {% endblock %}
-
+ 
 {% block content %}
-<main class="proposal-main">
-    
-
-    <div class="filter-bar">
-        <div class="search-wrap">
-            <span class="search-icon">⌕</span>
-            <input class="search-input" type="text" placeholder="Search client or proposal no…" oninput="filterTable(this.value)">
-        </div>
+<div class="pl-wrap">
+ 
+  <!-- Top bar -->
+  <div class="pl-topbar">
+    <h4>Proposals</h4>
+    <a href="{% url 'create_proposal' %}" class="pl-btn-create">+ Create Proposal</a>
+  </div>
+ 
+  <!-- Card -->
+  <div class="pl-card">
+ 
+    <!-- Search -->
+    <div class="pl-searchrow">
+      <label for="pl-search">Search:</label>
+      <input id="pl-search" type="text" placeholder="" autocomplete="off">
     </div>
-
-    <div class="table-card">
-        {% if proposals %}
-        <table class="prop-table" id="prop-table">
-            <thead>
-                <tr>
-                    <th>Proposal No.</th>
-                    <th>Client</th>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                    <th style="min-width:220px;"></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in proposals %}
-                <tr>
-                    <td><span class="prop-num">{{ p.proposal_number }}</span></td>
-                    <td>
-                        <div class="prop-client">{{ p.client_name }}</div>
-                        {% if p.proposal_title %}<div class="prop-title">{{ p.proposal_title }}</div>{% endif %}
-                    </td>
-                    <td><span class="prop-date">{{ p.date|date:"d M Y" }}</span></td>
-                    <td><span class="prop-amount">₹{{ p.total_amount|floatformat:2 }}</span></td>
-                    <td><span class="badge {{ p.status }}">{{ p.get_status_display }}</span></td>
-                    <td>
-                        <div class="action-btns">
-                            <a href="{% url 'proposal_view' p.id %}" class="act-btn">👁 View</a>
-
-                            {% if p.status == 'accepted' %}
-                                {% if p.invoice %}
-                                    <a href="" class="act-btn">👁 Invoice</a>
-                                {% else %}
-                                    <a href="" class="act-btn">💰 Invoice</a>
-                                {% endif %}
-                            {% else %}
-                                <a href="{% url 'edit_proposal' p.id %}" class="act-btn">✏️ Edit</a>
-                            {% endif %}
-
-                           <a href="{% url 'proposal_print' p.id %}" class="act-btn" target="_blank">🖨 Print</a>
-
-                            <a href="{% url 'proposal_delete' p.id %}"
-                               class="act-btn danger"
-                               onclick="return confirm('Delete {{ p.proposal_number }}?')">
-                                ✕
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <div class="empty-state">
-            <div class="empty-icon">◧</div>
-            <p class="empty-title">No proposals yet</p>
-            <p class="empty-sub">Create your first proposal to get started</p>
-        </div>
-        {% endif %}
+ 
+    <!-- Table -->
+    <div style="overflow-x:auto;">
+      <table class="pl-table" id="pl-table">
+        <thead>
+          <tr>
+            <th>Proposal #</th>
+            <th>Client</th>
+            <th>Project</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Action</th>
+            <th>Converted</th>
+          </tr>
+        </thead>
+        <tbody id="pl-tbody">
+          <tr>
+            <td colspan="8">
+              <div class="pl-loading">
+                <div class="pl-spinner"></div><br>Loading…
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-</main>
+ 
+    <!-- Pagination -->
+    <div class="pl-pagination" id="pl-pagination"></div>
+ 
+  </div><!-- /card -->
+</div><!-- /wrap -->
+ 
+<!-- Delete Modal -->
+<div id="pl-del-modal">
+  <div class="pl-modal-box">
+    <h6>Delete Proposal</h6>
+    <p id="pl-del-msg"></p>
+    <div class="pl-modal-foot">
+      <button class="pl-modal-cancel" onclick="plCloseModal()">Cancel</button>
+      <a id="pl-del-link" href="#" class="pl-modal-del">Delete</a>
+    </div>
+  </div>
+</div>
 {% endblock %}
+ 
+
+ 
+
 
 {% block js %}
+    <!-- latest jquery-->
     <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <!-- Bootstrap js-->
     <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <!-- feather icon js-->
     <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
     <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
+    <!-- scrollbar js-->
     <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
     <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
+    <!-- Sidebar jquery-->
     <script src="{% static 'assets/js/config.js' %}"></script>
+    <!-- Plugins JS start-->
     <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
     <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.js' %}"></script>
     <script src="{% static 'assets/js/header-slick.js' %}"></script>
     <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
-    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"> </script>
     <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
@@ -196,12 +468,175 @@
     <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
     <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
     <script src="{% static 'assets/js/height-equal.js' %}"></script>
-    <script>
-        function filterTable(q) {
-            q = q.toLowerCase();
-            document.querySelectorAll('#prop-table tbody tr').forEach(row => {
-                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-            });
+    <!-- Plugins JS Ends-->
+     <script>
+(function () {
+  'use strict';
+ 
+  const API_URL   = '{% url "proposal_list" %}';
+  const PAGE_SIZE = 10;
+ 
+  let allRows  = [];
+  let filtered = [];
+  let curPage  = 1;
+ 
+  /* ── SVG icons ── */
+  const I_EDIT = `<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/>
+  </svg>`;
+ 
+  const I_EYE = `<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>`;
+ 
+  const I_DL = `<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+    <polyline points="7 10 12 15 17 10"/>
+    <line x1="12" y1="15" x2="12" y2="3"/>
+  </svg>`;
+ 
+  const I_DEL = `<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+    <polyline points="3 6 5 6 21 6"/>
+    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+    <path d="M10 11v6M14 11v6"/>
+    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+  </svg>`;
+ 
+  /* ── fetch ── */
+  function load() {
+    fetch(API_URL, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      .then(r => {
+        if (!r.ok) throw new Error('Network error');
+        return r.json();
+      })
+      .then(d => {
+        allRows  = d.proposals || [];
+        filtered = allRows.slice();
+        curPage  = 1;
+        render();
+      })
+      .catch(() => {
+        document.getElementById('pl-tbody').innerHTML =
+          '<tr><td colspan="8"><div class="pl-empty">Failed to load proposals. Please refresh.</div></td></tr>';
+      });
+  }
+ 
+  /* ── render table ── */
+  function render() {
+    const tbody = document.getElementById('pl-tbody');
+    const start = (curPage - 1) * PAGE_SIZE;
+    const rows  = filtered.slice(start, start + PAGE_SIZE);
+ 
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="8"><div class="pl-empty">No proposals found.</div></td></tr>';
+      document.getElementById('pl-pagination').innerHTML = '';
+      return;
+    }
+ 
+    tbody.innerHTML = rows.map(p => {
+      const sc  = (p.status || '').toLowerCase();   /* css class key */
+      const lbl = cap(p.status);
+ 
+      /* Converted column */
+      let converted = '';
+      if (sc === 'accepted' || sc === 'approved') {
+        if (p.has_invoice) {
+          converted = `<a href="/invoices/view/${p.invoice_id}/" class="pl-btn-invoice">View Invoice</a>`;
+        } else {
+          converted = `<a href="/invoices/create/${p.id}/" class="pl-btn-convert">Convert</a>`;
         }
-    </script>
+      }
+ 
+      return `
+      <tr>
+        <td><a href="/proposals/view/${p.id}/" class="pl-propnum">${x(p.proposal_number)}</a></td>
+        <td><a href="#" class="pl-client">${x(p.client_name)}</a></td>
+        <td class="pl-project">${x(p.proposal_title) || '-'}</td>
+        <td class="pl-total">&#8377; ${fmt(p.total_amount)}</td>
+        <td><span class="pl-badge ${sc}">${lbl}</span></td>
+        <td class="pl-date">${x(p.date)}</td>
+        <td>
+          <div class="pl-actions">
+            <a href="/proposals/edit/${p.id}/"  class="pl-icon" title="Edit">${I_EDIT}</a>
+            <a href="/proposals/view/${p.id}/"  class="pl-icon" title="View">${I_EYE}</a>
+            <a href="/proposals/print/${p.id}/" class="pl-icon" title="Download" target="_blank">${I_DL}</a>
+            <button class="pl-icon del" title="Delete"
+              onclick="plDel(${p.id},'${x(p.proposal_number)}')">${I_DEL}</button>
+          </div>
+        </td>
+        <td>${converted}</td>
+      </tr>`;
+    }).join('');
+ 
+    renderPager(filtered.length);
+  }
+ 
+  /* ── pagination ── */
+  function renderPager(total) {
+    const pages = Math.ceil(total / PAGE_SIZE);
+    const el    = document.getElementById('pl-pagination');
+    if (pages <= 1) { el.innerHTML = ''; return; }
+ 
+    let h = `<button class="pl-pgbtn" onclick="plGo(${curPage-1})" ${curPage===1?'disabled':''}>&#8249;</button>`;
+    for (let i = 1; i <= pages; i++) {
+      h += `<button class="pl-pgbtn ${i===curPage?'active':''}" onclick="plGo(${i})">${i}</button>`;
+    }
+    h += `<button class="pl-pgbtn" onclick="plGo(${curPage+1})" ${curPage===pages?'disabled':''}>&#8250;</button>`;
+    el.innerHTML = h;
+  }
+ 
+  window.plGo = function(n) { curPage = n; render(); window.scrollTo(0,0); };
+ 
+  /* ── live search ── */
+  document.getElementById('pl-search').addEventListener('input', function () {
+    const q = this.value.toLowerCase().trim();
+    filtered = q
+      ? allRows.filter(p =>
+          (p.proposal_number||'').toLowerCase().includes(q) ||
+          (p.client_name||'').toLowerCase().includes(q)    ||
+          (p.proposal_title||'').toLowerCase().includes(q) ||
+          (p.status||'').toLowerCase().includes(q))
+      : allRows.slice();
+    curPage = 1;
+    render();
+  });
+ 
+  /* ── delete modal ── */
+  window.plDel = function(id, num) {
+    document.getElementById('pl-del-msg').textContent =
+      'Are you sure you want to delete ' + num + '? This cannot be undone.';
+    document.getElementById('pl-del-link').href = '/proposals/delete/' + id + '/';
+    document.getElementById('pl-del-modal').classList.add('show');
+  };
+  window.plCloseModal = function() {
+    document.getElementById('pl-del-modal').classList.remove('show');
+  };
+  document.getElementById('pl-del-modal').addEventListener('click', function(e) {
+    if (e.target === this) plCloseModal();
+  });
+ 
+  /* ── helpers ── */
+  function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+ 
+  function fmt(v) {
+    return parseFloat(v || 0)
+      .toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+ 
+  /* safe HTML escape — prevents XSS in injected strings */
+  function x(s) {
+    return (s == null ? '' : String(s))
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#39;');
+  }
+ 
+  /* ── boot ── */
+  load();
+})();
+</script>
 {% endblock %}

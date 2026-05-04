@@ -725,9 +725,41 @@ def create_proposal(request):
         'proposal_number': generate_proposal_number(),
     })
 
-def proposal_list(request):
-    proposals = Proposal.objects.select_related('client').all().order_by('-id')
-    return render(request, 'proposal_list.html', {'proposals': proposals})
+
+def proposal_list_api(request):
+    """
+    Returns all proposals as JSON for the AJAX-powered proposal list page.
+    Also handles the normal GET request to render the page shell.
+    """
+    # If it's an AJAX/fetch call, return JSON data
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        proposals = (
+            Proposal.objects
+            .select_related('client')
+            .prefetch_related('items')
+            .order_by('-id')
+        )
+
+        data = []
+        for p in proposals:
+            data.append({
+                'id':              p.id,
+                'proposal_number': p.proposal_number,
+                'proposal_title':  p.proposal_title or '',
+                'client_name':     p.client.name if p.client else '',
+                'total_amount':    str(p.total_amount),
+                'status':          p.status,
+                'date':            p.date.strftime('%Y-%m-%d') if p.date else '',
+                # set has_invoice True if you have an Invoice model linked to proposal
+                # e.g. 'has_invoice': hasattr(p, 'invoice'),
+                'has_invoice':     False,
+            })
+
+        return JsonResponse({'proposals': data})
+
+    # Normal page load — render the empty shell (AJAX will fill the table)
+    return render(request, 'proposal_list.html')
+
 
 def proposal_delete(request,id):
     proposal=get_object_or_404(Proposal,id=id)
