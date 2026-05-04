@@ -899,10 +899,11 @@ def service_list(request):
     services = CompanyService.objects.all()
     return render(request, 'service_list.html', {'services': services})
 
+
 def convert_to_invoice(request, pk):
     proposal = get_object_or_404(Proposal, pk=pk)
 
-    # prevent duplicate
+    # جلوگیری duplicate invoice
     if hasattr(proposal, 'invoice'):
         return redirect('view_invoice', pk=proposal.invoice.id)
 
@@ -910,8 +911,11 @@ def convert_to_invoice(request, pk):
         proposal=proposal,
         client=proposal.client,
         total_amount=proposal.total_amount,
-        status='unpaid'
+        status='unpaid',
+        due_date=timezone.now().date() + timedelta(days=7)  # ✅ FIX HERE
     )
+
+    # copy items
     for item in proposal.items.all():
         InvoiceItem.objects.create(
             invoice=invoice,
@@ -923,9 +927,13 @@ def convert_to_invoice(request, pk):
 
     return redirect('view_invoice', pk=invoice.id)
 
-def view_invoice(request,pk):
-    invoice = get_object_or_404(Invoice,pk=pk)
-    return render(request,'invoice_view.html',{'invoice':invoice})
+def view_invoice(request, pk):
+    invoice = get_object_or_404(
+        Invoice.objects.select_related('client').prefetch_related('items'),
+        pk=pk
+    )
+    return render(request, 'invoice_view.html', {'invoice': invoice})
+
 
 def invoice_pdf(request, pk):
     invoice = get_object_or_404(Invoice, pk=pk)
@@ -944,79 +952,87 @@ def invoice_list(request):
     return render(request, 'invoice_list.html', {'invoices': invoices})
 
 
+
 def create_invoice(request):
     clients = Client.objects.all()
 
     if request.method == 'POST':
         client_id = request.POST.get('client')
-        due_date = request.POST.get('due_date')
-        invoice = Invoice(
+        due_date  = request.POST.get('due_date') or None
+        status    = request.POST.get('status', 'unpaid')
+
+        invoice = Invoice.objects.create(
             client_id=client_id,
             due_date=due_date,
-            status='unpaid'
+            status=status,
+            total_amount=0,
         )
-        invoice.save()  
-        names = request.POST.getlist('service_name[]')
+
+        names   = request.POST.getlist('service_name[]')
         details = request.POST.getlist('service_detail[]')
-        qtys = request.POST.getlist('quantity[]')
+        qtys    = request.POST.getlist('quantity[]')
         amounts = request.POST.getlist('amount[]')
 
         total = 0
-
         for i in range(len(names)):
-            if names[i]:
-                qty = int(qtys[i]) if qtys[i] else 1
-                amt = float(amounts[i]) if amounts[i] else 0
+            if names[i].strip():
+                qty = int(qtys[i])   if qtys[i]    else 1
+                amt = float(amounts[i]) if amounts[i] else 0.0
 
                 item = InvoiceItem.objects.create(
                     invoice=invoice,
-                    service_name=names[i],
-                    service_detail=details[i],
+                    service_name=names[i].strip(),
+                    service_detail=details[i] if i < len(details) else '',
                     quantity=qty,
-                    amount=amt
+                    amount=amt,
                 )
-
                 total += item.line_total
+
         invoice.total_amount = total
         invoice.save()
 
         return redirect('view_invoice', pk=invoice.id)
 
+    # Pass a draft invoice number for display (optional — remove if not needed)
+    next_num = Invoice.objects.count() + 1
     return render(request, 'create_invoice.html', {
-        'clients': clients
+        'clients':        clients,
+        'invoice_number': f'INV-{next_num:04d}',
     })
-    
+
+
 def edit_invoice(request, pk):
     invoice = get_object_or_404(Invoice, pk=pk)
     clients = Client.objects.all()
 
     if request.method == 'POST':
         invoice.client_id = request.POST.get('client')
-        invoice.due_date = request.POST.get('due_date')
-        invoice.status = request.POST.get('status')
+        invoice.due_date  = request.POST.get('due_date') or None
+        invoice.status    = request.POST.get('status', 'unpaid')
         invoice.save()
+
+        # Replace all line items
         invoice.items.all().delete()
-        names = request.POST.getlist('service_name[]')
+
+        names   = request.POST.getlist('service_name[]')
         details = request.POST.getlist('service_detail[]')
-        qtys = request.POST.getlist('quantity[]')
+        qtys    = request.POST.getlist('quantity[]')
         amounts = request.POST.getlist('amount[]')
 
         total = 0
         for i in range(len(names)):
-            if names[i]:
-                qty = int(qtys[i]) if qtys[i] else 1
-                amt = float(amounts[i]) if amounts[i] else 0
+            if names[i].strip():
+                qty = int(qtys[i])      if qtys[i]    else 1
+                amt = float(amounts[i]) if amounts[i] else 0.0
 
                 item = InvoiceItem.objects.create(
                     invoice=invoice,
-                    service_name=names[i],
-                    service_detail=details[i],
+                    service_name=names[i].strip(),
+                    service_detail=details[i] if i < len(details) else '',
                     quantity=qty,
-                    amount=amt
+                    amount=amt,
                 )
-
                 total += item.line_total
-
 
         invoice.total_amount = total
         invoice.save()
@@ -1025,7 +1041,7 @@ def edit_invoice(request, pk):
 
     return render(request, 'edit_invoice.html', {
         'invoice': invoice,
-        'clients': clients
+        'clients': clients,
     })
     
 @login_required

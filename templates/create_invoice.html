@@ -1,205 +1,719 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Create Invoice — Trendo</title>
+{% extends 'main.html' %}
+{% block title %}Create Invoice{% endblock %}
+{% load static %}
 
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
+<link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
 
 <style>
-:root {
-    --primary: #111827;
-    --accent: #6366f1;
-    --bg: #f8fafc;
-    --border: #e2e8f0;
-}
+  /* ───── PAGE WRAPPER ───── */
+  .pl-wrap {
+    padding: 28px 32px;
+    background: #f4f5f7;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    padding: 50px 20px;
-}
-
-/* CONTAINER */
-.container {
-    max-width: 1100px;
-    margin: auto;
-    background: #fff;
-    padding: 50px;
-    border-radius: 28px;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.05);
-}
-
-/* HEADER */
-.header {
+  /* ───── TOP BAR ───── */
+  .pl-topbar {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 40px;
-}
-
-h1 {
-    font-family: 'DM Serif Display';
-    font-size: 40px;
-}
-
-/* GRID */
-.grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 30px;
-    margin-bottom: 40px;
-}
-
-.label {
-    font-size: 11px;
-    text-transform: uppercase;
-    color: #94a3b8;
-    margin-bottom: 8px;
-    display: block;
-}
-
-.field {
-    width: 100%;
-    padding: 14px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-}
-
-/* ITEMS */
-.row {
-    display: grid;
-    grid-template-columns: 2fr 2fr 1fr 1fr 50px;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.add-btn {
-    margin-top: 15px;
-    padding: 14px;
-    border: 2px dashed var(--border);
-    background: none;
-    border-radius: 14px;
-    cursor: pointer;
-}
-
-/* FOOTER */
-.footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 40px;
     align-items: center;
-}
+    margin-bottom: 22px;
+    background-color: white;
+    padding: 22px 28px;
+  }
+  .pl-topbar h4 {
+    font-size: 21px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+  }
+  .pl-topbar p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 4px 0 0;
+  }
+  .pl-num-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f4f5f7;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 8px 16px;
+    flex-shrink: 0;
+  }
+  .pl-num-label { font-size: 11px; color: #9ca3af; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  .pl-num-val   { font-size: 13px; font-weight: 600; color: #374151; }
+  .pl-draft-badge {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 3px 9px;
+  }
 
-.total {
-    font-size: 26px;
-    font-family: 'DM Serif Display';
-}
+  /* ───── OUTER CONTAINER ───── */
+  .pl-container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
 
-.submit {
-    background: var(--primary);
-    color: #fff;
-    padding: 16px 40px;
-    border: none;
-    border-radius: 14px;
-    font-size: 15px;
+  /* ───── FORM CARD ───── */
+  .pl-form-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .pl-card-head {
+    padding: 14px 28px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pl-card-head h6 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #374151;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .pl-card-head .sub {
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: 2px;
+  }
+
+  /* ───── FORM BODY ───── */
+  .pl-form-body { padding: 24px 28px; }
+
+  /* ───── FORM ELEMENTS ───── */
+  .pl-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+  }
+  .pl-label .req { color: #e24b4a; margin-left: 2px; }
+
+  .pl-input,
+  .pl-select {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: #374151;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .pl-input:focus, .pl-select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+  }
+  .pl-input[readonly] {
+    background: #f9fafb;
+    color: #6b7280;
+    cursor: default;
+  }
+  .pl-input[readonly]:focus {
+    border-color: #d1d5db;
+    box-shadow: none;
+  }
+  .pl-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
     cursor: pointer;
-}
+  }
+
+  .pl-field { margin-bottom: 20px; }
+  .pl-field:last-child { margin-bottom: 0; }
+
+  /* ── 2-col and 3-col rows ── */
+  .pl-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .pl-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .pl-row-2 .pl-field,
+  .pl-row-3 .pl-field { margin-bottom: 0; }
+
+  /* ── Error ── */
+  .pl-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 7px;
+    color: #991b1b;
+    font-size: 13px;
+    padding: 11px 14px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ───── SERVICE ITEMS ───── */
+  .pl-services { display: flex; flex-direction: column; gap: 14px; }
+
+  .pl-service-item {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .pl-service-item:focus-within { border-color: #6366f1; }
+
+  .pl-service-head {
+    background: #f9fafb;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .pl-item-num {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #9ca3af;
+  }
+  .pl-rm-btn {
+    background: none;
+    border: 1px solid #e5e7eb;
+    border-radius: 5px;
+    color: #d1d5db;
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.13s;
+  }
+  .pl-rm-btn:hover { border-color: #fca5a5; color: #e24b4a; background: #fef2f2; }
+
+  .pl-service-body {
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .pl-svc-name {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+  }
+  .pl-svc-name:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+  .pl-svc-name::placeholder { font-weight: 400; color: #9ca3af; }
+
+  .pl-svc-main-row {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .pl-svc-desc {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: #374151;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    outline: none;
+    resize: vertical;
+    min-height: 88px;
+    line-height: 1.6;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+  }
+  .pl-svc-desc:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+  .pl-svc-desc::placeholder { color: #9ca3af; }
+
+  .pl-svc-amounts {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pl-input-wrap { display: flex; flex-direction: column; gap: 5px; }
+  .pl-input-lbl {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9ca3af;
+  }
+
+  .pl-num-input {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: #374151;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .pl-num-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+  .pl-num-input::placeholder { color: #9ca3af; }
+
+  .pl-item-sub {
+    font-size: 12px;
+    color: #6b7280;
+    text-align: right;
+    padding-top: 2px;
+  }
+  .pl-item-sub span { font-weight: 700; color: #374151; }
+
+  .pl-add-btn {
+    background: none;
+    border: 1.5px dashed #d1d5db;
+    border-radius: 7px;
+    color: #9ca3af;
+    font-size: 13px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: 500;
+    padding: 13px 16px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.15s;
+    text-align: center;
+    margin-top: 12px;
+  }
+  .pl-add-btn:hover { border-color: #6366f1; color: #4f46e5; background: #eef2ff; }
+
+  /* ── Totals ── */
+  .pl-totals-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  .pl-totals-box {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px 22px;
+    min-width: 280px;
+  }
+  .pl-total-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13.5px;
+    color: #6b7280;
+    padding: 5px 0;
+  }
+  .pl-total-val { font-size: 13.5px; color: #374151; font-weight: 500; }
+  .pl-total-line.grand {
+    border-top: 1px solid #e5e7eb;
+    margin-top: 10px;
+    padding-top: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+  .pl-total-line.grand .pl-total-val { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+
+  /* ───── FOOTER ───── */
+  .pl-footer-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+    padding: 18px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .pl-footer-note {
+    font-size: 12px;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .pl-footer-actions { display: flex; gap: 10px; align-items: center; }
+
+  .pl-btn-submit {
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 11px 28px;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .pl-btn-submit:hover { background: #4f46e5; }
+
+  .pl-btn-cancel {
+    background: transparent;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 10px 20px;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    transition: all 0.13s;
+    white-space: nowrap;
+  }
+  .pl-btn-cancel:hover { background: #f4f5f7; border-color: #9ca3af; color: #374151; text-decoration: none; }
+
+  @media (max-width: 900px) {
+    .pl-row-3 { grid-template-columns: 1fr 1fr; }
+    .pl-svc-main-row { grid-template-columns: 1fr; }
+    .pl-svc-amounts { flex-direction: row; }
+  }
+  @media (max-width: 600px) {
+    .pl-wrap { padding: 16px; }
+    .pl-row-2, .pl-row-3 { grid-template-columns: 1fr; }
+    .pl-topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .pl-footer-card { flex-direction: column; align-items: flex-end; }
+    .pl-svc-amounts { flex-direction: column; }
+  }
 </style>
-</head>
+{% endblock %}
 
-<body>
+{% block content %}
+<div class="pl-wrap">
 
-<div class="container">
-
-    <div class="header">
-        <h1>Create Invoice</h1>
+  <!-- Top bar -->
+  <div class="pl-topbar">
+    <div>
+      <h4>Create Invoice</h4>
+      <p>Fill in the details below to generate a new invoice.</p>
     </div>
+    <div class="pl-num-pill">
+      <span class="pl-num-label">#</span>
+      <span class="pl-num-val">{{ invoice_number|default:"New" }}</span>
+      <span class="pl-draft-badge">Draft</span>
+    </div>
+  </div>
 
-    <form method="POST">
-        {% csrf_token %}
+  <form method="POST" action="{% url 'create_invoice' %}" id="invoice-form">
+    {% csrf_token %}
 
-        <div class="grid">
-            <div>
-                <label class="label">Client</label>
-                <select name="client" class="field" required>
-                    <option value="">Select Client</option>
-                    {% for c in clients %}
-                    <option value="{{ c.id }}">
-                        {{ c.company_name|default:c.name }}
-                    </option>
-                    {% endfor %}
-                </select>
-            </div>
+    <div class="pl-container">
 
-            <div>
-                <label class="label">Due Date</label>
-                <input type="date" name="due_date" class="field">
-            </div>
+      {% if error %}
+      <div class="pl-error">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <!-- ── Bill To ── -->
+      <div class="pl-form-card">
+        <div class="pl-card-head">
+          <h6>Bill To <span class="sub">— client details</span></h6>
         </div>
+        <div class="pl-form-body">
 
-        <h3 style="margin-bottom:15px;">Services</h3>
-
-        <div id="items">
-            <div class="row">
-                <input name="service_name[]" class="field" placeholder="Service">
-                <input name="service_detail[]" class="field" placeholder="Details">
-                <input name="quantity[]" type="number" value="1" class="field qty" oninput="calc()">
-                <input name="amount[]" type="number" step="0.01" class="field amt" oninput="calc()">
-                <button type="button" onclick="removeRow(this)">✕</button>
+          <div class="pl-row-3">
+            <div class="pl-field">
+              <label class="pl-label">Company <span class="req">*</span></label>
+              <select class="pl-select" name="client" id="client-select" onchange="loadClient()" required>
+                <option value="">Choose a company…</option>
+                {% for c in clients %}
+                <option value="{{ c.id }}">{{ c.company_name|default:c.name }}</option>
+                {% endfor %}
+              </select>
             </div>
-        </div>
-
-        <button type="button" class="add-btn" onclick="addRow()">+ Add Service</button>
-
-        <div class="footer">
-            <div class="total">
-                ₹ <span id="total">0.00</span>
+            <div class="pl-field">
+              <label class="pl-label">Contact Name</label>
+              <input type="text" id="client-name" class="pl-input" placeholder="Auto-filled on selection" readonly>
             </div>
-            <button type="submit" class="submit">Create Invoice</button>
-        </div>
+            <div class="pl-field">
+              <label class="pl-label">Address</label>
+              <input type="text" id="client-address" class="pl-input" placeholder="Auto-filled on selection" readonly>
+            </div>
+          </div>
 
-    </form>
+        </div>
+      </div>
+
+      <!-- ── Invoice Details ── -->
+      <div class="pl-form-card">
+        <div class="pl-card-head">
+          <h6>Invoice Details</h6>
+        </div>
+        <div class="pl-form-body">
+
+          <div class="pl-row-2">
+            <div class="pl-field">
+              <label class="pl-label">Due Date</label>
+              <input type="date" name="due_date" class="pl-input">
+            </div>
+            <div class="pl-field">
+              <label class="pl-label">Status</label>
+              <select name="status" class="pl-select">
+                <option value="unpaid">Unpaid</option>
+                <option value="paid">Paid</option>
+                <option value="overdue">Overdue</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── Services ── -->
+      <div class="pl-form-card">
+        <div class="pl-card-head">
+          <h6>Services <span class="sub">— line items</span></h6>
+        </div>
+        <div class="pl-form-body">
+
+          <div class="pl-services" id="service-items">
+
+            <!-- Default first item -->
+            <div class="pl-service-item">
+              <div class="pl-service-head">
+                <span class="pl-item-num">Service 1</span>
+                <button type="button" class="pl-rm-btn" onclick="removeItem(this)" title="Remove">✕</button>
+              </div>
+              <div class="pl-service-body">
+                <input class="pl-svc-name" type="text" name="service_name[]"
+                       placeholder="Service name — e.g. Logo Design" required>
+                <div class="pl-svc-main-row">
+                  <textarea class="pl-svc-desc" name="service_detail[]"
+                            placeholder="Detailed description of this service…"></textarea>
+                  <div class="pl-svc-amounts">
+                    <div class="pl-input-wrap">
+                      <span class="pl-input-lbl">Quantity</span>
+                      <input class="pl-num-input" type="number" name="quantity[]" value="1" min="1" oninput="recalc()">
+                    </div>
+                    <div class="pl-input-wrap">
+                      <span class="pl-input-lbl">Amount (₹)</span>
+                      <input class="pl-num-input" type="number" name="amount[]" placeholder="0.00" min="0" step="0.01" oninput="recalc()">
+                    </div>
+                    <p class="pl-item-sub">Subtotal: <span class="item-sub-val">₹0.00</span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <button type="button" class="pl-add-btn" onclick="addItem()">+ Add another service</button>
+
+          <!-- Totals -->
+          <div class="pl-totals-wrap">
+            <div class="pl-totals-box">
+              <div class="pl-total-line">
+                <span>Subtotal</span>
+                <span class="pl-total-val" id="subtotal">₹0.00</span>
+              </div>
+              <div class="pl-total-line">
+                <span>Tax (0%)</span>
+                <span class="pl-total-val">₹0.00</span>
+              </div>
+              <div class="pl-total-line grand">
+                <span>Total</span>
+                <span class="pl-total-val" id="grand-total">₹0.00</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── Footer / Actions ── -->
+      <div class="pl-footer-card">
+        <span class="pl-footer-note">
+          <svg width="13" height="13" fill="none" stroke="#9ca3af" stroke-width="1.8" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          All amounts in Indian Rupees (INR)
+        </span>
+        <div class="pl-footer-actions">
+          <a href="{% url 'invoice_list' %}" class="pl-btn-cancel">Cancel</a>
+          <button type="submit" class="pl-btn-submit">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Create Invoice
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /container -->
+  </form>
+
 </div>
 
 <script>
-function addRow(){
-    let div = document.createElement('div');
-    div.classList.add('row');
+  let itemCount = 1;
 
+  function fmt(v) {
+    return '₹' + v.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function addItem() {
+    itemCount++;
+    const wrap = document.getElementById('service-items');
+    const div = document.createElement('div');
+    div.className = 'pl-service-item';
     div.innerHTML = `
-        <input name="service_name[]" class="field" placeholder="Service">
-        <input name="service_detail[]" class="field" placeholder="Details">
-        <input name="quantity[]" type="number" value="1" class="field qty" oninput="calc()">
-        <input name="amount[]" type="number" step="0.01" class="field amt" oninput="calc()">
-        <button type="button" onclick="removeRow(this)">✕</button>
-    `;
+      <div class="pl-service-head">
+        <span class="pl-item-num">Service ${itemCount}</span>
+        <button type="button" class="pl-rm-btn" onclick="removeItem(this)" title="Remove">✕</button>
+      </div>
+      <div class="pl-service-body">
+        <input class="pl-svc-name" type="text" name="service_name[]" placeholder="Service name" required>
+        <div class="pl-svc-main-row">
+          <textarea class="pl-svc-desc" name="service_detail[]" placeholder="Detailed description of this service…"></textarea>
+          <div class="pl-svc-amounts">
+            <div class="pl-input-wrap">
+              <span class="pl-input-lbl">Quantity</span>
+              <input class="pl-num-input" type="number" name="quantity[]" value="1" min="1" oninput="recalc()">
+            </div>
+            <div class="pl-input-wrap">
+              <span class="pl-input-lbl">Amount (₹)</span>
+              <input class="pl-num-input" type="number" name="amount[]" placeholder="0.00" min="0" step="0.01" oninput="recalc()">
+            </div>
+            <p class="pl-item-sub">Subtotal: <span class="item-sub-val">₹0.00</span></p>
+          </div>
+        </div>
+      </div>`;
+    wrap.appendChild(div);
+    renumberItems();
+  }
 
-    document.getElementById('items').appendChild(div);
-}
+  function removeItem(btn) {
+    const items = document.querySelectorAll('.pl-service-item');
+    if (items.length > 1) {
+      btn.closest('.pl-service-item').remove();
+      recalc();
+      renumberItems();
+    }
+  }
 
-function removeRow(btn){
-    btn.parentElement.remove();
-    calc();
-}
-
-function calc(){
-    let total = 0;
-
-    document.querySelectorAll('.row').forEach(r => {
-        let q = parseFloat(r.querySelector('.qty').value) || 0;
-        let a = parseFloat(r.querySelector('.amt').value) || 0;
-        total += q * a;
+  function renumberItems() {
+    document.querySelectorAll('.pl-item-num').forEach((el, i) => {
+      el.textContent = `Service ${i + 1}`;
     });
+    itemCount = document.querySelectorAll('.pl-service-item').length;
+  }
 
-    document.getElementById('total').innerText =
-        total.toLocaleString('en-IN', {minimumFractionDigits:2});
-}
+  function recalc() {
+    let sub = 0;
+    document.querySelectorAll('.pl-service-item').forEach(item => {
+      const qty = parseFloat(item.querySelector('input[name="quantity[]"]')?.value) || 0;
+      const amt = parseFloat(item.querySelector('input[name="amount[]"]')?.value) || 0;
+      const itemSub = qty * amt;
+      sub += itemSub;
+      const subEl = item.querySelector('.item-sub-val');
+      if (subEl) subEl.textContent = fmt(itemSub);
+    });
+    document.getElementById('subtotal').textContent = fmt(sub);
+    document.getElementById('grand-total').textContent = fmt(sub);
+  }
 
-calc();
+  function loadClient() {
+    const id = document.getElementById('client-select').value;
+    if (!id) {
+      document.getElementById('client-name').value = '';
+      document.getElementById('client-address').value = '';
+      return;
+    }
+    fetch("{% url 'get_client' %}?client_id=" + id)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('client-name').value = data.name || '';
+        document.getElementById('client-address').value = data.address || '';
+      })
+      .catch(err => console.error('Failed to load client:', err));
+  }
 </script>
+{% endblock %}
 
-</body>
-</html>
+{% block js %}
+<script src="{% static 'assets/js/jquery.min.js' %}"></script>
+<script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
+<script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
+<script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
+<script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
+<script src="{% static 'assets/js/config.js' %}"></script>
+<script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
+<script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
+<script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
+<script src="{% static 'assets/js/slick/slick.js' %}"></script>
+<script src="{% static 'assets/js/header-slick.js' %}"></script>
+<script src="{% static 'assets/js/notify/bootstrap-notify.min.js' %}"></script>
+<script src="{% static 'assets/js/notify/index.js' %}"></script>
+<script src="{% static 'assets/js/height-equal.js' %}"></script>
+{% endblock %}
