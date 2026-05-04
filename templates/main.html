@@ -5,106 +5,311 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Zono admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
-    <meta name="keywords" content="admin template, Zono admin template, dashboard template, flat admin template, responsive admin template, web app">
+    <meta name="description" content="Zono admin template">
+    <meta name="keywords" content="admin template, Zono admin template, dashboard template">
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="{% static 'assets/images/favicon.png' %}" type="image/x-icon">
     <link rel="shortcut icon" href="{% static 'assets/images/favicon.png' %}" type="image/x-icon">
     <title>Zono - Premium Admin Template</title>
-    <!-- Google font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;300;400;600;700;800;900&amp;display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900&amp;display=swap" rel="stylesheet">
-    {% block css %}
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900&display=swap" rel="stylesheet">
 
-    {% endblock %}
+    <style>
+      /* ── Global search box ── */
+      #global-search-wrap {
+        position: relative;
+        width: 100%;
+        max-width: 380px;
+      }
+      #globalSearchInput {
+        width: 100%;
+        height: 38px;
+        padding: 0 16px 0 38px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 13px;
+        color: #333;
+        background: #fff;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color 0.15s;
+      }
+      #globalSearchInput:focus { border-color: #22c55e; }
+      #search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+      }
+      /* ── Dropdown results ── */
+      #globalSearchDropdown {
+        display: none;
+        position: absolute;
+        top: 44px;
+        left: 0;
+        width: 420px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        box-shadow: 0 8px 28px rgba(0,0,0,0.13);
+        z-index: 99999;
+        max-height: 380px;
+        overflow-y: auto;
+      }
+      .gs-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        text-decoration: none;
+        color: #333;
+        border-bottom: 1px solid #f5f5f5;
+        transition: background 0.12s;
+      }
+      .gs-item:last-child { border-bottom: none; }
+      .gs-item:hover { background: #f9fafb; color: #333; text-decoration: none; }
+      .gs-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 12px;
+        white-space: nowrap;
+      }
+      .gs-badge.Staff    { background: #e8f4fd; color: #1a73e8; }
+      .gs-badge.Task     { background: #fff3e0; color: #e65100; }
+      .gs-badge.Client   { background: #e8f5e9; color: #2e7d32; }
+      .gs-badge.Proposal { background: #f3e5f5; color: #6a1b9a; }
+      .gs-label { font-size: 13px; flex: 1; }
+      .gs-label mark {
+        background: #fff9c4;
+        padding: 0 2px;
+        border-radius: 2px;
+        font-style: normal;
+      }
+      .gs-arrow { color: #d1d5db; font-size: 13px; }
+      .gs-empty {
+        padding: 22px;
+        text-align: center;
+        color: #9ca3af;
+        font-size: 13px;
+      }
+      .gs-hint {
+        padding: 8px 16px;
+        font-size: 11px;
+        color: #9ca3af;
+        border-top: 1px solid #f0f0f0;
+        text-align: center;
+      }
+    </style>
+
+    {% block css %}{% endblock %}
   </head>
-  <body> 
-    <!-- tap on top starts-->
+
+  <body>
     <div class="tap-top"><i data-feather="chevrons-up"></i></div>
-    <!-- tap on tap ends-->
-    <!-- page-wrapper Start   -->
+
     <div class="page-wrapper compact-wrapper" id="pageWrapper">
-      <!-- Page Header Start-->
+
+      <!-- ── Page Header ── -->
       <div class="page-header">
         <div class="header-wrapper row m-0">
+
+          <!-- Logo -->
           <div class="header-logo-wrapper col-auto p-0">
-            <div class="logo-wrapper"><a href="{% static '/' %}"> <img class="img-fluid for-light" src="{% static 'assets/images/logo/logo.png' %}" alt=""><img class="img-fluid for-dark" src="{% static 'assets/images/logo/logo_dark.png' %}" alt=""></a></div>
+            <div class="logo-wrapper">
+              <a href="/">
+                <img class="img-fluid for-light" src="{% static 'assets/images/logo/logo.png' %}" alt="">
+                <img class="img-fluid for-dark"  src="{% static 'assets/images/logo/logo_dark.png' %}" alt="">
+              </a>
+            </div>
             <div class="toggle-sidebar">
-              <svg class="sidebar-toggle"> 
+              <svg class="sidebar-toggle">
                 <use href="{% static 'assets/svg/icon-sprite.svg#stroke-animation' %}"></use>
               </svg>
             </div>
           </div>
-          
+
+          <!-- Nav right -->
           <div class="nav-right col-xl-12 col-lg-12 col-auto pull-right right-header p-0">
             <ul class="nav-menus">
-            
-              
-            
+
+              <!-- ── Global Search ── -->
+              <li class="search-nav" style="flex:1; padding: 0 20px;">
+                <div id="global-search-wrap">
+                  <!-- Search icon -->
+                  <svg id="search-icon" width="15" height="15" viewBox="0 0 24 24"
+                       fill="none" stroke="#aaa" stroke-width="2" stroke-linecap="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+
+                  <!-- Input -->
+                  <input id="globalSearchInput" type="text"
+                         placeholder="Search anything… (Ctrl+K)"
+                         autocomplete="off">
+
+                  <!-- Dropdown -->
+                  <div id="globalSearchDropdown">
+                    <div id="globalSearchResults"></div>
+                    <div class="gs-hint">Press Esc to close</div>
+                  </div>
+                </div>
+              </li>
+
+              <!-- ── Profile ── -->
               <li class="profile-nav onhover-dropdown pe-0 py-0">
                 <div class="d-flex align-items-center profile-media">
-                   {% if user_reg and user_reg.profile_image %}
-                      <img class="b-r-25"
-                          src="{{ user_reg.profile_image.url }}"
-                          style="width:48px;height:48px;object-fit:cover;border-radius:50%;">
+                  {% if user_reg and user_reg.profile_image %}
+                    <img class="b-r-25" src="{{ user_reg.profile_image.url }}"
+                         style="width:48px;height:48px;object-fit:cover;border-radius:50%;">
                   {% else %}
-                      <img class="b-r-25"
-                          src="{% static 'assets/images/dashboard/profile.png' %}"
-                          style="width:48px;height:48px;object-fit:cover;border-radius:50%;">
+                    <img class="b-r-25" src="{% static 'assets/images/dashboard/profile.png' %}"
+                         style="width:48px;height:48px;object-fit:cover;border-radius:50%;">
                   {% endif %}
-                  <div class="flex-grow-1 user"><span><span>{{ request.user.username }}</span></span>
+                  <div class="flex-grow-1 user">
+                    <span><span>{{ request.user.username }}</span></span>
                     <p class="mb-0 font-nunito">
-                      <svg>
-                        <use href="{% static 'assets/svg/icon-sprite.svg#header-arrow-down' %}"></use>
-                      </svg>
+                      <svg><use href="{% static 'assets/svg/icon-sprite.svg#header-arrow-down' %}"></use></svg>
                     </p>
                   </div>
                 </div>
                 <ul class="profile-dropdown onhover-show-div">
-                  <li><a href="{% url "profile" %}"><i data-feather="user"></i><span>Account </span></a></li>
-                  <li><a href="{% static 'letter-box.html' %}"><i data-feather="mail"></i><span>Inbox</span></a></li>
-                  <li><a href="{% static 'task.html' %}"><i data-feather="file-text"></i><span>Taskboard</span></a></li>
-                  <li><a href="{% static 'edit-profile.html' %}"><i data-feather="settings"></i><span>Settings</span></a></li>
-                  <li><a href="{% url "user_logout" %}"> <i data-feather="log-in"></i><span>Log Out</span></a></li>
+                  <li><a href="{% url 'profile' %}"><i data-feather="user"></i><span>Account</span></a></li>
+                  <li><a href="#"><i data-feather="mail"></i><span>Inbox</span></a></li>
+                  <li><a href="#"><i data-feather="file-text"></i><span>Taskboard</span></a></li>
+                  <li><a href="#"><i data-feather="settings"></i><span>Settings</span></a></li>
+                  <li><a href="{% url 'user_logout' %}"><i data-feather="log-in"></i><span>Log Out</span></a></li>
                 </ul>
               </li>
+
             </ul>
           </div>
-          <script class="result-template" type="text/x-handlebars-template">
-            <div class="ProfileCard u-cf">              
-            <div class="ProfileCard-avatar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-airplay m-0"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path><polygon points="12 15 17 21 7 21 12 15"></polygon></svg></div>
-            <div class="ProfileCard-details">
-            <div class="ProfileCard-realName">{{name}}</div>
-            </div>
-            </div>
-          </script>
-          <script class="empty-template" type="text/x-handlebars-template"><div class="EmptyMessage">Your search turned up 0 results. This most likely means the backend is down, yikes</div></script>
         </div>
       </div>
-      <!-- Page Header Ends                              -->
-      <!-- Page body Start -->
-      <div class="page-body-wrapper"> 
-        <!-- Page Sidebar Start-->
-         {% include "components/navbar.html" %}
-        <!-- Page Sidebar Ends-->
+      <!-- ── Page Header End ── -->
+
+      <!-- ── Page Body ── -->
+      <div class="page-body-wrapper">
+        {% include "components/navbar.html" %}
         <div class="page-body">
-
-          {% block content %}
-            <!-- Page content will come here -->
-          {% endblock %}
-
+          {% block content %}{% endblock %}
         </div>
-        <!-- footer start-->
         {% include 'components/footer.html' %}
       </div>
-    </div>
 
-    {% block js %}
+    </div><!-- /page-wrapper -->
 
-    {% endblock %}
+    {% block js %}{% endblock %}
 
+    <!-- ── Global Search Script ── -->
+    <script>
+    (function () {
+      const input    = document.getElementById('globalSearchInput');
+      const dropdown = document.getElementById('globalSearchDropdown');
+      const results  = document.getElementById('globalSearchResults');
+
+      const COLORS = {
+        Staff:    { bg: '#e8f4fd', color: '#1a73e8' },
+        Task:     { bg: '#fff3e0', color: '#e65100' },
+        Client:   { bg: '#e8f5e9', color: '#2e7d32' },
+        Proposal: { bg: '#f3e5f5', color: '#6a1b9a' },
+      };
+
+      let timer;
+
+      /* ── highlight matching text ── */
+      function hl(text, q) {
+        if (!q) return text;
+        const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+        return text.replace(re, '<mark>$1</mark>');
+      }
+
+      /* ── show / hide dropdown ── */
+      function show() { dropdown.style.display = 'block'; }
+      function hide() { dropdown.style.display = 'none';  }
+
+      /* ── render results ── */
+      function render(data, q) {
+        if (!data.length) {
+          results.innerHTML = `<div class="gs-empty">No results for "<strong>${q}</strong>"</div>`;
+        } else {
+          results.innerHTML = data.map(item => `
+            <a href="${item.url}" class="gs-item">
+              <span class="gs-badge ${item.type}">${item.type}</span>
+              <span class="gs-label">${hl(item.label, q)}</span>
+              <span class="gs-arrow">›</span>
+            </a>`).join('');
+        }
+        show();
+      }
+
+      /* ── also filter current page table if any ── */
+      function filterCurrentTable(q) {
+        /* Hook for custom JS pages like proposals */
+        if (typeof window.plFilterTable === 'function') {
+          window.plFilterTable(q);
+          return;
+        }
+        /* DataTables */
+        if (window.jQuery && $.fn.dataTable) {
+          const api = $.fn.dataTable.tables({ visible: true, api: true });
+          if (api && typeof api.search === 'function') {
+            api.search(q).draw();
+            return;
+          }
+        }
+        /* Plain table fallback */
+        document.querySelectorAll('table tbody tr').forEach(row => {
+          row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+        });
+      }
+
+      /* ── main input handler ── */
+      input.addEventListener('input', function () {
+        const q = this.value.trim();
+        const ql = q.toLowerCase();
+
+        clearTimeout(timer);
+
+        /* also filter the page table live */
+        filterCurrentTable(ql);
+
+        if (!q) { hide(); return; }
+
+        /* debounce AJAX call */
+        timer = setTimeout(() => {
+          fetch(`/search/?q=${encodeURIComponent(q)}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+          })
+          .then(r => r.json())
+          .then(data => render(data, q))
+          .catch(() => hide());
+        }, 220);
+      });
+
+      /* ── close on outside click ── */
+      document.addEventListener('click', e => {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) hide();
+      });
+
+      /* ── keyboard shortcuts ── */
+      document.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+          e.preventDefault();
+          input.focus();
+          input.select();
+        }
+        if (e.key === 'Escape') {
+          hide();
+          input.blur();
+        }
+      });
+
+    })();
+    </script>
 
   </body>
 </html>

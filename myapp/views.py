@@ -18,9 +18,58 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from django.db.models import Sum
 from datetime import timedelta
+from django.urls import reverse
 # Create your views here.
 def home(request):
     return render(request,'home.html')
+
+
+
+@login_required
+def global_search_api(request):
+    q = request.GET.get('q', '').strip().lower()
+    if not q:
+        return JsonResponse([], safe=False)
+
+    data = []
+
+    for s in Staff.objects.select_related('authuser').all():
+        label = s.authuser.get_full_name() or s.authuser.username
+        if q in label.lower() or q in (s.phone or '').lower():
+            data.append({
+                'label': label,
+                'type': 'Staff',
+                'url': reverse('staff_list')
+            })
+
+    for t in Task.objects.select_related('staff__authuser').all():
+        label = f'{t.title} — {t.staff.authuser.username}'
+        if q in label.lower() or q in t.status.lower():
+            data.append({
+                'label': label,
+                'type': 'Task',
+                'url': reverse('task_detail', args=[t.id])
+            })
+
+    for c in Client.objects.all():
+        label = f'{c.name} — {c.company_name}'
+        if q in label.lower() or q in (c.phone or '').lower() or q in (c.email or '').lower():
+            data.append({
+                'label': label,
+                'type': 'Client',
+                'url': reverse('client_list')
+            })
+
+    for p in Proposal.objects.select_related('client').all():
+        label = f'{p.proposal_number} — {p.client.name} — ₹{p.total_amount}'
+        if q in label.lower() or q in p.status.lower() or q in str(p.total_amount):
+            data.append({
+                'label': label,
+                'type': 'Proposal',
+                'url': reverse('proposal_list')
+            })
+
+    return JsonResponse(data[:15], safe=False)
 
 def loginn(request):
     return render(request,'login.html')
