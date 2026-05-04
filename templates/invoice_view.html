@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice {{ invoice.invoice_number }} — Trendo</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #fdfdfd;
+            margin: 0;
+            color: #000;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 30px auto;
+            background: #fff;
+            padding: 60px;
+            min-height: 1000px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.02);
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 60px;
+        }
+
+        .brand-logo {
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .invoice-meta {
+            text-align: right;
+        }
+
+        .meta-text {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .address-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .address-block h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #000;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #000;
+            display: inline-block;
+        }
+
+        .address-content {
+            font-size: 14px;
+            white-space: pre-line;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .items-table th {
+            text-align: left;
+            background: #000;
+            color: #fff;
+            padding: 12px 15px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .items-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .text-right { text-align: right; }
+        .font-mono { font-family: 'DM Mono', monospace; }
+
+        .total-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 60px;
+        }
+
+        .total-row {
+            width: 280px;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: #f9f9f9;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .footer-info {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 50px;
+            margin-top: auto;
+            padding-top: 40px;
+            border-top: 1px solid #000;
+        }
+
+        .info-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .bank-details {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+        }
+
+        .contact-details {
+            font-size: 12px;
+            color: #444;
+        }
+
+        .nav-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .action-btn {
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-list {
+            background: #fff;
+            color: #111827;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .btn-list:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+
+        .btn-pdf {
+            background: #fff;
+            color: #111827;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .btn-pdf:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+
+        .btn-print {
+            background: #111827;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-print:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        @media print {
+            body { background: #fff; }
+            .container { margin: 0; padding: 40px; width: 100%; max-width: 100%; box-shadow: none; }
+            .nav-controls { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="nav-controls">
+    <a href="{% url 'invoice_list' %}" class="action-btn btn-list">
+        ← Back to Invoices
+    </a>
+    <a href="{% url 'invoice_pdf' invoice.id %}" target="_blank" class="action-btn btn-pdf">
+        ↓ Download PDF
+    </a>
+    <button class="action-btn btn-print" onclick="window.print()">
+        Print Document
+    </button>
+</div>
+
+<div class="container">
+    <div class="top-bar">
+        <div class="brand-logo">Ecodians</div>
+        <div class="invoice-meta">
+            <div class="meta-text" style="font-size: 20px;">Invoice</div>
+            <div class="meta-text">No: {{ invoice.invoice_number }}</div>
+            <div class="meta-text">Date: {{ invoice.issue_date }}</div>
+        </div>
+    </div>
+
+    <div class="address-grid">
+        <div class="address-block">
+            <h3>Invoice To</h3>
+            <div class="address-content">
+                <strong>{{ invoice.client.company_name }}</strong>
+            </div>
+        </div>
+        <div class="address-block" style="text-align: right;">
+            <h3>From</h3>
+            <div class="address-content">
+                <strong>Ecodians</strong><br>
+                11/166 F1st Floor, Basuri Arcade<br>
+                Kalleri, Poovattuparamba<br>
+                Kozhikode, Kerala 673008
+            </div>
+        </div>
+    </div>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Service</th>
+                <th class="text-right">Qty</th>
+                <th class="text-right">Amount</th>
+                <th class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in invoice.items.all %}
+            <tr>
+                <td><strong>{{ item.service_name }}</strong></td>
+                <td class="text-right font-mono">{{ item.quantity }}</td>
+                <td class="text-right font-mono">{{ item.amount }}</td>
+                <td class="text-right font-mono">{{ item.line_total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="total-wrapper">
+        <div class="total-row">
+            <span>Total</span>
+            <span class="font-mono">₹{{ invoice.total_amount }}</span>
+        </div>
+    </div>
+
+    <div class="footer-info">
+        <div>
+            <div class="info-title">Payment Info</div>
+            <div class="bank-details">
+                Account Name : Ecodians<br>
+                Account No &nbsp;&nbsp;: 64580200014526<br>
+                Bank &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: SBI<br>
+                IFSC Code &nbsp;&nbsp;&nbsp;: BARBOVJCHEV
+            </div>
+        </div>
+        <div>
+            <div class="info-title">Contact</div>
+            <div class="contact-details">
+                Ecodians<br>
+                Kozhikode, Kerala<br>
+                +91 9846331415<br>
+                hello@trendo.in
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

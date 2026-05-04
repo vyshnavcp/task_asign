@@ -46,6 +46,14 @@ urlpatterns = [
     path('services/', views.service_list, name='service_list'),
     path('services/add/', views.add_service, name='add_service'),
     path('search/', views.global_search_api, name='global_search_api'),
+    path('proposal/convert/<int:pk>/', views.convert_to_invoice, name='convert_to_invoice'),
+    path('invoices/', views.invoice_list, name='invoice_list'),
+    path('invoices/view/<int:pk>/', views.view_invoice, name='view_invoice'),
+    path('invoices/pdf/<int:pk>/', views.invoice_pdf, name='invoice_pdf'),
+    path('invoices/create/', views.create_invoice, name='create_invoice'),
+    path('invoices/edit/<int:pk>/', views.edit_invoice, name='edit_invoice'),
+    path('invoices/delete/<int:pk>/', views.delete_invoice, name='delete_invoice'),
+
 
 
 ]

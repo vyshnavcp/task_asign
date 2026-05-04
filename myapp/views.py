@@ -1,3 +1,4 @@
+from myapp.models import Invoice
 from myapp.models import Proposal
 from myapp.models import Client
 from myapp.models import LeaveRequest
@@ -19,6 +20,9 @@ from django.utils import timezone
 from django.db.models import Sum
 from datetime import timedelta
 from django.urls import reverse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from io import BytesIO
 # Create your views here.
 def home(request):
     return render(request,'home.html')
@@ -772,12 +776,11 @@ def create_proposal(request):
     })
 
 
+from django.http import JsonResponse
+from .models import Proposal
+
 def proposal_list_api(request):
-    """
-    Returns all proposals as JSON for the AJAX-powered proposal list page.
-    Also handles the normal GET request to render the page shell.
-    """
-    # If it's an AJAX/fetch call, return JSON data
+
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         proposals = (
             Proposal.objects
@@ -788,22 +791,26 @@ def proposal_list_api(request):
 
         data = []
         for p in proposals:
+
+            # ✅ CHECK IF INVOICE EXISTS
+            has_invoice = hasattr(p, 'invoice') and p.invoice is not None
+
             data.append({
-                'id':              p.id,
+                'id': p.id,
                 'proposal_number': p.proposal_number,
-                'proposal_title':  p.proposal_title or '',
-                'client_name':     p.client.name if p.client else '',
-                'total_amount':    str(p.total_amount),
-                'status':          p.status,
-                'date':            p.date.strftime('%Y-%m-%d') if p.date else '',
-                # set has_invoice True if you have an Invoice model linked to proposal
-                # e.g. 'has_invoice': hasattr(p, 'invoice'),
-                'has_invoice':     False,
+                'proposal_title': p.proposal_title or '',
+                'client_name': p.client.name if p.client else '',
+                'total_amount': str(p.total_amount),
+                'status': p.status,
+                'date': p.date.strftime('%Y-%m-%d') if p.date else '',
+
+                # ✅ FIXED
+                'has_invoice': has_invoice,
+                'invoice_id': p.invoice.id if has_invoice else None,
             })
 
         return JsonResponse({'proposals': data})
 
-    # Normal page load — render the empty shell (AJAX will fill the table)
     return render(request, 'proposal_list.html')
 
 
@@ -891,3 +898,138 @@ def add_service(request):
 def service_list(request):
     services = CompanyService.objects.all()
     return render(request, 'service_list.html', {'services': services})
+
+def convert_to_invoice(request, pk):
+    proposal = get_object_or_404(Proposal, pk=pk)
+
+    # prevent duplicate
+    if hasattr(proposal, 'invoice'):
+        return redirect('view_invoice', pk=proposal.invoice.id)
+
+    invoice = Invoice.objects.create(
+        proposal=proposal,
+        client=proposal.client,
+        total_amount=proposal.total_amount,
+        status='unpaid'
+    )
+    for item in proposal.items.all():
+        InvoiceItem.objects.create(
+            invoice=invoice,
+            service_name=item.service_name,
+            service_detail=item.service_detail,
+            quantity=item.quantity,
+            amount=item.amount
+        )
+
+    return redirect('view_invoice', pk=invoice.id)
+
+def view_invoice(request,pk):
+    invoice = get_object_or_404(Invoice,pk=pk)
+    return render(request,'invoice_view.html',{'invoice':invoice})
+
+def invoice_pdf(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk)
+
+    template = get_template('invoice_pdf.html')
+    html = template.render({'invoice': invoice})
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename="invoice_{invoice.invoice_number}.pdf"'
+
+    pisa.CreatePDF(BytesIO(html.encode("UTF-8")), dest=response)
+    return response
+
+def invoice_list(request):
+    invoices = Invoice.objects.select_related('client').prefetch_related('items').order_by('-id')
+    return render(request, 'invoice_list.html', {'invoices': invoices})
+
+
+def create_invoice(request):
+    clients = Client.objects.all()
+
+    if request.method == 'POST':
+        client_id = request.POST.get('client')
+        due_date = request.POST.get('due_date')
+        invoice = Invoice(
+            client_id=client_id,
+            due_date=due_date,
+            status='unpaid'
+        )
+        invoice.save()  
+        names = request.POST.getlist('service_name[]')
+        details = request.POST.getlist('service_detail[]')
+        qtys = request.POST.getlist('quantity[]')
+        amounts = request.POST.getlist('amount[]')
+
+        total = 0
+
+        for i in range(len(names)):
+            if names[i]:
+                qty = int(qtys[i]) if qtys[i] else 1
+                amt = float(amounts[i]) if amounts[i] else 0
+
+                item = InvoiceItem.objects.create(
+                    invoice=invoice,
+                    service_name=names[i],
+                    service_detail=details[i],
+                    quantity=qty,
+                    amount=amt
+                )
+
+                total += item.line_total
+        invoice.total_amount = total
+        invoice.save()
+
+        return redirect('view_invoice', pk=invoice.id)
+
+    return render(request, 'create_invoice.html', {
+        'clients': clients
+    })
+    
+def edit_invoice(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk)
+    clients = Client.objects.all()
+
+    if request.method == 'POST':
+        invoice.client_id = request.POST.get('client')
+        invoice.due_date = request.POST.get('due_date')
+        invoice.status = request.POST.get('status')
+        invoice.save()
+        invoice.items.all().delete()
+        names = request.POST.getlist('service_name[]')
+        details = request.POST.getlist('service_detail[]')
+        qtys = request.POST.getlist('quantity[]')
+        amounts = request.POST.getlist('amount[]')
+
+        total = 0
+        for i in range(len(names)):
+            if names[i]:
+                qty = int(qtys[i]) if qtys[i] else 1
+                amt = float(amounts[i]) if amounts[i] else 0
+
+                item = InvoiceItem.objects.create(
+                    invoice=invoice,
+                    service_name=names[i],
+                    service_detail=details[i],
+                    quantity=qty,
+                    amount=amt
+                )
+
+                total += item.line_total
+
+
+        invoice.total_amount = total
+        invoice.save()
+
+        return redirect('view_invoice', pk=invoice.id)
+
+    return render(request, 'edit_invoice.html', {
+        'invoice': invoice,
+        'clients': clients
+    })
+    
+@login_required
+def delete_invoice(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk)
+    invoice.delete()
+    return redirect('invoice_list')

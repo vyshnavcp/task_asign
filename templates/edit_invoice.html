@@ -1,0 +1,410 @@
+{% extends 'main.html' %}
+{% block title %}Edit Invoice{% endblock %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
+    <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+
+<style>
+  /* ───── PAGE WRAPPER ───── */
+  .pl-wrap {
+    padding: 28px;
+    background: #f4f5f7;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
+  /* ───── TOP BAR ───── */
+  .pl-topbar {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .pl-topbar h4 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 21px;
+    color: #1a1a1a;
+  }
+  .pl-topbar p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #6b7280;
+  }
+  .pl-invoice-badge {
+    background: #f3f4f6;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #e5e7eb;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ───── FORM CARD ───── */
+  .pl-form-card {
+    background: #fff;
+    border-radius: 10px;
+    max-width: 750px;
+    margin: auto;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .pl-form-body {
+    padding: 28px;
+  }
+
+  /* ───── SECTION HEADING ───── */
+  .pl-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6b7280;
+    margin: 24px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  /* ───── LABELS & INPUTS ───── */
+  .pl-label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+    color: #374151;
+  }
+  .pl-input, .pl-select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    font-size: 13.5px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #111;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .pl-input:focus, .pl-select:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
+  }
+
+  .pl-field {
+    margin-bottom: 18px;
+  }
+
+  /* ───── TWO-COLUMN ROW ───── */
+  .pl-time-row {
+    display: flex;
+    gap: 12px;
+  }
+  .pl-time-row .pl-field {
+    flex: 1;
+  }
+
+  /* ───── LINE ITEMS ───── */
+  .pl-items-header {
+    display: grid;
+    grid-template-columns: 2fr 2fr 80px 100px 36px;
+    gap: 8px;
+    padding: 0 0 6px;
+  }
+  .pl-items-header span {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #9ca3af;
+    letter-spacing: 0.4px;
+  }
+
+  .pl-item-row {
+    display: grid;
+    grid-template-columns: 2fr 2fr 80px 100px 36px;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+    background: #f9fafb;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #f3f4f6;
+  }
+  .pl-item-row .pl-input {
+    background: #fff;
+    margin: 0;
+  }
+
+  .pl-remove-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: #fef2f2;
+    color: #ef4444;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.13s;
+  }
+  .pl-remove-btn:hover {
+    background: #fee2e2;
+  }
+
+  /* ───── ADD ROW BUTTON ───── */
+  .pl-btn-add {
+    background: transparent;
+    border: 1.5px dashed #d1d5db;
+    color: #6b7280;
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: all 0.15s;
+  }
+  .pl-btn-add:hover {
+    border-color: #22c55e;
+    color: #16a34a;
+    background: #f0fdf4;
+  }
+
+  /* ───── TOTAL BAR ───── */
+  .pl-total-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #f3f4f6;
+  }
+  .pl-total-bar span {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 600;
+  }
+  .pl-total-bar strong {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ───── SUBMIT BUTTON ───── */
+  .pl-btn-submit {
+    flex: 1;
+    background: #22c55e;
+    color: white;
+    border: none;
+    padding: 11px;
+    border-radius: 7px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .pl-btn-submit:hover { background: #16a34a; }
+
+  .pl-btn-cancel {
+    flex: 1;
+    text-align: center;
+    padding: 11px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    text-decoration: none;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.15s;
+  }
+  .pl-btn-cancel:hover { background: #f9fafb; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pl-wrap">
+
+  <!-- Top Bar -->
+  <div class="pl-topbar">
+    <div>
+      <h4>Edit Invoice</h4>
+      <p>Update invoice details and line items</p>
+    </div>
+    <span class="pl-invoice-badge">{{ invoice.invoice_number }}</span>
+  </div>
+
+  <!-- Form Card -->
+  <div class="pl-form-card">
+    <div class="pl-form-body">
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <!-- Invoice Details -->
+        <div class="pl-section-title">Invoice Details</div>
+
+        <div class="pl-time-row">
+          <div class="pl-field">
+            <label class="pl-label">Client</label>
+            <select name="client" class="pl-select">
+              {% for c in clients %}
+              <option value="{{ c.id }}"
+                {% if invoice.client.id == c.id %}selected{% endif %}>
+                {{ c.company_name|default:c.name }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="pl-field">
+            <label class="pl-label">Due Date</label>
+            <input type="date" name="due_date"
+                   value="{{ invoice.due_date|date:'Y-m-d' }}"
+                   class="pl-input">
+          </div>
+
+          <div class="pl-field">
+            <label class="pl-label">Status</label>
+            <select name="status" class="pl-select">
+              <option value="unpaid" {% if invoice.status == 'unpaid' %}selected{% endif %}>Unpaid</option>
+              <option value="paid"   {% if invoice.status == 'paid'   %}selected{% endif %}>Paid</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Line Items -->
+        <div class="pl-section-title">Line Items</div>
+
+        <div class="pl-items-header">
+          <span>Service Name</span>
+          <span>Detail</span>
+          <span>Qty</span>
+          <span>Amount (₹)</span>
+          <span></span>
+        </div>
+
+        <div id="items">
+          {% for item in invoice.items.all %}
+          <div class="pl-item-row">
+            <input name="service_name[]" value="{{ item.service_name }}" class="pl-input" placeholder="Service name">
+            <input name="service_detail[]" value="{{ item.service_detail }}" class="pl-input" placeholder="Detail">
+            <input name="quantity[]" value="{{ item.quantity }}" class="pl-input qty" type="number" min="1" oninput="calc()">
+            <input name="amount[]" value="{{ item.amount }}" class="pl-input amt" type="number" oninput="calc()">
+            <button type="button" class="pl-remove-btn" onclick="removeRow(this)">✕</button>
+          </div>
+          {% endfor %}
+        </div>
+
+        <button type="button" class="pl-btn-add" onclick="addRow()">+ Add Line Item</button>
+
+        <!-- Total -->
+        <div class="pl-total-bar">
+          <span>Total</span>
+          <strong>₹ <span id="total">0.00</span></strong>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display:flex; gap:10px; margin-top:24px;">
+          <a href="{% url 'invoice_list' %}" class="pl-btn-cancel">Cancel</a>
+          <button type="submit" class="pl-btn-submit">Save Invoice</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function addRow() {
+  const div = document.createElement('div');
+  div.classList.add('pl-item-row');
+  div.innerHTML = `
+    <input name="service_name[]" class="pl-input" placeholder="Service name">
+    <input name="service_detail[]" class="pl-input" placeholder="Detail">
+    <input name="quantity[]" class="pl-input qty" type="number" min="1" value="1" oninput="calc()">
+    <input name="amount[]" class="pl-input amt" type="number" oninput="calc()">
+    <button type="button" class="pl-remove-btn" onclick="removeRow(this)">✕</button>
+  `;
+  document.getElementById('items').appendChild(div);
+}
+
+function removeRow(btn) {
+  btn.closest('.pl-item-row').remove();
+  calc();
+}
+
+function calc() {
+  let total = 0;
+  document.querySelectorAll('.pl-item-row').forEach(r => {
+    const q = parseFloat(r.querySelector('.qty').value) || 0;
+    const a = parseFloat(r.querySelector('.amt').value) || 0;
+    total += q * a;
+  });
+  document.getElementById('total').innerText =
+    total.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+}
+
+calc();
+</script>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
+    <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
+    <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
+    <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
+    <script src="{% static 'assets/js/config.js' %}"></script>
+    <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
+    <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.js' %}"></script>
+    <script src="{% static 'assets/js/header-slick.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"></script>
+    <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
+    <script src="{% static 'assets/js/chart/apex-chart/moment.min.js' %}"></script>
+    <script src="{% static 'assets/js/notify/bootstrap-notify.min.js' %}"></script>
+    <script src="{% static 'assets/js/dashboard/default.js' %}"></script>
+    <script src="{% static 'assets/js/notify/index.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/datatable.custom.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/datatable.custom1.js' %}"></script>
+    <script src="{% static 'assets/js/owlcarousel/owl.carousel.js' %}"></script>
+    <script src="{% static 'assets/js/owlcarousel/owl-custom.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/handlebars.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/typeahead.bundle.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead/typeahead.custom.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
+    <script src="{% static 'assets/js/height-equal.js' %}"></script>
+{% endblock %}

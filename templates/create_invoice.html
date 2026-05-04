@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Invoice — Trendo</title>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #111827;
+    --accent: #6366f1;
+    --bg: #f8fafc;
+    --border: #e2e8f0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    padding: 50px 20px;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 1100px;
+    margin: auto;
+    background: #fff;
+    padding: 50px;
+    border-radius: 28px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.05);
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+h1 {
+    font-family: 'DM Serif Display';
+    font-size: 40px;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.field {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+/* ITEMS */
+.row {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr 1fr 50px;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.add-btn {
+    margin-top: 15px;
+    padding: 14px;
+    border: 2px dashed var(--border);
+    background: none;
+    border-radius: 14px;
+    cursor: pointer;
+}
+
+/* FOOTER */
+.footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    align-items: center;
+}
+
+.total {
+    font-size: 26px;
+    font-family: 'DM Serif Display';
+}
+
+.submit {
+    background: var(--primary);
+    color: #fff;
+    padding: 16px 40px;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Create Invoice</h1>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="grid">
+            <div>
+                <label class="label">Client</label>
+                <select name="client" class="field" required>
+                    <option value="">Select Client</option>
+                    {% for c in clients %}
+                    <option value="{{ c.id }}">
+                        {{ c.company_name|default:c.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="label">Due Date</label>
+                <input type="date" name="due_date" class="field">
+            </div>
+        </div>
+
+        <h3 style="margin-bottom:15px;">Services</h3>
+
+        <div id="items">
+            <div class="row">
+                <input name="service_name[]" class="field" placeholder="Service">
+                <input name="service_detail[]" class="field" placeholder="Details">
+                <input name="quantity[]" type="number" value="1" class="field qty" oninput="calc()">
+                <input name="amount[]" type="number" step="0.01" class="field amt" oninput="calc()">
+                <button type="button" onclick="removeRow(this)">✕</button>
+            </div>
+        </div>
+
+        <button type="button" class="add-btn" onclick="addRow()">+ Add Service</button>
+
+        <div class="footer">
+            <div class="total">
+                ₹ <span id="total">0.00</span>
+            </div>
+            <button type="submit" class="submit">Create Invoice</button>
+        </div>
+
+    </form>
+</div>
+
+<script>
+function addRow(){
+    let div = document.createElement('div');
+    div.classList.add('row');
+
+    div.innerHTML = `
+        <input name="service_name[]" class="field" placeholder="Service">
+        <input name="service_detail[]" class="field" placeholder="Details">
+        <input name="quantity[]" type="number" value="1" class="field qty" oninput="calc()">
+        <input name="amount[]" type="number" step="0.01" class="field amt" oninput="calc()">
+        <button type="button" onclick="removeRow(this)">✕</button>
+    `;
+
+    document.getElementById('items').appendChild(div);
+}
+
+function removeRow(btn){
+    btn.parentElement.remove();
+    calc();
+}
+
+function calc(){
+    let total = 0;
+
+    document.querySelectorAll('.row').forEach(r => {
+        let q = parseFloat(r.querySelector('.qty').value) || 0;
+        let a = parseFloat(r.querySelector('.amt').value) || 0;
+        total += q * a;
+    });
+
+    document.getElementById('total').innerText =
+        total.toLocaleString('en-IN', {minimumFractionDigits:2});
+}
+
+calc();
+</script>
+
+</body>
+</html>

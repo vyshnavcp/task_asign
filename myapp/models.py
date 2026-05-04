@@ -201,6 +201,72 @@ class CompanyService(models.Model):
 
     def __str__(self):
         return self.title
+    
+class Invoice(models.Model):
+    STATUS_CHOICES = [
+        ('unpaid', 'Unpaid'),
+        ('paid', 'Paid'),
+    ]
+
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    proposal = models.OneToOneField(Proposal, on_delete=models.SET_NULL, null=True, blank=True)
+
+    invoice_number = models.CharField(max_length=50, unique=True, blank=True)
+
+    issue_date = models.DateField(auto_now_add=True)
+    due_date = models.DateField()
+
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='unpaid')
+
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    def save(self, *args, **kwargs):
+
+        if not self.invoice_number:
+
+            if self.proposal:
+                self.invoice_number = f"INV-{self.proposal.proposal_number}"
+
+            else:
+                last = Invoice.objects.order_by('-id').first()
+
+                if last and last.invoice_number:
+                    try:
+                        last_num = int(last.invoice_number.split('-')[-1])
+                        new_num = last_num + 1
+                    except:
+                        new_num = self.id or 1
+                else:
+                    new_num = 1
+
+                self.invoice_number = f"INV-{new_num:04d}"
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.invoice_number
+
+class InvoiceItem(models.Model):
+    invoice = models.ForeignKey(Invoice, related_name='items', on_delete=models.CASCADE)
+
+    service_name = models.CharField(max_length=255)
+    service_detail = models.TextField(blank=True)
+
+    quantity = models.IntegerField(default=1)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    @property
+    def line_total(self):
+        return self.quantity * self.amount
+    
+    
+
+
+
+
+
+    
+
 
 
     

@@ -175,6 +175,23 @@
                      
                     </ul>
                   </li>
+                   <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
+                      <svg class="stroke-icon">
+                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
+                      </svg>
+                      <svg class="fill-icon">
+                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
+                      <i class="bi bi-file-earmark-text" style="font-size:medium;"></i><span>Invoice</span></a>
+                    <ul class="sidebar-submenu">
+                        
+                         <li><a href="{% url 'invoice_list' %}">Invoice List</a></li>
+                         <li><a href="{% url 'create_invoice' %}">Create Invoice</a></li>
+                      
+
+                      
+                     
+                    </ul>
+                  </li>
                    {% endif %}
                  
                  {% if request.user.is_superuser %}

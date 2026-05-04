@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice {{ invoice.invoice_number }} — Ecodians</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+
+        body {
+            font-family: 'DM Sans', Arial, sans-serif;
+            background: #fff;
+            margin: 0;
+            color: #000;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 60px;
+            min-height: 1000px;
+        }
+
+        /* ── TOP BAR ── */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 60px;
+        }
+
+        .brand-logo {
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .invoice-meta {
+            text-align: right;
+        }
+
+        .meta-text {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        /* ── ADDRESS GRID ── */
+        .address-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .address-block h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #000;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #000;
+            display: inline-block;
+            padding-bottom: 4px;
+        }
+
+        .address-content {
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        /* ── ITEMS TABLE ── */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .items-table th {
+            text-align: left;
+            background: #000;
+            color: #fff;
+            padding: 12px 15px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .items-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .items-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .text-right { text-align: right; }
+        .font-mono  { font-family: 'DM Mono', 'Courier New', monospace; }
+
+        /* ── TOTAL ── */
+        .total-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 60px;
+        }
+
+        .total-row {
+            width: 280px;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: #f9f9f9;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        /* ── FOOTER ── */
+        .footer-info {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 50px;
+            padding-top: 40px;
+            border-top: 1px solid #000;
+        }
+
+        .info-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .bank-details {
+            font-family: 'DM Mono', 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.9;
+        }
+
+        .contact-details {
+            font-size: 12px;
+            color: #444;
+            line-height: 1.9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="top-bar">
+        <div class="brand-logo">Ecodians</div>
+        <div class="invoice-meta">
+            <div class="meta-text" style="font-size: 20px;">Invoice</div>
+            <div class="meta-text">No: {{ invoice.invoice_number }}</div>
+            <div class="meta-text">Date: {{ invoice.issue_date }}</div>
+        </div>
+    </div>
+
+    <!-- Addresses -->
+    <div class="address-grid">
+        <div class="address-block">
+            <h3>Invoice To</h3>
+            <div class="address-content">
+                <strong>{{ invoice.client.company_name }}</strong>
+            </div>
+        </div>
+        <div class="address-block" style="text-align: right;">
+            <h3>From</h3>
+            <div class="address-content">
+                <strong>Ecodians</strong><br>
+                11/166 F1st Floor, Basuri Arcade<br>
+                Kalleri, Poovattuparamba<br>
+                Kozhikode, Kerala 673008
+            </div>
+        </div>
+    </div>
+
+    <!-- Items Table -->
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Service</th>
+                <th class="text-right">Qty</th>
+                <th class="text-right">Amount</th>
+                <th class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in invoice.items.all %}
+            <tr>
+                <td><strong>{{ item.service_name }}</strong></td>
+                <td class="text-right font-mono">{{ item.quantity }}</td>
+                <td class="text-right font-mono">{{ item.amount }}</td>
+                <td class="text-right font-mono">{{ item.line_total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Total -->
+    <div class="total-wrapper">
+        <div class="total-row">
+            <span>Total</span>
+            <span class="font-mono">₹ {{ invoice.total_amount }}</span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-info">
+        <div>
+            <div class="info-title">Payment Info</div>
+            <div class="bank-details">
+                Account Name : Ecodians<br>
+                Account No &nbsp;&nbsp;: 64580200014526<br>
+                Bank &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: SBI<br>
+                IFSC Code &nbsp;&nbsp;&nbsp;: BARBOVJCHEV
+            </div>
+        </div>
+        <div>
+            <div class="info-title">Contact</div>
+            <div class="contact-details">
+                Ecodians<br>
+                Kozhikode, Kerala<br>
+                +91 9846331415<br>
+                hello@trendo.in
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
