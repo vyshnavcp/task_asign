@@ -1,167 +1,229 @@
-
 {% extends 'main.html' %}
-{% block title %}Home{% endblock %}
+{% block title %}Assign Task{% endblock %}
 {% load static %}
 
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
-    <!-- ico-font-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
-    <!-- Themify icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
-    <!-- Flag icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
-    <!-- Feather icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
-    <!-- Plugins css start-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
-    <!-- Plugins css Ends-->
-    <!-- Bootstrap css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
-    <!-- App css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
-    <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
-    <style>
-/* Card */
-.premium-card {
-    background: #ffffff;
-    border-radius: 16px;
-    border: 1px solid #eef1f6;
+
+<style>
+  /* ───── PAGE WRAPPER ───── */
+  .pl-wrap {
+    padding: 28px 28px;
+    background: #f4f5f7;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
+  /* ───── TOP BAR ───── */
+  .pl-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    background-color: white;
+    padding: 22px;
+  }
+  .pl-topbar h4 {
+    font-size: 21px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+  }
+  .pl-topbar p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 4px 0 0;
+  }
+
+  /* ───── FORM CARD ───── */
+  .pl-form-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07);
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.04);
-}
+    max-width: 640px;
+    margin: 0 auto;
+  }
 
-/* Header */
-.premium-header {
-    padding: 20px;
-    background-color: black;
-    color: #fff;
-}
+  /* ───── FORM BODY ───── */
+  .pl-form-body {
+    padding: 28px 28px;
+  }
 
-.premium-header small {
-    opacity: 0.8;
-}
-
-/* Body */
-.premium-body {
-    padding: 25px;
-}
-
-/* Inputs */
-.form-control {
-    border-radius: 10px;
-    padding: 12px;
-    border: 1px solid #e5e7eb;
-    transition: all 0.2s ease;
-}
-
-.form-control:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
-}
-
-/* Button */
-.btn-premium {
-    background-color: black;
-    border: none;
-    border-radius: 10px;
-    padding: 12px;
+  /* ───── FORM ELEMENTS ───── */
+  .pl-label {
+    display: block;
+    font-size: 13px;
     font-weight: 600;
-    color: #fff;
-    transition: 0.2s;
-}
+    color: #374151;
+    margin-bottom: 6px;
+  }
 
-.btn-premium:hover {
-    opacity: 0.9;
-}
+  .pl-input,
+  .pl-select,
+  .pl-textarea {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: #374151;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  .pl-input:focus,
+  .pl-select:focus,
+  .pl-textarea:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
+  }
+  .pl-textarea {
+    resize: vertical;
+    min-height: 90px;
+  }
+  .pl-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  .pl-field {
+    margin-bottom: 20px;
+  }
+
+  /* ── Time row ── */
+  .pl-time-row {
+    display: flex;
+    gap: 12px;
+  }
+  .pl-time-row .pl-field {
+    flex: 1;
+  }
+
+  /* ── Divider ── */
+  .pl-divider {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 4px 0 24px;
+  }
+
+  /* ───── SUBMIT BUTTON ───── */
+  .pl-btn-submit {
+    width: 100%;
+    background: #22c55e;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 11px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 4px;
+  }
+  .pl-btn-submit:hover { background: #16a34a; }
 </style>
 {% endblock %}
+
 {% block content %}
+<div class="pl-wrap">
 
-
-
-<div class="container-fluid py-4">
-  <div class="row justify-content-center">
-    <div class="col-lg-6">
-
-      <div class="premium-card">
-
-        <!-- Header -->
-        <div class="premium-header">
-          <h5 class="mb-0" style="color: white;">Assign Task</h5>
-          <small>Create task for staff</small>
-        </div>
-
-        <!-- Body -->
-        <div class="premium-body">
-
-          <form method="POST">
-            {% csrf_token %}
-
-            <!-- Staff -->
-            <label class="form-label">Select Staff</label>
-            <select name="staff" class="form-control mb-3" required>
-              <option value="">Choose staff...</option>
-              {% for s in staff_list %}
-                <option value="{{ s.id }}">{{ s.authuser.username }}</option>
-              {% endfor %}
-            </select>
-
-            <!-- Title -->
-            <label class="form-label">Task Title</label>
-            <input type="text" name="title" class="form-control mb-3" placeholder="Enter task title">
-
-            <!-- Description -->
-            <label class="form-label">Description</label>
-            <textarea name="description" class="form-control mb-3" rows="3" placeholder="Write details..."></textarea>
-
-            <!-- Time -->
-            <label class="form-label">Expected Time</label>
-            <div class="d-flex gap-2 mb-4">
-              <input type="number" name="hours" class="form-control" placeholder="Hours">
-              <input type="number" name="minutes" class="form-control" placeholder="Minutes">
-            </div>
-
-            <button class="btn btn-premium w-100">Assign Task</button>
-
-          </form>
-
-        </div>
-      </div>
-
+  <!-- Top bar -->
+  <div class="pl-topbar">
+    <div>
+      <h4>Assign Task</h4>
+      <p>Create and assign a task to a staff member</p>
     </div>
   </div>
-</div>
+
+  <!-- Form Card -->
+  <div class="pl-form-card">
+    <div class="pl-form-body">
+      <form method="POST">
+        {% csrf_token %}
+
+        <!-- Staff -->
+        <div class="pl-field">
+          <label class="pl-label">Select Staff</label>
+          <select name="staff" class="pl-select" required>
+            <option value="">Choose staff…</option>
+            {% for s in staff_list %}
+              <option value="{{ s.id }}">{{ s.authuser.username }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <hr class="pl-divider">
+
+        <!-- Title -->
+        <div class="pl-field">
+          <label class="pl-label">Task Title</label>
+          <input type="text" name="title" class="pl-input" placeholder="Enter task title" required>
+        </div>
+
+        <!-- Description -->
+        <div class="pl-field">
+          <label class="pl-label">Description</label>
+          <textarea name="description" class="pl-textarea" placeholder="Write task details…"></textarea>
+        </div>
+
+        <!-- Expected Time -->
+        <div class="pl-field">
+          <label class="pl-label">Expected Time</label>
+          <div class="pl-time-row">
+            <div class="pl-field" style="margin-bottom:0;">
+              <input type="number" name="hours" class="pl-input" placeholder="Hours" min="0">
+            </div>
+            <div class="pl-field" style="margin-bottom:0;">
+              <input type="number" name="minutes" class="pl-input" placeholder="Minutes" min="0" max="59">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="pl-btn-submit">Assign Task</button>
+
+      </form>
+    </div>
+  </div><!-- /form card -->
+
+</div><!-- /wrap -->
 {% endblock %}
 
 {% block js %}
-    <!-- latest jquery-->
     <script src="{% static 'assets/js/jquery.min.js' %}"></script>
-    <!-- Bootstrap js-->
     <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
-    <!-- feather icon js-->
     <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
     <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
-    <!-- scrollbar js-->
     <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
     <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
-    <!-- Sidebar jquery-->
     <script src="{% static 'assets/js/config.js' %}"></script>
-    <!-- Plugins JS start-->
     <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
     <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.js' %}"></script>
     <script src="{% static 'assets/js/header-slick.js' %}"></script>
     <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
-    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"> </script>
+    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"></script>
     <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
@@ -180,5 +242,4 @@
     <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
     <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
     <script src="{% static 'assets/js/height-equal.js' %}"></script>
-    <!-- Plugins JS Ends-->
 {% endblock %}

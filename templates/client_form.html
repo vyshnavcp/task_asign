@@ -1,108 +1,282 @@
-
 {% extends 'main.html' %}
-{% block title %}Home{% endblock %}
+{% block title %}{% if client %}Edit{% else %}Add{% endif %} Client{% endblock %}
 {% load static %}
-
+ 
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
-    <!-- ico-font-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
-    <!-- Themify icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
-    <!-- Flag icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
-    <!-- Feather icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
-    <!-- Plugins css start-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
-    <!-- Plugins css Ends-->
-    <!-- Bootstrap css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
-    <!-- App css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
-    <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+ 
+<style>
+  /* ───── PAGE WRAPPER ───── */
+  .pl-wrap {
+    padding: 28px 28px;
+    background: #f4f5f7;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+ 
+  /* ───── TOP BAR ───── */
+  .pl-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    background-color: white;
+    padding: 22px;
+  }
+  .pl-topbar h4 {
+    font-size: 21px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+  }
+  .pl-topbar p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 4px 0 0;
+  }
+ 
+  /* ───── FORM CARD ───── */
+  .pl-form-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+    overflow: hidden;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+ 
+  /* ───── FORM BODY ───── */
+  .pl-form-body {
+    padding: 28px 28px;
+  }
+ 
+  /* ───── FORM ELEMENTS ───── */
+  .pl-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+  }
+  .pl-label .req { color: #e24b4a; margin-left: 2px; }
+ 
+  .pl-input,
+  .pl-textarea {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: #374151;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  .pl-input:focus,
+  .pl-textarea:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
+  }
+  .pl-textarea {
+    resize: vertical;
+    min-height: 90px;
+  }
+ 
+  .pl-field {
+    margin-bottom: 20px;
+  }
+ 
+  /* ── Two-column row ── */
+  .pl-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .pl-row .pl-field {
+    flex: 1;
+    margin-bottom: 0;
+  }
+ 
+  /* ── Divider ── */
+  .pl-divider {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 4px 0 24px;
+  }
+ 
+  /* ── Required note ── */
+  .pl-req-note {
+    font-size: 12px;
+    color: #9ca3af;
+    margin: 8px 0 0;
+  }
+  .pl-req-note span { color: #e24b4a; }
+ 
+  /* ── Actions ── */
+  .pl-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+  }
+ 
+  /* ───── SUBMIT BUTTON ───── */
+  .pl-btn-submit {
+    flex: 1;
+    background: #22c55e;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 11px;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+  }
+  .pl-btn-submit:hover { background: #16a34a; }
+ 
+  /* ── Cancel link ── */
+  .pl-btn-cancel {
+    background: transparent;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 10px 20px;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    transition: all 0.13s;
+    white-space: nowrap;
+  }
+  .pl-btn-cancel:hover {
+    background: #f4f5f7;
+    border-color: #9ca3af;
+    color: #374151;
+    text-decoration: none;
+  }
+</style>
 {% endblock %}
-
+ 
 {% block content %}
-<div class="container mt-4">
-
-    <div class="card shadow-sm">
-        <div class="card-body">
-
-            <h4 class="mb-3">
-                {% if client %}Edit{% else %}Add{% endif %} Client
-            </h4>
-
-            <form method="POST">
-                {% csrf_token %}
-
-                <div class="mb-3">
-                    <label>Name</label>
-                    <input type="text" name="name" class="form-control"
-                           value="{{ client.name|default:'' }}" required>
-                </div>
-
-                <div class="mb-3">
-                    <label>Company Name</label>
-                    <input type="text" name="company_name" class="form-control"
-                           value="{{ client.company_name|default:'' }}" required>
-                </div>
-
-                <div class="mb-3">
-                    <label>Address</label>
-                    <textarea name="address" class="form-control" required>{{ client.address|default:'' }}</textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label>Phone</label>
-                    <input type="text" name="phone" class="form-control"
-                           value="{{ client.phone|default:'' }}">
-                </div>
-
-                <div class="mb-3">
-                    <label>Email</label>
-                    <input type="email" name="email" class="form-control"
-                           value="{{ client.email|default:'' }}">
-                </div>
-
-                <button class="btn btn-success">Save</button>
-                <a href="{% url 'client_list' %}" class="btn btn-secondary">Cancel</a>
-
-            </form>
-
-        </div>
+<div class="pl-wrap">
+ 
+  <!-- Top bar -->
+  <div class="pl-topbar">
+    <div>
+      <h4>{% if client %}Edit Client{% else %}Add New Client{% endif %}</h4>
+      <p>{% if client %}Update the details for {{ client.name }}{% else %}Fill in the details to create a new client{% endif %}</p>
     </div>
-
+  </div>
+ 
+  <!-- Form Card -->
+  <div class="pl-form-card">
+    <div class="pl-form-body">
+      <form method="POST">
+        {% csrf_token %}
+ 
+        <!-- Name + Company -->
+        <div class="pl-row">
+          <div class="pl-field">
+            <label class="pl-label">Name <span class="req">*</span></label>
+            <input type="text" name="name" class="pl-input"
+                   placeholder="e.g. Rahul Sharma"
+                   value="{{ client.name|default:'' }}" required>
+          </div>
+          <div class="pl-field">
+            <label class="pl-label">Company Name <span class="req">*</span></label>
+            <input type="text" name="company_name" class="pl-input"
+                   placeholder="e.g. Acme Pvt Ltd"
+                   value="{{ client.company_name|default:'' }}" required>
+          </div>
+        </div>
+ 
+        <hr class="pl-divider">
+ 
+        <!-- Address -->
+        <div class="pl-field">
+          <label class="pl-label">Address <span class="req">*</span></label>
+          <textarea name="address" class="pl-textarea"
+                    placeholder="Street, City, State, PIN" required>{{ client.address|default:'' }}</textarea>
+        </div>
+ 
+        <!-- Phone + Email -->
+        <div class="pl-row">
+          <div class="pl-field">
+            <label class="pl-label">Phone</label>
+            <input type="text" name="phone" class="pl-input"
+                   placeholder="+91 98765 43210"
+                   value="{{ client.phone|default:'' }}">
+          </div>
+          <div class="pl-field">
+            <label class="pl-label">Email</label>
+            <input type="email" name="email" class="pl-input"
+                   placeholder="client@example.com"
+                   value="{{ client.email|default:'' }}">
+          </div>
+        </div>
+ 
+        <p class="pl-req-note"><span>*</span> Required fields</p>
+ 
+        <hr class="pl-divider" style="margin-top: 20px;">
+ 
+        <!-- Actions -->
+        <div class="pl-actions">
+          <button type="submit" class="pl-btn-submit">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Save Client
+          </button>
+          <a href="{% url 'client_list' %}" class="pl-btn-cancel">Cancel</a>
+        </div>
+ 
+      </form>
+    </div>
+  </div>
+ 
 </div>
 {% endblock %}
+ 
 {% block js %}
-    <!-- latest jquery-->
     <script src="{% static 'assets/js/jquery.min.js' %}"></script>
-    <!-- Bootstrap js-->
     <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
-    <!-- feather icon js-->
     <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
     <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
-    <!-- scrollbar js-->
     <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
     <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
-    <!-- Sidebar jquery-->
     <script src="{% static 'assets/js/config.js' %}"></script>
-    <!-- Plugins JS start-->
     <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
     <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.js' %}"></script>
     <script src="{% static 'assets/js/header-slick.js' %}"></script>
     <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
-    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"> </script>
+    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"></script>
     <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
@@ -121,5 +295,4 @@
     <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
     <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
     <script src="{% static 'assets/js/height-equal.js' %}"></script>
-    <!-- Plugins JS Ends-->
 {% endblock %}

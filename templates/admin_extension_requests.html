@@ -2,6 +2,7 @@
 {% block title %}Extension Requests{% endblock %}
 {% load static %}
 {% load time_filters %}
+
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
@@ -18,307 +19,494 @@
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
-    <style>
-        body { background: #f3f4f6; }
-        .page-wrap { padding: 30px 36px; }
-        h2 { font-size: 1.5rem; font-weight: 700; color: #111827; margin-bottom: 6px; }
-        .subtitle { color: #6b7280; font-size: .9rem; margin-bottom: 28px; }
 
-        .chips { display:flex; gap:14px; margin-bottom:28px; flex-wrap:wrap; }
-        .chip {
-            background:#fff; border-radius:10px; padding:14px 22px;
-            box-shadow:0 2px 8px rgba(0,0,0,.07);
-            display:flex; flex-direction:column; align-items:center; min-width:110px;
-        }
-        .chip .num { font-size:1.7rem; font-weight:700; }
-        .chip .lbl { font-size:.78rem; color:#6b7280; margin-top:2px; }
-        .chip.pending  .num { color:#d97706; }
-        .chip.approved .num { color:#059669; }
-        .chip.rejected .num { color:#dc2626; }
+<style>
+  /* ───── PAGE WRAPPER ───── */
+  .pl-wrap {
+    padding: 28px 28px;
+    background: #f4f5f7;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
 
-        .msg-box { border-radius:8px; padding:10px 16px; margin-bottom:18px; font-size:.88rem; }
-        .msg-error   { background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; }
-        .msg-success { background:#d1fae5; color:#065f46; border:1px solid #6ee7b7; }
-        .msg-warning { background:#fef3c7; color:#92400e; border:1px solid #fcd34d; }
+  /* ───── TOP BAR ───── */
+  .pl-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    background-color: white;
+    padding: 22px;
+  }
+  .pl-topbar h4 {
+    font-size: 21px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+  }
+  .pl-topbar p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 4px 0 0;
+  }
 
-        .table-card { background:#fff; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.07); overflow:hidden; }
-        .table-card table { width:100%; border-collapse:collapse; }
-        .table-card thead { background:black; color:#fff; }
-        .table-card thead th { padding:14px 18px; font-size:.82rem; font-weight:600; letter-spacing:.03em; text-transform:uppercase; }
-        .table-card tbody tr { border-bottom:1px solid #f3f4f6; transition:background .15s; }
-        .table-card tbody tr:hover { background:#f9fafb; }
-        .table-card tbody td { padding:14px 18px; font-size:.88rem; color:#374151; vertical-align:top; }
+  /* ───── SUMMARY CHIPS ───── */
+  .pl-chips {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .pl-chip {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px 24px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 110px;
+  }
+  .pl-chip .num {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+  .pl-chip .lbl {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 3px;
+  }
+  .pl-chip.pending  .num { color: #d97706; }
+  .pl-chip.approved .num { color: #22c55e; }
+  .pl-chip.rejected .num { color: #ef4444; }
 
-        .badge { display:inline-block; padding:4px 12px; border-radius:20px; font-size:.78rem; font-weight:600; }
-        .badge-pending  { background:#fef3c7; color:#92400e; }
-        .badge-approved { background:#d1fae5; color:#065f46; }
-        .badge-rejected { background:#fee2e2; color:#991b1b; }
+  /* ───── FILTER TABS ───── */
+  .pl-filter-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .pl-filter-tab {
+    padding: 7px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.15s;
+    background: #e5e7eb;
+    color: #374151;
+  }
+  .pl-filter-tab.pending  { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+  .pl-filter-tab.approved { background: #dcfce7; color: #166534; border-color: #86efac; }
+  .pl-filter-tab.rejected { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+  .pl-filter-tab.active   { box-shadow: 0 0 0 3px rgba(34,197,94,0.3); }
 
-        .btn-approve {
-            background:#059669; color:#fff; border:none;
-            padding:7px 16px; border-radius:7px; font-size:.82rem;
-            cursor:pointer; text-decoration:none; display:inline-block;
-            margin-right:6px; transition:opacity .2s;
-        }
-        .btn-approve:hover { opacity:.85; color:#fff; }
+  /* ───── MESSAGES ───── */
+  .pl-msg {
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 18px;
+    font-size: 13px;
+  }
+  .pl-msg.error   { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+  .pl-msg.success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+  .pl-msg.warning { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
 
-        .btn-reject-open {
-            background:#dc2626; color:#fff; border:none;
-            padding:7px 16px; border-radius:7px; font-size:.82rem;
-            cursor:pointer; display:inline-block; transition:opacity .2s;
-        }
-        .btn-reject-open:hover { opacity:.85; }
+  /* ───── CARD ───── */
+  .pl-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+    overflow: hidden;
+  }
 
-        .modal-overlay {
-            display:none; position:fixed; inset:0;
-            background:rgba(0,0,0,.45); z-index:1000;
-            align-items:center; justify-content:center;
-        }
-        .modal-overlay.active { display:flex; }
-        .modal-box {
-            background:#fff; border-radius:14px; padding:32px;
-            width:420px; max-width:95vw;
-            box-shadow:0 8px 40px rgba(0,0,0,.18);
-        }
-        .modal-box h3 { margin:0 0 16px; font-size:1.1rem; color:#111827; }
-        .modal-box textarea {
-            width:100%; border:1px solid #d1d5db; border-radius:8px;
-            padding:10px 14px; font-size:.9rem; resize:vertical;
-            min-height:90px; box-sizing:border-box; background:#f9fafb;
-        }
-        .modal-box textarea:focus { outline:none; border-color:#dc2626; background:#fff; }
-        .modal-actions { display:flex; gap:12px; margin-top:18px; }
-        .modal-actions .btn-confirm-reject {
-            flex:1; background:#dc2626; color:#fff; border:none;
-            padding:10px; border-radius:8px; font-size:.9rem;
-            font-weight:600; cursor:pointer;
-        }
-        .modal-actions .btn-cancel-modal {
-            flex:1; background:#f3f4f6; color:#374151;
-            border:1px solid #d1d5db; padding:10px;
-            border-radius:8px; font-size:.9rem; cursor:pointer;
-        }
+  /* ───── TABLE ───── */
+  .pl-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    table-layout: auto;
+  }
+  .pl-table thead tr {
+    border-bottom: 1.5px solid #e8e8e8;
+    background: #fff;
+  }
+  .pl-table thead th {
+    padding: 13px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #222;
+    text-align: left;
+    white-space: nowrap;
+  }
+  .pl-table tbody tr {
+    border-bottom: 1px solid #f2f2f2;
+    transition: background 0.1s;
+  }
+  .pl-table tbody tr:last-child { border-bottom: none; }
+  .pl-table tbody tr:hover { background: #f9fffe; }
+  .pl-table td {
+    padding: 14px 18px;
+    color: #374151;
+    vertical-align: top;
+    line-height: 1.5;
+    font-size: 13.5px;
+  }
 
-        .empty-state { text-align:center; padding:60px 20px; color:#9ca3af; }
-        .empty-state .icon { font-size:3rem; margin-bottom:12px; }
-        .empty-state p { font-size:.95rem; }
+  /* ── Staff name ── */
+  .pl-staff-name {
+    color: #2b5b64;
+    font-weight: 700;
+    font-size: 13.5px;
+  }
+  .pl-staff-username {
+    color: #9ca3af;
+    font-size: 12px;
+  }
 
-        .filter-tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
-        .filter-tab {
-            padding:7px 18px; border-radius:20px; font-size:.85rem;
-            font-weight:600; cursor:pointer; border:2px solid transparent;
-            transition:all .15s;
-        }
-        .filter-tab.all      { background:#e5e7eb; color:#374151; }
-        .filter-tab.pending  { background:#fef3c7; color:#92400e; border-color:#fcd34d; }
-        .filter-tab.approved { background:#d1fae5; color:#065f46; border-color:#6ee7b7; }
-        .filter-tab.rejected { background:#fee2e2; color:#991b1b; border-color:#fca5a5; }
-        .filter-tab.active   { box-shadow:0 0 0 3px rgba(37,99,235,.35); }
+  /* ── Task info ── */
+  .pl-task-title {
+    font-weight: 700;
+    color: #374151;
+  }
+  .pl-task-meta {
+    font-size: 12px;
+    color: #9ca3af;
+  }
+  .pl-task-exceeded {
+    font-size: 12px;
+    color: #ef4444;
+  }
 
-        .reason-text { max-width:220px; white-space:pre-wrap; word-break:break-word; }
-        .remark-text { color:#6b7280; font-style:italic; font-size:.82rem; }
+  /* ── Extra time ── */
+  .pl-extra-time {
+    font-weight: 700;
+    color: #1d4ed8;
+  }
 
-        /* Approval info box shown after admin approves */
-        .approved-info {
-            background:#ecfdf5; border:1px solid #6ee7b7;
-            border-radius:8px; padding:10px 14px;
-            font-size:.82rem; color:#065f46; line-height:1.5;
-            margin-top:6px;
-        }
-    </style>
+  /* ── Reason ── */
+  .pl-reason {
+    max-width: 200px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 13px;
+  }
+
+  /* ── Date ── */
+  .pl-date {
+    color: #555;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  /* ── Status badges ── */
+  .pl-badge {
+    display: inline-block;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 14px;
+    white-space: nowrap;
+  }
+  .pl-badge.approved { background: #22c55e; color: #fff; }
+  .pl-badge.pending  { background: #eab308; color: #fff; }
+  .pl-badge.rejected { background: #ef4444; color: #fff; }
+
+  .pl-remark {
+    color: #6b7280;
+    font-style: italic;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  /* ── Approved info box ── */
+  .pl-approved-info {
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #166534;
+    line-height: 1.5;
+    margin-top: 6px;
+  }
+
+  /* ── Action buttons ── */
+  .pl-btn-approve {
+    background: #22c55e;
+    color: #fff !important;
+    border: none;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 7px 14px;
+    text-decoration: none !important;
+    white-space: nowrap;
+    display: inline-block;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    margin-bottom: 5px;
+  }
+  .pl-btn-approve:hover { opacity: 0.85; color: #fff !important; }
+
+  .pl-btn-reject {
+    background: #ef4444;
+    color: #fff !important;
+    border: none;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 7px 14px;
+    white-space: nowrap;
+    display: inline-block;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .pl-btn-reject:hover { opacity: 0.85; }
+
+  .pl-reviewed {
+    color: #9ca3af;
+    font-size: 12.5px;
+  }
+
+  /* ───── EMPTY STATE ───── */
+  .pl-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #9ca3af;
+    font-size: 14px;
+  }
+
+  /* ───── REJECT MODAL ───── */
+  #pl-reject-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.38);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+  }
+  #pl-reject-modal.show { display: flex; }
+  .pl-modal-box {
+    background: #fff;
+    border-radius: 10px;
+    padding: 26px 28px;
+    max-width: 420px;
+    width: 92%;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  }
+  .pl-modal-box h6 {
+    font-size: 15px; font-weight: 700; color: #111; margin: 0 0 8px;
+  }
+  .pl-modal-box p {
+    font-size: 13px; color: #6b7280; margin: 0 0 14px;
+  }
+  .pl-modal-box textarea {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 13px;
+    resize: vertical;
+    min-height: 90px;
+    box-sizing: border-box;
+    background: #f9fafb;
+    outline: none;
+  }
+  .pl-modal-box textarea:focus { border-color: #ef4444; background: #fff; }
+  .pl-modal-foot {
+    display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px;
+  }
+  .pl-modal-cancel {
+    border: 1px solid #d1d5db; background: #fff; border-radius: 6px;
+    padding: 7px 18px; font-size: 13px; cursor: pointer; color: #374151;
+  }
+  .pl-modal-cancel:hover { background: #f9fafb; }
+  .pl-modal-confirm {
+    background: #ef4444; color: #fff; border: none; border-radius: 6px;
+    padding: 7px 18px; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .pl-modal-confirm:hover { background: #dc2626; }
+</style>
 {% endblock %}
 
 {% block content %}
-<div >
-    
-</div>
+<div class="pl-wrap">
 
-<div class="page-wrap">
-    <h2>⏱ Time Extension Requests</h2>
-    <p class="subtitle">Review and manage staff requests for additional task time.</p>
-
-    {% if messages %}
-        {% for message in messages %}
-        <div class="msg-box
-            {% if message.tags == 'error' %}msg-error
-            {% elif message.tags == 'success' %}msg-success
-            {% else %}msg-warning{% endif %}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    {% endif %}
-
-    <!-- Summary chips -->
-    <div class="chips">
-        <div class="chip">
-            <span class="num">{{ extension_requests|length }}</span>
-            <span class="lbl">Total</span>
-        </div>
-        <div class="chip pending">
-            <span class="num">
-                {% with count=0 %}
-                {% for r in extension_requests %}{% if r.status == 'pending' %}
-                    {% with count=count|add:1 %}{% endwith %}
-                {% endif %}{% endfor %}
-                {{ extension_requests|dictsort:"status"|length }}
-                {% endwith %}
-                {# Django doesn't have a simple count filter, so we use JS below #}
-            </span>
-            <span class="lbl" id="pending-count-lbl">Pending</span>
-        </div>
-        <div class="chip approved">
-            <span class="num" id="chip-approved">–</span>
-            <span class="lbl">Approved</span>
-        </div>
-        <div class="chip rejected">
-            <span class="num" id="chip-rejected">–</span>
-            <span class="lbl">Rejected</span>
-        </div>
+  <!-- Top bar -->
+  <div class="pl-topbar">
+    <div>
+      <h4>⏱ Time Extension Requests</h4>
+      <p>Review and manage staff requests for additional task time.</p>
     </div>
+  </div>
 
-    <!-- Filter tabs -->
-    <div class="filter-tabs">
-        <button class="filter-tab all active"  onclick="filterRows('all',  event)">All</button>
-        <button class="filter-tab pending"     onclick="filterRows('pending',  event)">⏳ Pending</button>
-        <button class="filter-tab approved"    onclick="filterRows('approved', event)">✔ Approved</button>
-        <button class="filter-tab rejected"    onclick="filterRows('rejected', event)">✖ Rejected</button>
+  <!-- Messages -->
+  {% if messages %}
+    {% for message in messages %}
+    <div class="pl-msg
+      {% if message.tags == 'error' %}error
+      {% elif message.tags == 'success' %}success
+      {% else %}warning{% endif %}">
+      {{ message }}
     </div>
+    {% endfor %}
+  {% endif %}
 
-    <!-- Table -->
-    <div class="table-card">
-        {% if extension_requests %}
-        <table id="extTable">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Staff</th>
-                    <th>Task</th>
-                    <th>Reason</th>
-                    <th>Extra Time</th>
-                    <th>Requested On</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for req in extension_requests %}
-                <tr data-status="{{ req.status }}">
-                    <td>{{ forloop.counter }}</td>
-                    <td>
-                        <strong>{{ req.staff.authuser.get_full_name|default:req.staff.authuser.username }}</strong><br>
-                        <span style="color:#9ca3af;font-size:.78rem;">@{{ req.staff.authuser.username }}</span>
-                    </td>
-                    <td>
-                        <strong>{{ req.task.title }}</strong><br>
-                        {% if req.task.expected_time %}
-                        <span style="color:#9ca3af;font-size:.78rem;">Allocated: {{ req.task.expected_time }}</span>
-                        {% endif %}
-                        {% if req.task.exceeded_time %}
-                        <br><span style="color:#dc2626;font-size:.78rem;">
-                            Exceeded: {{ req.task.exceeded_time|duration_format }}
-                        </span>
-                        {% endif %}
-                        {% if req.status == 'approved' and req.task.status == 'paused' %}
-                        <br>
-                        <div class="approved-info">
-                            ✔ Extension applied. Staff can now resume the task.
-                        </div>
-                        {% endif %}
-                    </td>
-                    <td><div class="reason-text">{{ req.reason }}</div></td>
-                    <td>
-                        <span style="font-weight:700;color:#1d4ed8;">
-                            {{ req.requested_extra_time }}
-                        </span>
-                    </td>
-                    <td>{{ req.requested_on|date:"d M Y, H:i" }}</td>
-                    <td>
-                        <span class="badge badge-{{ req.status }}">
-                            {% if req.status == 'pending' %}⏳ Pending
-                            {% elif req.status == 'approved' %}✔ Approved
-                            {% else %}✖ Rejected{% endif %}
-                        </span>
-                        {% if req.admin_remark %}
-                        <br><span class="remark-text">{{ req.admin_remark|truncatechars:50 }}</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if req.status == 'pending' %}
-                            <a href="{% url 'approve_extension' req.id %}" class="btn-approve">✔ Approve</a>
-                            <button class="btn-reject-open"
-                                    onclick="openRejectModal({{ req.id }})">✖ Reject</button>
-                        {% else %}
-                            <span style="color:#9ca3af;font-size:.82rem;">
-                                Reviewed<br>{{ req.reviewed_on|date:"d M Y" }}
-                            </span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <div class="empty-state">
-            <div class="icon">📭</div>
-            <p>No extension requests yet.</p>
-        </div>
-        {% endif %}
+  <!-- Summary chips -->
+  <div class="pl-chips">
+    <div class="pl-chip">
+      <span class="num" id="chip-total">–</span>
+      <span class="lbl">Total</span>
     </div>
-</div>
+    <div class="pl-chip pending">
+      <span class="num" id="chip-pending">–</span>
+      <span class="lbl">Pending</span>
+    </div>
+    <div class="pl-chip approved">
+      <span class="num" id="chip-approved">–</span>
+      <span class="lbl">Approved</span>
+    </div>
+    <div class="pl-chip rejected">
+      <span class="num" id="chip-rejected">–</span>
+      <span class="lbl">Rejected</span>
+    </div>
+  </div>
 
-<!-- Reject modal -->
-<div class="modal-overlay" id="rejectModal">
-    <div class="modal-box">
-        <h3>✖ Reject Extension Request</h3>
-        <p style="color:#6b7280;font-size:.88rem;margin-bottom:14px;">
-            Optionally provide a remark explaining the rejection.
-        </p>
-        <form method="POST" id="rejectForm" action="">
-            {% csrf_token %}
-            <textarea name="admin_remark" placeholder="Optional remark for the staff member…"></textarea>
-            <div class="modal-actions">
-                <button type="submit" class="btn-confirm-reject">Confirm Reject</button>
-                <button type="button" class="btn-cancel-modal" onclick="closeRejectModal()">Cancel</button>
-            </div>
-        </form>
+  <!-- Filter tabs -->
+  <div class="pl-filter-tabs">
+    <button class="pl-filter-tab active" onclick="filterRows('all', event)">All</button>
+    <button class="pl-filter-tab pending"  onclick="filterRows('pending',  event)">⏳ Pending</button>
+    <button class="pl-filter-tab approved" onclick="filterRows('approved', event)">✔ Approved</button>
+    <button class="pl-filter-tab rejected" onclick="filterRows('rejected', event)">✖ Rejected</button>
+  </div>
+
+  <!-- Card -->
+  <div class="pl-card">
+    <div style="overflow-x:auto;">
+      {% if extension_requests %}
+      <table class="pl-table" id="extTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Staff</th>
+            <th>Task</th>
+            <th>Reason</th>
+            <th>Extra Time</th>
+            <th>Requested On</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for req in extension_requests %}
+          <tr data-status="{{ req.status }}">
+            <td>{{ forloop.counter }}</td>
+            <td>
+              <span class="pl-staff-name">{{ req.staff.authuser.get_full_name|default:req.staff.authuser.username }}</span><br>
+              <span class="pl-staff-username">@{{ req.staff.authuser.username }}</span>
+            </td>
+            <td>
+              <span class="pl-task-title">{{ req.task.title }}</span>
+              {% if req.task.expected_time %}
+              <br><span class="pl-task-meta">Allocated: {{ req.task.expected_time }}</span>
+              {% endif %}
+              {% if req.task.exceeded_time %}
+              <br><span class="pl-task-exceeded">Exceeded: {{ req.task.exceeded_time|duration_format }}</span>
+              {% endif %}
+              {% if req.status == 'approved' and req.task.status == 'paused' %}
+              <div class="pl-approved-info">✔ Extension applied. Staff can now resume the task.</div>
+              {% endif %}
+            </td>
+            <td><div class="pl-reason">{{ req.reason }}</div></td>
+            <td><span class="pl-extra-time">{{ req.requested_extra_time }}</span></td>
+            <td><span class="pl-date">{{ req.requested_on|date:"d M Y, H:i" }}</span></td>
+            <td>
+              <span class="pl-badge {{ req.status }}">
+                {% if req.status == 'pending' %}⏳ Pending
+                {% elif req.status == 'approved' %}✔ Approved
+                {% else %}✖ Rejected{% endif %}
+              </span>
+              {% if req.admin_remark %}
+              <div class="pl-remark">{{ req.admin_remark|truncatechars:50 }}</div>
+              {% endif %}
+            </td>
+            <td>
+              {% if req.status == 'pending' %}
+                <a href="{% url 'approve_extension' req.id %}" class="pl-btn-approve">✔ Approve</a><br>
+                <button class="pl-btn-reject" onclick="openRejectModal({{ req.id }})">✖ Reject</button>
+              {% else %}
+                <span class="pl-reviewed">Reviewed<br>{{ req.reviewed_on|date:"d M Y" }}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="pl-empty">
+        <div style="font-size:2.5rem;margin-bottom:10px;">📭</div>
+        <p>No extension requests yet.</p>
+      </div>
+      {% endif %}
     </div>
+  </div><!-- /card -->
+
+</div><!-- /wrap -->
+
+<!-- Reject Modal -->
+<div id="pl-reject-modal">
+  <div class="pl-modal-box">
+    <h6>✖ Reject Extension Request</h6>
+    <p>Optionally provide a remark explaining the rejection.</p>
+    <form method="POST" id="rejectForm" action="">
+      {% csrf_token %}
+      <textarea name="admin_remark" placeholder="Optional remark for the staff member…"></textarea>
+      <div class="pl-modal-foot">
+        <button type="button" class="pl-modal-cancel" onclick="closeRejectModal()">Cancel</button>
+        <button type="submit" class="pl-modal-confirm">Confirm Reject</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
 function openRejectModal(reqId) {
-    document.getElementById('rejectForm').action = '/extension-reject/' + reqId + '/';
-    document.getElementById('rejectModal').classList.add('active');
+  document.getElementById('rejectForm').action = '/extension-reject/' + reqId + '/';
+  document.getElementById('pl-reject-modal').classList.add('show');
 }
 function closeRejectModal() {
-    document.getElementById('rejectModal').classList.remove('active');
+  document.getElementById('pl-reject-modal').classList.remove('show');
 }
+document.getElementById('pl-reject-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeRejectModal();
+});
 
 function filterRows(status, e) {
-    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-    if (e && e.target) e.target.classList.add('active');
-
-    document.querySelectorAll('#extTable tbody tr').forEach(row => {
-        row.style.display = (status === 'all' || row.dataset.status === status) ? '' : 'none';
-    });
+  document.querySelectorAll('.pl-filter-tab').forEach(t => t.classList.remove('active'));
+  if (e && e.target) e.target.classList.add('active');
+  document.querySelectorAll('#extTable tbody tr').forEach(row => {
+    row.style.display = (status === 'all' || row.dataset.status === status) ? '' : 'none';
+  });
 }
 
-// Populate summary chips via JS (avoids complex Django template counting)
-(function() {
-    const rows = document.querySelectorAll('#extTable tbody tr');
-    let pending = 0, approved = 0, rejected = 0;
-    rows.forEach(r => {
-        if (r.dataset.status === 'pending')  pending++;
-        if (r.dataset.status === 'approved') approved++;
-        if (r.dataset.status === 'rejected') rejected++;
-    });
-    // Overwrite the chip numbers
-    const chips = document.querySelectorAll('.chip .num');
-    if (chips[0]) chips[0].textContent = rows.length;
-    if (chips[1]) chips[1].textContent = pending;
-    const approvedEl = document.getElementById('chip-approved');
-    const rejectedEl = document.getElementById('chip-rejected');
-    if (approvedEl) approvedEl.textContent = approved;
-    if (rejectedEl) rejectedEl.textContent = rejected;
+// Populate summary chips
+(function () {
+  const rows = document.querySelectorAll('#extTable tbody tr');
+  let pending = 0, approved = 0, rejected = 0;
+  rows.forEach(r => {
+    if (r.dataset.status === 'pending')  pending++;
+    if (r.dataset.status === 'approved') approved++;
+    if (r.dataset.status === 'rejected') rejected++;
+  });
+  document.getElementById('chip-total').textContent    = rows.length;
+  document.getElementById('chip-pending').textContent  = pending;
+  document.getElementById('chip-approved').textContent = approved;
+  document.getElementById('chip-rejected').textContent = rejected;
 })();
 </script>
 {% endblock %}

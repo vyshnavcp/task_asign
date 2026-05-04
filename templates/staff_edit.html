@@ -1,5 +1,6 @@
+
 {% extends 'main.html' %}
-{% block title %}Edit Staff{% endblock %}
+{% block title %}Home{% endblock %}
 {% load static %}
 
 {% block css %}
@@ -28,130 +29,222 @@
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
 
-    <style>
-        .border-dashed {
-            border: 2px dashed #d1d9e6 !important;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .border-dashed:hover {
-            border-color: #7366ff !important;
-            background-color: rgba(115, 102, 255, 0.05) !important;
-        }
-        .current-img-preview {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 12px;
-            border: 2px solid #7366ff;
-            margin-bottom: 10px;
-        }
-        .form-control.bg-light:focus {
-            background-color: #fff !important;
-            border: 1px solid #7366ff !important;
-            box-shadow: 0 0 0 4px rgba(115, 102, 255, 0.1);
-        }
-    </style>
+<style>
+/* ===== SAME GLOBAL STYLE ===== */
+.pl-wrap {
+  padding: 28px;
+  background: #f4f5f7;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.pl-topbar {
+  background: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+.pl-topbar h4 {
+  margin: 0;
+  font-weight: 700;
+}
+.pl-topbar p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* FORM CARD */
+.pl-form-card {
+  background: #fff;
+  border-radius: 10px;
+  max-width: 650px;
+  margin: auto;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.pl-form-body {
+  padding: 28px;
+}
+
+/* INPUTS */
+.pl-label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.pl-input, .pl-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  font-size: 13.5px;
+}
+.pl-input:focus, .pl-textarea:focus {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
+}
+
+.pl-textarea {
+  min-height: 90px;
+}
+
+.pl-field {
+  margin-bottom: 18px;
+}
+
+.pl-time-row {
+  display: flex;
+  gap: 12px;
+}
+.pl-time-row .pl-field {
+  flex: 1;
+}
+
+/* BUTTON */
+.pl-btn-submit {
+  width: 100%;
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 11px;
+  border-radius: 7px;
+  font-weight: 600;
+}
+.pl-btn-submit:hover {
+  background: #16a34a;
+}
+
+/* IMAGE */
+.pl-img-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid #22c55e;
+  margin-bottom: 10px;
+}
+
+/* UPLOAD BOX */
+.pl-upload {
+  border: 2px dashed #d1d5db;
+  padding: 20px;
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.pl-upload:hover {
+  border-color: #22c55e;
+  background: #f0fdf4;
+}
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="page-title">
-        <div class="row">
-            <div class="col-6">
-                <h3>Staff Management</h3>
-            </div>
-            <div class="col-6">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/"><i data-feather="home"></i></a></li>
-                    <li class="breadcrumb-item">Staff</li>
-                    <li class="breadcrumb-item active">Edit Staff</li>
-                </ol>
-            </div>
+<div class="pl-wrap">
+
+  <!-- Top -->
+  <div class="pl-topbar">
+    <h4>Edit Staff</h4>
+    <p>Update staff details</p>
+  </div>
+
+  <!-- Form -->
+  <div class="pl-form-card">
+    <div class="pl-form-body">
+
+      <!-- Image -->
+      {% if staff.image %}
+      <div style="text-align:center;">
+        <img src="{{ staff.image.url }}" class="pl-img-preview">
+      </div>
+      {% endif %}
+
+      <!-- Error -->
+      {% if error %}
+        <p style="color:red; font-size:13px;">{{ error }}</p>
+      {% endif %}
+
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Username + Email -->
+        <div class="pl-time-row">
+          <div class="pl-field">
+            <label class="pl-label">Username</label>
+            <input type="text" name="username"
+                   value="{{ staff.authuser.username }}"
+                   class="pl-input" required>
+          </div>
+
+          <div class="pl-field">
+            <label class="pl-label">Email</label>
+            <input type="email" name="email"
+                   value="{{ staff.authuser.email }}"
+                   class="pl-input" required>
+          </div>
         </div>
-    </div>
-</div>
 
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-xl-6 col-lg-8">
-            <div class="card shadow-sm border-0">
-                <div class="card-header pb-0 border-0 bg-white text-center">
-                    {% if staff.image %}
-                        <img src="{{ staff.image.url }}" class="current-img-preview shadow-sm">
-                    {% endif %}
-                    <h4 class="card-title mb-0">Edit Profile: {{ staff.authuser.username }}</h4>
-                    <p class="text-muted mt-1">Update the account information below.</p>
-                </div>
-                <div class="card-body">
-                    {% if error %}
-                        <div class="alert alert-light-danger border-left-danger" role="alert">
-                            <i class="icon-info-alt"></i> {{ error }}
-                        </div>
-                    {% endif %}
-
-                    <form method="POST" enctype="multipart/form-data" class="theme-form">
-                        {% csrf_token %}
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold text-dark">Username</label>
-                                <input type="text" name="username" value="{{ staff.authuser.username }}" class="form-control bg-light border-0" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold text-dark">Email Address</label>
-                                <input type="email" name="email" value="{{ staff.authuser.email }}" class="form-control bg-light border-0" required>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold text-dark">Password</label>
-                            <input type="password" name="password" class="form-control bg-light border-0" placeholder="Leave blank to keep current password">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold text-dark">Phone Number</label>
-                            <input type="text" name="phone" value="{{ staff.phone }}" class="form-control bg-light border-0" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold text-dark">Address</label>
-                            <textarea name="address" rows="3" class="form-control bg-light border-0" required>{{ staff.address }}</textarea>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label fw-bold text-dark">Update Profile Picture</label>
-                            <div class="px-3 py-4 border-dashed rounded-3 text-center bg-light" id="dropzone">
-                                <input type="file" name="image" class="form-control d-none" id="staffImage">
-                                <label for="staffImage" class="cursor-pointer mb-0 w-100">
-                                    <i class="fa fa-cloud-upload text-primary mb-2 fa-2x"></i>
-                                    <p class="mb-0 text-muted" id="file-label">Click to change photo or drag and drop</p>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="card-footer px-0 bg-transparent border-0 d-flex justify-content-end gap-2">
-                            <a href="/staff/" class="btn btn-light px-4">Cancel</a>
-                            <button type="submit" class="btn btn-primary px-5 shadow-sm">Update Staff Member</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+        <!-- Password -->
+        <div class="pl-field">
+          <label class="pl-label">Password</label>
+          <input type="password" name="password"
+                 class="pl-input"
+                 placeholder="Leave blank to keep current password">
         </div>
-    </div>
-</div>
-    <script>
-        // Make the dashed area trigger the file input
-        $('#dropzone').click(function() {
-            $('#staffImage').click();
-        });
 
-        // Update the label when a file is selected
-        $('#staffImage').change(function(e) {
-            var fileName = e.target.files[0].name;
-            $('#file-label').text("Selected: " + fileName).addClass("text-primary fw-bold");
-        });
-    </script>
+        <!-- Phone -->
+        <div class="pl-field">
+          <label class="pl-label">Phone</label>
+          <input type="text" name="phone"
+                 value="{{ staff.phone }}"
+                 class="pl-input" required>
+        </div>
+
+        <!-- Address -->
+        <div class="pl-field">
+          <label class="pl-label">Address</label>
+          <textarea name="address"
+                    class="pl-textarea"
+                    required>{{ staff.address }}</textarea>
+        </div>
+
+        <!-- Image Upload -->
+        <div class="pl-field">
+          <label class="pl-label">Update Profile Picture</label>
+
+          <div class="pl-upload" onclick="document.getElementById('img').click()">
+            <input type="file" name="image" id="img" hidden>
+            <p id="fileText">Click to upload image</p>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div style="display:flex; gap:10px; margin-top:20px;">
+          <a href="/staff/" style="flex:1; text-align:center; padding:10px;
+             border:1px solid #d1d5db; border-radius:7px; text-decoration:none;">
+            Cancel
+          </a>
+
+          <button type="submit" class="pl-btn-submit" style="flex:1;">
+            Update Staff
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>
+<script>
+document.getElementById('img').addEventListener('change', function(e){
+  if(e.target.files.length > 0){
+    document.getElementById('fileText').innerText =
+      "Selected: " + e.target.files[0].name;
+  }
+});
+</script>
 {% endblock %}
 
 

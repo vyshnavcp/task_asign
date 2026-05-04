@@ -1,144 +1,406 @@
-
 {% extends 'main.html' %}
-{% block title %}Home{% endblock %}
+{% block title %}Add Staff Member{% endblock %}
 {% load static %}
-
+ 
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
-    <!-- ico-font-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
-    <!-- Themify icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
-    <!-- Flag icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
-    <!-- Feather icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
-    <!-- Plugins css start-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
-    <!-- Plugins css Ends-->
-    <!-- Bootstrap css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
-    <!-- App css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
-    <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
-   
+ 
+<style>
+  /* ───── PAGE WRAPPER ───── */
+  .pl-wrap {
+    padding: 28px 28px;
+    background: #f4f5f7;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+ 
+  /* ───── TOP BAR ───── */
+  .pl-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    background-color: white;
+    padding: 22px;
+  }
+  .pl-topbar h4 {
+    font-size: 21px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+  }
+  .pl-topbar p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 4px 0 0;
+  }
+ 
+  /* ───── FORM CARD ───── */
+  .pl-form-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+    overflow: hidden;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+ 
+  /* ───── FORM BODY ───── */
+  .pl-form-body {
+    padding: 28px 28px;
+  }
+ 
+  /* ───── FORM ELEMENTS ───── */
+  .pl-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+  }
+  .pl-label .req { color: #e24b4a; margin-left: 2px; }
+ 
+  .pl-input,
+  .pl-textarea {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: #374151;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  .pl-input:focus,
+  .pl-textarea:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
+  }
+  .pl-input[type="password"] { letter-spacing: 0.1em; }
+  .pl-textarea {
+    resize: vertical;
+    min-height: 90px;
+  }
+ 
+  .pl-field {
+    margin-bottom: 20px;
+  }
+ 
+  /* ── Two-column row ── */
+  .pl-row {
+    display: flex;
+    gap: 12px;
+  }
+  .pl-row .pl-field {
+    flex: 1;
+  }
+ 
+  /* ── Divider ── */
+  .pl-divider {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 4px 0 24px;
+  }
+ 
+  /* ── Password wrapper ── */
+  .pl-pwd-wrap {
+    position: relative;
+  }
+  .pl-pwd-wrap .pl-input {
+    padding-right: 42px;
+  }
+  .pl-pwd-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.13s;
+  }
+  .pl-pwd-toggle:hover { color: #374151; }
+ 
+  /* ── File upload ── */
+  .pl-upload-zone {
+    border: 1.5px dashed #d1d5db;
+    border-radius: 7px;
+    background: #f9fafb;
+    padding: 24px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    position: relative;
+  }
+  .pl-upload-zone:hover { border-color: #22c55e; background: #f0fdf4; }
+  .pl-upload-zone.has-file { border-color: #16a34a; background: #f0fdf4; }
+  .pl-upload-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+  .pl-upload-icon {
+    width: 36px; height: 36px;
+    background: #e5e7eb;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    transition: background 0.15s;
+  }
+  .pl-upload-zone:hover .pl-upload-icon,
+  .pl-upload-zone.has-file .pl-upload-icon { background: #dcfce7; }
+  .pl-upload-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 3px;
+  }
+  .pl-upload-sub {
+    font-size: 12px;
+    color: #9ca3af;
+    margin: 0;
+  }
+  #sf-file-name {
+    margin-top: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #16a34a;
+    display: none;
+  }
+ 
+  /* ── Error ── */
+  .pl-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 7px;
+    color: #991b1b;
+    font-size: 13px;
+    padding: 11px 14px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+ 
+  /* ───── SUBMIT BUTTON ───── */
+  .pl-btn-submit {
+    width: 100%;
+    background: #22c55e;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 11px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 4px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+  }
+  .pl-btn-submit:hover { background: #16a34a; }
+ 
+  /* ── Clear link ── */
+  .pl-clear-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+  }
+  .pl-btn-clear {
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    padding: 0;
+    transition: color 0.13s;
+  }
+  .pl-btn-clear:hover { color: #374151; }
+</style>
 {% endblock %}
+ 
 {% block content %}
-<div class="container-fluid">
-    <div class="page-title">
-        <div class="row">
-            <div class="col-6">
-                <h3>Staff Management</h3>
-            </div>
-            <div class="col-6">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/"><i data-feather="home"></i></a></li>
-                    <li class="breadcrumb-item">Staff</li>
-                    <li class="breadcrumb-item active">Add New</li>
-                </ol>
-            </div>
-        </div>
+<div class="pl-wrap">
+ 
+  <!-- Top bar -->
+  <div class="pl-topbar">
+    <div>
+      <h4>Add New Staff Member</h4>
+      <p>Create a new staff account with login credentials and profile details.</p>
     </div>
-</div>
-
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-xl-6 col-lg-8">
-            <div class="card shadow-sm border-0">
-                <div class="card-header pb-0 border-0 " style="background-color: black;">
-                    <h4 class="card-title mb-0" style="color: white;">Add New Staff Member</h4>
-                    <p  style="color: white;">Fill in the details below to create a new staff account.</p>
-                </div>
-                <div class="card-body">
-                    {% if error %}
-                        <div class="alert alert-light-danger border-left-danger" role="alert">
-                            <i class="icon-info-alt"></i> {{ error }}
-                        </div>
-                    {% endif %}
-
-                    <form method="POST" enctype="multipart/form-data" class="theme-form">
-                        {% csrf_token %}
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold text-dark">Username</label>
-                                <input type="text" name="username" class="form-control bg-light border-0" placeholder="e.g. johndoe" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold text-dark">Email Address</label>
-                                <input type="email" name="email" class="form-control bg-light border-0" placeholder="asj@gmail.com" required>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold text-dark">Password</label>
-                            <input type="password" name="password" class="form-control bg-light border-0" placeholder="••••••••" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold text-dark">Phone Number</label>
-                            <input type="text" name="phone" class="form-control bg-light border-0" placeholder="enter valid number" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold text-dark">Address</label>
-                            <textarea name="address" rows="3" class="form-control bg-light border-0" placeholder="Street, City, Zip Code" required></textarea>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label fw-bold text-dark">Profile Picture</label>
-                            <div class="px-3 py-4 border-dashed rounded-3 text-center bg-light">
-                                <input type="file" name="image" class="form-control d-none" id="staffImage">
-                                <label for="staffImage" class="cursor-pointer mb-0">
-                                    <i class="fa fa-cloud-upload text-primary mb-2 fa-2x"></i>
-                                    <p class="mb-0 text-muted">Click to upload or drag and drop</p>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="card-footer px-0 bg-transparent border-0 d-flex justify-content-end gap-2">
-                            <button type="reset" class="btn btn-light px-4">Clear</button>
-                            <button type="submit" class="btn px-5 shadow-sm" style="background:black; color:white;">
-                                Save Staff Member
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+  </div>
+ 
+  <!-- Form Card -->
+  <div class="pl-form-card">
+    <div class="pl-form-body">
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+ 
+        {% if error %}
+        <div class="pl-error">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          {{ error }}
         </div>
+        {% endif %}
+ 
+        <!-- Username + Email -->
+        <div class="pl-row">
+          <div class="pl-field">
+            <label class="pl-label">Username <span class="req">*</span></label>
+            <input type="text" name="username" class="pl-input" placeholder="e.g. johndoe" required>
+          </div>
+          <div class="pl-field">
+            <label class="pl-label">Email Address <span class="req">*</span></label>
+            <input type="email" name="email" class="pl-input" placeholder="staff@example.com" required>
+          </div>
+        </div>
+ 
+        <hr class="pl-divider">
+ 
+        <!-- Password -->
+        <div class="pl-field">
+          <label class="pl-label">Password <span class="req">*</span></label>
+          <div class="pl-pwd-wrap">
+            <input type="password" name="password" id="sf-password" class="pl-input" placeholder="••••••••" required>
+            <button type="button" class="pl-pwd-toggle" onclick="togglePwd()" title="Show/hide password">
+              <svg id="sf-eye-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+ 
+        <!-- Phone -->
+        <div class="pl-field">
+          <label class="pl-label">Phone Number <span class="req">*</span></label>
+          <input type="text" name="phone" class="pl-input" placeholder="+91 98765 43210" required>
+        </div>
+ 
+        <!-- Address -->
+        <div class="pl-field">
+          <label class="pl-label">Address <span class="req">*</span></label>
+          <textarea name="address" class="pl-textarea" placeholder="Street, City, State, PIN" required></textarea>
+        </div>
+ 
+        <!-- Profile Picture -->
+        <div class="pl-field">
+          <label class="pl-label">Profile Picture</label>
+          <div class="pl-upload-zone" id="sf-drop-zone">
+            <input type="file" name="image" id="staffImage" accept="image/*" onchange="handleFile(this)">
+            <div class="pl-upload-icon">
+              <svg width="17" height="17" fill="none" stroke="#6b7280" stroke-width="1.8" viewBox="0 0 24 24">
+                <polyline points="16 16 12 12 8 16"/>
+                <line x1="12" y1="12" x2="12" y2="21"/>
+                <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+              </svg>
+            </div>
+            <p class="pl-upload-title">Click to upload profile photo</p>
+            <p class="pl-upload-sub">PNG, JPG up to 5MB</p>
+            <p id="sf-file-name"></p>
+          </div>
+        </div>
+ 
+        <!-- Actions -->
+        <div class="pl-clear-row">
+          <button type="reset" class="pl-btn-clear" onclick="clearFile()">Clear Form</button>
+        </div>
+ 
+        <button type="submit" class="pl-btn-submit">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+          Save Staff Member
+        </button>
+ 
+      </form>
     </div>
-</div>
+  </div><!-- /form card -->
+ 
+</div><!-- /wrap -->
+ 
+<script>
+  function togglePwd() {
+    const inp = document.getElementById('sf-password');
+    const icon = document.getElementById('sf-eye-icon');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      icon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>`;
+    } else {
+      inp.type = 'password';
+      icon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+    }
+  }
+ 
+  function handleFile(input) {
+    const zone = document.getElementById('sf-drop-zone');
+    const label = document.getElementById('sf-file-name');
+    if (input.files && input.files[0]) {
+      zone.classList.add('has-file');
+      label.style.display = 'block';
+      label.textContent = '✓ ' + input.files[0].name;
+    }
+  }
+ 
+  function clearFile() {
+    const zone = document.getElementById('sf-drop-zone');
+    const label = document.getElementById('sf-file-name');
+    zone.classList.remove('has-file');
+    label.style.display = 'none';
+    label.textContent = '';
+  }
+</script>
 {% endblock %}
-
-
+ 
 {% block js %}
-    <!-- latest jquery-->
     <script src="{% static 'assets/js/jquery.min.js' %}"></script>
-    <!-- Bootstrap js-->
     <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
-    <!-- feather icon js-->
     <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
     <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
-    <!-- scrollbar js-->
     <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
     <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
-    <!-- Sidebar jquery-->
     <script src="{% static 'assets/js/config.js' %}"></script>
-    <!-- Plugins JS start-->
     <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
     <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.js' %}"></script>
     <script src="{% static 'assets/js/header-slick.js' %}"></script>
     <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
-    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"> </script>
+    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"></script>
     <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
@@ -157,5 +419,4 @@
     <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
     <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
     <script src="{% static 'assets/js/height-equal.js' %}"></script>
-    <!-- Plugins JS Ends-->
 {% endblock %}

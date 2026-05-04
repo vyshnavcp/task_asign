@@ -699,14 +699,11 @@ def client_list(request):
     clients = Client.objects.all().order_by('id')
     return render(request,'client_list.html',{'clients':clients})
 
-def client_delete(request, id):
-    client = get_object_or_404(Client, id=id)
-    client.delete()
-    return redirect('client_list')   
+
      
 def client_delete(request,id):
     client=get_object_or_404(Client,id=id)
-    Client.delete()
+    client.delete()
     return redirect('client_list')
 
 def generate_proposal_number():

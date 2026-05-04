@@ -1,246 +1,217 @@
-
 {% extends 'main.html' %}
-{% block title %}Home{% endblock %}
+{% block title %}My Leave Requests{% endblock %}
 {% load static %}
 
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
-    <!-- ico-font-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
-    <!-- Themify icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
-    <!-- Flag icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
-    <!-- Feather icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
-    <!-- Plugins css start-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
-    <!-- Plugins css Ends-->
-    <!-- Bootstrap css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
-    <!-- App css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
-    <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
-  <style>
-    :root {
-        --glass-bg: rgba(255, 255, 255, 0.85);
-        --premium-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
-        --accent-color: #4facfe;
-    }
 
-    body {
-        font-family: 'Inter', 'Poppins', sans-serif;
-        background-color: #f8fafc; /* Softer gray than f4f7fb */
-        color: #334155;
-    }
+<style>
+  /* ───── PAGE WRAPPER ───── */
+  .pl-wrap {
+    padding: 28px 28px;
+    background: #f4f5f7;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
 
-    .container {
-        max-width: 1200px;
-        margin-top: 40px;
-    }
-
-    h2 {
-        font-weight: 700;
-        letter-spacing: -1px;
-        color: #1e293b;
-        margin-bottom: 35px;
-        position: relative;
-        text-align: left !important; /* Premium looks usually left-align titles */
-    }
-
-    /* Premium Glass Container */
-    .table-box {
-        background: var(--glass-bg);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 24px;
-        padding: 30px;
-        box-shadow: var(--premium-shadow);
-    }
-
-    /* Table Reset for "Floating Rows" */
-    table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0 12px; /* Gaps between rows */
-    }
-
-    thead {
-        background: transparent !important;
-    }
-
-    th {
-        padding: 15px 25px;
-        text-transform: uppercase;
-        font-size: 11px;
-        letter-spacing: 1.5px;
-        color: #94a3b8;
-        border: none !important;
-    }
-
-    /* Row Styling */
-    tbody tr {
-        background: #ffffff;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
-    }
-
-    tbody tr:hover {
-        transform: translateY(-4px) scale(1.005);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
-    }
-
-    td {
-        padding: 20px 25px;
-        font-size: 14px;
-        font-weight: 500;
-        border: none !important;
-    }
-
-    /* Rounding Row Corners */
-    tbody tr td:first-child { border-radius: 16px 0 0 16px; }
-    tbody tr td:last-child { border-radius: 0 16px 16px 0; }
-
-    /* Modern Status Indicators */
-    .status {
-        padding: 8px 16px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 700;
-        text-transform: uppercase;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    /* Dot indicators for a high-end feel */
-    .status::before {
-        content: '';
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-    }
-
-    .pending { background: #fffbeb; color: #d97706; }
-    .pending::before { background: #f59e0b; }
-
-    .approved { background: #f0fdf4; color: #16a34a; }
-    .approved::before { background: #22c55e; }
-
-    .rejected { background: #fef2f2; color: #dc2626; }
-    .rejected::before { background: #ef4444; }
-
-    /* Empty state refinement */
-    .empty {
-        padding: 80px !important;
-        text-align: center;
-        color: #94a3b8;
-        background: transparent !important;
-    }
-    .btn-black {
-    background: #000 !important;
-    border: none !important;
+  /* ───── TOP BAR ───── */
+  .pl-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    background-color: white;
+    padding: 22px;
+  }
+  .pl-topbar h4 {
+    font-size: 21px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+  }
+  .pl-topbar p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 4px 0 0;
+  }
+  .pl-btn-create {
+    background: #22c55e;
     color: #fff !important;
-}
+    border: none;
+    border-radius: 7px;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 9px 22px;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.15s;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .pl-btn-create:hover { background: #16a34a; color: #fff !important; }
 
-.btn-black:hover {
-    background: #222 !important;
-}
+  /* ───── CARD ───── */
+  .pl-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+    overflow: hidden;
+  }
+
+  /* ───── TABLE ───── */
+  .pl-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    table-layout: auto;
+  }
+  .pl-table thead tr {
+    border-bottom: 1.5px solid #e8e8e8;
+    background: #fff;
+  }
+  .pl-table thead th {
+    padding: 13px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #222;
+    text-align: left;
+    white-space: nowrap;
+  }
+  .pl-table tbody tr {
+    border-bottom: 1px solid #f2f2f2;
+    transition: background 0.1s;
+  }
+  .pl-table tbody tr:last-child { border-bottom: none; }
+  .pl-table tbody tr:hover { background: #f9fffe; }
+  .pl-table td {
+    padding: 16px 18px;
+    color: #374151;
+    vertical-align: middle;
+    line-height: 1.4;
+    font-size: 13.5px;
+  }
+
+  /* ── Date ── */
+  .pl-date {
+    color: #374151;
+    font-size: 13.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* ── Reason ── */
+  .pl-reason {
+    color: #6b7280;
+    font-size: 13.5px;
+    max-width: 340px;
+  }
+
+  /* ── Status badges ── */
+  .pl-badge {
+    display: inline-block;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 16px;
+    white-space: nowrap;
+    text-transform: capitalize;
+  }
+  .pl-badge.approved { background: #22c55e; color: #fff; }
+  .pl-badge.pending  { background: #eab308; color: #fff; }
+  .pl-badge.rejected { background: #ef4444; color: #fff; }
+
+  /* ───── EMPTY STATE ───── */
+  .pl-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #9ca3af;
+    font-size: 14px;
+  }
 </style>
 {% endblock %}
-   
 
 {% block content %}
-<div class="px-4 pt-4">
- 
-</div>
+<div class="pl-wrap">
 
-<div class="container">
-    <div class="d-flex justify-content-between align-items-end mb-4">
-        <div>
-            <h2 class="mb-0">My Leave Requests</h2>
-            <p class="text-muted small">Track and manage your application status</p>
-        </div>
-      <a href="{% url "apply_leave" %}" 
-        class="btn btn-primary rounded-4 px-4 py-2 shadow-sm btn-black">
-        <i class="me-1" style="width: 18px;"></i> New Request
-        </a>
+  <!-- Top bar -->
+  <div class="pl-topbar">
+    <div>
+      <h4>My Leave Requests</h4>
+      <p>Track and manage your application status</p>
     </div>
+    <a href="{% url 'apply_leave' %}" class="pl-btn-create">+ New Request</a>
+  </div>
 
-    <div class="table-box">
-        <table>
-            <thead>
-                <tr>
-                    <th><i data-feather="calendar" class="me-2" style="width: 14px;"></i>From Date</th>
-                    <th>To Date</th>
-                    <th><i data-feather="edit-3" class="me-2" style="width: 14px;"></i>Reason</th>
-                    <th class="text-end">Status</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% if leaves %}
-                    {% for leave in leaves %}
-                    <tr>
-                        <td>{{ leave.from_date }}</td>
-                        <td>{{ leave.to_date }}</td>
-                        <td><span class="opacity-75">{{ leave.reason }}</span></td>
-                        <td class="text-end">
-                            <span class="status {{ leave.status }}">
-                                {{ leave.status }}
-                            </span>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr>
-                        <td colspan="4" class="empty">
-                           <i data-feather="inbox" class="mb-3 d-block mx-auto opacity-25" style="width: 48px; height: 48px;"></i>
-                           No leave requests found yet.
-                        </td>
-                    </tr>
-                {% endif %}
-            </tbody>
-        </table>
+  <!-- Card -->
+  <div class="pl-card">
+    <div style="overflow-x:auto;">
+      <table class="pl-table">
+        <thead>
+          <tr>
+            <th>From Date</th>
+            <th>To Date</th>
+            <th>Reason</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if leaves %}
+            {% for leave in leaves %}
+            <tr>
+              <td><span class="pl-date">{{ leave.from_date }}</span></td>
+              <td><span class="pl-date">{{ leave.to_date }}</span></td>
+              <td><span class="pl-reason">{{ leave.reason }}</span></td>
+              <td>
+                <span class="pl-badge {{ leave.status }}">{{ leave.status }}</span>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="4">
+                <div class="pl-empty">No leave requests found yet.</div>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
     </div>
-</div>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        feather.replace();
-    });
-</script>
+  </div><!-- /card -->
+
+</div><!-- /wrap -->
 {% endblock %}
 
 {% block js %}
-    <!-- latest jquery-->
     <script src="{% static 'assets/js/jquery.min.js' %}"></script>
-    <!-- Bootstrap js-->
     <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
-    <!-- feather icon js-->
     <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
     <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
-    <!-- scrollbar js-->
     <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
     <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
-    <!-- Sidebar jquery-->
     <script src="{% static 'assets/js/config.js' %}"></script>
-    <!-- Plugins JS start-->
     <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
     <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.js' %}"></script>
     <script src="{% static 'assets/js/header-slick.js' %}"></script>
     <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
-    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"> </script>
+    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"></script>
     <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
@@ -259,5 +230,4 @@
     <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
     <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
     <script src="{% static 'assets/js/height-equal.js' %}"></script>
-    <!-- Plugins JS Ends-->
 {% endblock %}

@@ -1,110 +1,287 @@
-
 {% extends 'main.html' %}
 {% block title %}Home{% endblock %}
 {% load static %}
 
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
-    <!-- ico-font-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
-    <!-- Themify icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
-    <!-- Flag icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
-    <!-- Feather icon-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
-    <!-- Plugins css start-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
-    <!-- Plugins css Ends-->
-    <!-- Bootstrap css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
-    <!-- App css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
-    <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+
+<style>
+  /* ───── PAGE WRAPPER ───── */
+  .pl-wrap {
+    padding: 28px 28px;
+    background: #f4f5f7;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
+  /* ───── TOP BAR ───── */
+  .pl-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    background-color: white;
+    padding: 22px;
+  }
+  .pl-topbar h4 {
+    font-size: 21px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+  }
+  .pl-btn-create {
+    background: #22c55e;
+    color: #fff !important;
+    border: none;
+    border-radius: 7px;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 9px 22px;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.15s;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .pl-btn-create:hover { background: #16a34a; color: #fff !important; }
+
+  /* ───── CARD ───── */
+  .pl-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+    overflow: hidden;
+  }
+
+  /* ───── TABLE ───── */
+  .pl-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    table-layout: auto;
+  }
+
+  .pl-table thead tr {
+    border-bottom: 1.5px solid #e8e8e8;
+    background: #fff;
+  }
+  .pl-table thead th {
+    padding: 13px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #222;
+    text-align: left;
+    white-space: nowrap;
+    letter-spacing: 0;
+  }
+
+  .pl-table tbody tr {
+    border-bottom: 1px solid #f2f2f2;
+    transition: background 0.1s;
+  }
+  .pl-table tbody tr:last-child { border-bottom: none; }
+  .pl-table tbody tr:hover { background: #f9fffe; }
+  .pl-table td {
+    padding: 16px 18px;
+    color: #374151;
+    vertical-align: middle;
+    line-height: 1.4;
+  }
+
+  /* ── Client name — green bold ── */
+  .pl-client {
+    color: #2b5b64;
+    font-weight: 700;
+    font-size: 13.5px;
+    white-space: nowrap;
+    display: inline-block;
+  }
+
+  /* ── Normal text fields ── */
+  .pl-text {
+    color: #374151;
+    font-size: 13.5px;
+  }
+
+  /* ── Action icons ── */
+  .pl-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+  }
+  .pl-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.13s, color 0.13s;
+    padding: 0;
+  }
+  .pl-icon svg { display: block; }
+  .pl-icon:hover     { background: #f3f4f6; color: #222; }
+  .pl-icon.del:hover { background: #fef2f2; color: #ef4444; }
+
+  /* ───── EMPTY STATE ───── */
+  .pl-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #9ca3af;
+    font-size: 14px;
+  }
+
+  /* ───── DELETE MODAL ───── */
+  #pl-del-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.38);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+  }
+  #pl-del-modal.show { display: flex; }
+  .pl-modal-box {
+    background: #fff;
+    border-radius: 10px;
+    padding: 26px 28px;
+    max-width: 370px;
+    width: 92%;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  }
+  .pl-modal-box h6 {
+    font-size: 15px; font-weight: 700; color: #111; margin: 0 0 10px;
+  }
+  .pl-modal-box p {
+    font-size: 13.5px; color: #6b7280; margin: 0 0 20px;
+  }
+  .pl-modal-foot {
+    display: flex; gap: 10px; justify-content: flex-end;
+  }
+  .pl-modal-cancel {
+    border: 1px solid #d1d5db; background: #fff; border-radius: 6px;
+    padding: 7px 18px; font-size: 13px; cursor: pointer; color: #374151;
+  }
+  .pl-modal-cancel:hover { background: #f9fafb; }
+  .pl-modal-del {
+    background: #ef4444; color: #fff; border: none; border-radius: 6px;
+    padding: 7px 18px; font-size: 13px; font-weight: 600; cursor: pointer;
+    text-decoration: none; display: inline-block;
+  }
+  .pl-modal-del:hover { background: #dc2626; color: #fff; text-decoration: none; }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="pl-wrap">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>Client Management</h3>
-        <a href="{% url 'client_add' %}" class="btn btn-primary">
-            + Add Client
-        </a>
+  <!-- Top bar -->
+  <div class="pl-topbar">
+    <h4>Client Management</h4>
+    <a href="{% url 'client_add' %}" class="pl-btn-create">+ Add Client</a>
+  </div>
+
+  <!-- Card -->
+  <div class="pl-card">
+    <div style="overflow-x:auto;">
+      <table class="pl-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Company</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in clients %}
+          <tr>
+            <td class="pl-text">{{ forloop.counter }}</td>
+            <td><span class="pl-client">{{ c.name }}</span></td>
+            <td class="pl-text">{{ c.company_name }}</td>
+            <td class="pl-text">{{ c.phone }}</td>
+            <td class="pl-text">{{ c.email }}</td>
+            <td>
+              <div class="pl-actions">
+                <button class="pl-icon del" title="Delete"
+                  onclick="plDel({{ c.id }}, '{{ c.name }}')">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                    <path d="M10 11v6M14 11v6"/>
+                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6">
+              <div class="pl-empty">No clients found.</div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+  </div><!-- /card -->
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+</div><!-- /wrap -->
 
-            <table class="table table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Company</th>
-                        <th>Phone</th>
-                        <th>Email</th>
-                        <th style="width:150px;">Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for c in clients %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ c.name }}</td>
-                        <td>{{ c.company_name }}</td>
-                        <td>{{ c.phone }}</td>
-                        <td>{{ c.email }}</td>
-                        <td>
-                          
-                            <a href="{% url 'client_delete' c.id %}" 
-                               onclick="return confirm('Delete this client?')"
-                               class="btn btn-sm btn-danger">Delete</a> 
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="text-center">No clients found</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-
-            </table>
-
-        </div>
+<!-- Delete Modal -->
+<div id="pl-del-modal">
+  <div class="pl-modal-box">
+    <h6>Delete Client</h6>
+    <p id="pl-del-msg"></p>
+    <div class="pl-modal-foot">
+      <button class="pl-modal-cancel" onclick="plCloseModal()">Cancel</button>
+      <a id="pl-del-link" href="#" class="pl-modal-del">Delete</a>
     </div>
-
+  </div>
 </div>
 {% endblock %}
+
 {% block js %}
-    <!-- latest jquery-->
     <script src="{% static 'assets/js/jquery.min.js' %}"></script>
-    <!-- Bootstrap js-->
     <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
-    <!-- feather icon js-->
     <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
     <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
-    <!-- scrollbar js-->
     <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
     <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
-    <!-- Sidebar jquery-->
     <script src="{% static 'assets/js/config.js' %}"></script>
-    <!-- Plugins JS start-->
     <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
     <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.js' %}"></script>
     <script src="{% static 'assets/js/header-slick.js' %}"></script>
     <script src="{% static 'assets/js/chart/morris-chart/raphael.js' %}"></script>
-    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"> </script>
+    <script src="{% static 'assets/js/chart/morris-chart/morris.js' %}"></script>
     <script src="{% static 'assets/js/chart/morris-chart/prettify.min.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
     <script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
@@ -123,5 +300,19 @@
     <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
     <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
     <script src="{% static 'assets/js/height-equal.js' %}"></script>
-    <!-- Plugins JS Ends-->
+
+<script>
+  window.plDel = function(id, name) {
+    document.getElementById('pl-del-msg').textContent =
+      'Are you sure you want to delete ' + name + '? This cannot be undone.';
+    document.getElementById('pl-del-link').href = '/clients/delete/' + id + '/';
+    document.getElementById('pl-del-modal').classList.add('show');
+  };
+  window.plCloseModal = function() {
+    document.getElementById('pl-del-modal').classList.remove('show');
+  };
+  document.getElementById('pl-del-modal').addEventListener('click', function(e) {
+    if (e.target === this) plCloseModal();
+  });
+</script>
 {% endblock %}

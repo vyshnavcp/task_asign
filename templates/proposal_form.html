@@ -1,7 +1,7 @@
 {% extends 'main.html' %}
-{% block title %}New Proposal — Trendo{% endblock %}
+{% block title %}New Proposal{% endblock %}
 {% load static %}
-
+ 
 {% block css %}
 <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
@@ -18,188 +18,224 @@
 <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
 <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
 <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-
+ 
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
+  /* ───── PAGE WRAPPER ───── */
+  .pl-wrap {
+    padding: 28px 32px;
     background: #f4f5f7;
     min-height: 100vh;
-    color: #111827;
+    font-family: 'Segoe UI', Arial, sans-serif;
   }
-
-  .proposal-main {
-    padding: 2.5rem;
-    display: flex;
-    justify-content: center;
-  }
-
-  .content-wrapper {
-    width: 100%;
-    max-width: 1100px;
-  }
-
-  .page-header {
+ 
+  /* ───── TOP BAR ───── */
+  .pl-topbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 22px;
+    background-color: white;
+    padding: 22px 28px;
   }
-  .page-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 30px;
-    letter-spacing: -0.5px;
-    color: #111827;
+  .pl-topbar h4 {
+    font-size: 21px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
   }
-
-  /* ── CARD ── */
-  .proposal-card {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.05);
-    width: 100%;
+  .pl-topbar p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 4px 0 0;
   }
-
-  /* ── CARD HEADER ── */
-  .proposal-card-header {
-    background: #111827;
-    color: #fff;
-    padding: 2rem 2.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-  .card-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 38px;
-    letter-spacing: -1px;
-    color: #fff;
-    line-height: 1;
-  }
-  .num-row {
+  .pl-num-pill {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-top: 10px;
+    background: #f4f5f7;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 8px 16px;
+    flex-shrink: 0;
   }
-  .num-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #9ca3af;
-  }
-  .num-display {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 6px;
-    color: #fff;
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    padding: 4px 10px;
-  }
-  .draft-badge {
-    display: inline-block;
-    background: #e1f5ee;
-    color: #0f6e56;
+  .pl-num-label { font-size: 11px; color: #9ca3af; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  .pl-num-val { font-size: 13px; font-weight: 600; color: #374151; }
+  .pl-draft-badge {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
     border-radius: 20px;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 3px 10px;
+    letter-spacing: 0.07em;
+    padding: 3px 9px;
   }
-  .card-date {
-    font-size: 12px;
-    color: #6b7280;
-    margin-top: 8px;
-    font-family: 'DM Mono', monospace;
+ 
+  /* ───── OUTER CONTAINER ───── */
+  .pl-container {
+    max-width: 1100px;
+    margin: 0 auto;
   }
-  .brand-block { text-align: right; }
-  .brand-name {
-    font-family: 'DM Serif Display', serif;
-    font-size: 20px;
-    color: #fff;
+ 
+  /* ───── FORM CARD ───── */
+  .pl-form-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+    overflow: hidden;
+    margin-bottom: 16px;
   }
-  .brand-detail {
-    font-size: 12px;
-    color: #6b7280;
-    margin-top: 6px;
-    line-height: 1.8;
+ 
+  .pl-card-head {
+    padding: 14px 28px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
-
-  /* ── CARD BODY ── */
-  .proposal-card-body { padding: 2.5rem 3rem; }
-
-  /* ── SECTION LABEL ── */
-  .section-label {
-    font-size: 10px;
+  .pl-card-head h6 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #374151;
+    margin: 0;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: #6b7280;
-    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+  .pl-card-head .sub {
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: 2px;
+  }
+ 
+  /* ───── FORM BODY ───── */
+  .pl-form-body {
+    padding: 24px 28px;
+  }
+ 
+  /* ───── FORM ELEMENTS ───── */
+  .pl-label {
+    display: block;
+    font-size: 13px;
     font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
   }
-
-  .divider {
-    border: none;
-    border-top: 1px solid #f3f4f6;
-    margin: 1.75rem 0;
-  }
-
-  /* ── FIELDS ── */
-  .field {
+  .pl-label .req { color: #e24b4a; margin-left: 2px; }
+ 
+  .pl-input,
+  .pl-textarea,
+  .pl-select {
     width: 100%;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 9px 13px;
-    font-size: 14px;
-    font-family: 'DM Sans', sans-serif;
-    background: #f9fafb;
-    color: #111827;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: #374151;
+    background: #fff;
     outline: none;
-    transition: border-color 0.15s, background 0.15s;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    -webkit-appearance: none;
+    appearance: none;
   }
-  .field:focus { border-color: #6b7280; background: #fff; }
-  .field[readonly] { cursor: default; opacity: .75; }
-  textarea.field { resize: vertical; min-height: 72px; line-height: 1.6; }
-  select.field { cursor: pointer; }
-
-  /* ── SERVICE ITEMS ── */
-  .service-items { display: flex; flex-direction: column; gap: 14px; }
-
-  .service-item {
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
+  .pl-input:focus, .pl-textarea:focus, .pl-select:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
+  }
+  .pl-input[readonly], .pl-textarea[readonly] {
+    background: #f9fafb;
+    color: #6b7280;
+    cursor: default;
+  }
+  .pl-input[readonly]:focus, .pl-textarea[readonly]:focus {
+    border-color: #d1d5db;
+    box-shadow: none;
+  }
+  .pl-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+  .pl-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+ 
+  .pl-field { margin-bottom: 20px; }
+  .pl-field:last-child { margin-bottom: 0; }
+ 
+  /* ── 2-col and 3-col rows ── */
+  .pl-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .pl-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .pl-row-2 .pl-field,
+  .pl-row-3 .pl-field { margin-bottom: 0; }
+ 
+  /* ── Divider ── */
+  .pl-divider {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 4px 0 22px;
+  }
+ 
+  /* ── Error ── */
+  .pl-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 7px;
+    color: #991b1b;
+    font-size: 13px;
+    padding: 11px 14px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+ 
+  /* ───── SERVICE ITEMS ───── */
+  .pl-services { display: flex; flex-direction: column; gap: 14px; }
+ 
+  .pl-service-item {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
     overflow: hidden;
     transition: border-color 0.15s;
   }
-  .service-item:focus-within { border-color: #9ca3af; }
-
-  .service-item-header {
+  .pl-service-item:focus-within { border-color: #22c55e; }
+ 
+  .pl-service-head {
     background: #f9fafb;
-    padding: 10px 14px;
+    padding: 10px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #f0f0f0;
   }
-  .item-num {
-    font-size: 10px;
+  .pl-item-num {
+    font-size: 11px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.07em;
     color: #9ca3af;
-    font-weight: 600;
   }
-  .rm-btn {
+  .pl-rm-btn {
     background: none;
     border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    color: #9ca3af;
+    border-radius: 5px;
+    color: #d1d5db;
     width: 26px;
     height: 26px;
     cursor: pointer;
@@ -207,362 +243,456 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.15s;
+    transition: all 0.13s;
   }
-  .rm-btn:hover { border-color: #e24b4a; color: #e24b4a; background: #fef2f2; }
-
-  .service-item-body {
-    padding: 14px;
+  .pl-rm-btn:hover { border-color: #fca5a5; color: #e24b4a; background: #fef2f2; }
+ 
+  .pl-service-body {
+    padding: 18px 20px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 14px;
   }
-
-  .service-name-input {
+ 
+  /* Service name full-width */
+  .pl-svc-name {
     width: 100%;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #d1d5db;
     border-radius: 7px;
-    padding: 8px 12px;
+    padding: 10px 14px;
     font-size: 14px;
-    font-family: 'DM Sans', sans-serif;
     font-weight: 600;
-    color: #111827;
-    background: #fff;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  .service-name-input:focus { border-color: #6b7280; }
-  .service-name-input::placeholder { font-weight: 400; color: #9ca3af; }
-
-  .service-detail-input {
-    width: 100%;
-    border: 1px solid #e5e7eb;
-    border-radius: 7px;
-    padding: 8px 12px;
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
     color: #374151;
-    background: #fff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+  }
+  .pl-svc-name:focus { border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.1); }
+  .pl-svc-name::placeholder { font-weight: 400; color: #9ca3af; }
+ 
+  /* Description + qty/amount side by side */
+  .pl-svc-main-row {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 16px;
+    align-items: start;
+  }
+ 
+  .pl-svc-desc {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: #374151;
+    font-family: 'Segoe UI', Arial, sans-serif;
     outline: none;
     resize: vertical;
-    min-height: 80px;
+    min-height: 88px;
     line-height: 1.6;
-    transition: border-color 0.15s;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
   }
-  .service-detail-input:focus { border-color: #6b7280; }
-
-  .service-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-  .input-wrap { display: flex; flex-direction: column; gap: 4px; }
-  .input-label {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #9ca3af;
-    font-weight: 600;
-  }
-  .qty-amt-input {
-    width: 100%;
-    border: 1px solid #e5e7eb;
-    border-radius: 7px;
-    padding: 8px 12px;
-    font-size: 14px;
-    font-family: 'DM Mono', monospace;
-    color: #111827;
-    background: #fff;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  .qty-amt-input:focus { border-color: #6b7280; }
-
-  /* ── ADD BUTTON ── */
-  .add-btn {
-    background: none;
-    border: 1px dashed #d1d5db;
-    border-radius: 10px;
-    color: #6b7280;
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
-    padding: 12px 16px;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 4px;
-    transition: all 0.15s;
-    text-align: center;
-  }
-  .add-btn:hover { border-color: #6b7280; color: #111827; background: #f9fafb; }
-
-  /* ── TOTALS ── */
-  .totals-row { display: flex; justify-content: flex-end; margin-top: 1.5rem; }
-  .totals-box {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 1rem 1.5rem;
-    min-width: 240px;
-  }
-  .total-line {
+  .pl-svc-desc:focus { border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.1); }
+  .pl-svc-desc::placeholder { color: #9ca3af; }
+ 
+  .pl-svc-amounts {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: #6b7280;
-    margin-bottom: 6px;
-  }
-  .total-val { font-family: 'DM Mono', monospace; color: #374151; }
-  .total-line.grand {
-    border-top: 1px solid #e5e7eb;
-    padding-top: 10px;
-    margin-top: 8px;
-    font-size: 15px;
-    font-weight: 600;
-    color: #111827;
-    margin-bottom: 0;
-  }
-  .total-line.grand .total-val {
-    font-family: 'DM Mono', monospace;
-    font-weight: 600;
-    color: #111827;
-  }
-
-  /* ── FOOTER / ACTIONS ── */
-  .footer-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 2rem;
+    flex-direction: column;
     gap: 12px;
   }
-  .footer-note { font-size: 12px; color: #9ca3af; }
-  .footer-actions { display: flex; gap: 10px; align-items: center; }
-
-  .cancel-link {
-    font-size: 14px;
-    color: #6b7280;
-    text-decoration: none;
-    font-weight: 500;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
-    transition: background 0.15s, color 0.15s;
+ 
+  .pl-input-wrap { display: flex; flex-direction: column; gap: 5px; }
+  .pl-input-lbl {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9ca3af;
   }
-  .cancel-link:hover { background: #f3f4f6; color: #111827; }
-
-  .save-btn {
-    background: #111827;
+ 
+  .pl-num-input {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: #374151;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .pl-num-input:focus { border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.1); }
+  .pl-num-input::placeholder { color: #9ca3af; }
+ 
+  /* ── Item subtotal display ── */
+  .pl-item-sub {
+    font-size: 12px;
+    color: #6b7280;
+    text-align: right;
+    padding-top: 2px;
+  }
+  .pl-item-sub span { font-weight: 700; color: #374151; }
+ 
+  /* ── Add service button ── */
+  .pl-add-btn {
+    background: none;
+    border: 1.5px dashed #d1d5db;
+    border-radius: 7px;
+    color: #9ca3af;
+    font-size: 13px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: 500;
+    padding: 13px 16px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.15s;
+    text-align: center;
+    margin-top: 12px;
+  }
+  .pl-add-btn:hover { border-color: #22c55e; color: #16a34a; background: #f0fdf4; }
+ 
+  /* ── Totals ── */
+  .pl-totals-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  .pl-totals-box {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px 22px;
+    min-width: 280px;
+  }
+  .pl-total-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13.5px;
+    color: #6b7280;
+    padding: 5px 0;
+  }
+  .pl-total-val { font-size: 13.5px; color: #374151; font-weight: 500; }
+  .pl-total-line.grand {
+    border-top: 1px solid #e5e7eb;
+    margin-top: 10px;
+    padding-top: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+  .pl-total-line.grand .pl-total-val { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+ 
+  /* ───── FOOTER ───── */
+  .pl-footer-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+    padding: 18px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .pl-footer-note {
+    font-size: 12px;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .pl-footer-actions { display: flex; gap: 10px; align-items: center; }
+ 
+  .pl-btn-submit {
+    background: #22c55e;
     color: #fff;
     border: none;
-    border-radius: 9px;
-    font-family: 'DM Sans', sans-serif;
+    border-radius: 7px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     padding: 11px 28px;
     cursor: pointer;
-    transition: opacity 0.15s;
+    transition: background 0.15s;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
   }
-  .save-btn:hover { opacity: 0.85; }
-
-  /* ── ERROR BOX ── */
-  .error-box {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-radius: 8px;
-    color: #991b1b;
-    font-size: 13px;
-    padding: 10px 14px;
-    margin-bottom: 1rem;
+  .pl-btn-submit:hover { background: #16a34a; }
+ 
+  .pl-btn-cancel {
+    background: transparent;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 10px 20px;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    transition: all 0.13s;
+    white-space: nowrap;
   }
-
-  @media (max-width: 768px) {
-    .proposal-main { padding: 1.5rem; }
-    .service-row { grid-template-columns: 1fr; }
-    .proposal-card-body { padding: 1.5rem; }
-    .footer-row { flex-direction: column; align-items: flex-end; }
+  .pl-btn-cancel:hover { background: #f4f5f7; border-color: #9ca3af; color: #374151; text-decoration: none; }
+ 
+  @media (max-width: 900px) {
+    .pl-row-3 { grid-template-columns: 1fr 1fr; }
+    .pl-svc-main-row { grid-template-columns: 1fr; }
+    .pl-svc-amounts { flex-direction: row; }
+  }
+  @media (max-width: 600px) {
+    .pl-wrap { padding: 16px; }
+    .pl-row-2, .pl-row-3 { grid-template-columns: 1fr; }
+    .pl-topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .pl-footer-card { flex-direction: column; align-items: flex-end; }
+    .pl-svc-amounts { flex-direction: column; }
   }
 </style>
 {% endblock %}
-
-
+ 
 {% block content %}
-<div class="proposal-main">
-  <div class="content-wrapper">
-
-    
-
-    <div class="proposal-card">
-
-      <!-- HEADER -->
-      <div class="proposal-card-header">
-        <div>
-          <p class="card-title">Proposal</p>
-          <div class="num-row">
-            <span class="num-label">#</span>
-            <span class="num-display">{{ proposal_number }}</span>
-            <span class="draft-badge">Draft</span>
-          </div>
-          <p class="card-date">Issued {{ date }}</p>
+<div class="pl-wrap">
+ 
+  <!-- Top bar -->
+  <div class="pl-topbar">
+    <div>
+      <h4>Create Proposal</h4>
+      <p>Fill in the details below to generate a new proposal document.</p>
+    </div>
+    <div class="pl-num-pill">
+      <span class="pl-num-label">#</span>
+      <span class="pl-num-val">{{ proposal_number }}</span>
+      <span class="pl-draft-badge">Draft</span>
+    </div>
+  </div>
+ 
+  <form method="POST" action="{% url 'create_proposal' %}" id="proposal-form">
+    {% csrf_token %}
+ 
+    <div class="pl-container">
+ 
+      {% if error %}
+      <div class="pl-error">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        {{ error }}
+      </div>
+      {% endif %}
+ 
+      <!-- ── Bill To ── -->
+      <div class="pl-form-card">
+        <div class="pl-card-head">
+          <h6>Bill To <span class="sub">— client details</span></h6>
         </div>
-        <div class="brand-block">
-          <p class="brand-name">Trendo</p>
-          <p class="brand-detail">Kozhikode, Kerala<br>+91 90616 78824</p>
+        <div class="pl-form-body">
+ 
+          <div class="pl-row-3">
+            <div class="pl-field">
+              <label class="pl-label">Company <span class="req">*</span></label>
+              <select class="pl-select" name="client" id="client-select" onchange="loadClient()" required>
+                <option value="">Choose a company…</option>
+                {% for c in clients %}
+                <option value="{{ c.id }}">{{ c.company_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="pl-field">
+              <label class="pl-label">Contact Name</label>
+              <input type="text" id="client-name" class="pl-input" placeholder="Auto-filled on selection" readonly>
+            </div>
+            <div class="pl-field">
+              <label class="pl-label">Address</label>
+              <input type="text" id="client-address" class="pl-input" placeholder="Auto-filled on selection" readonly>
+            </div>
+          </div>
+ 
         </div>
       </div>
-
-      <!-- BODY -->
-      <div class="proposal-card-body">
-        <form method="POST" action="{% url 'create_proposal' %}" id="proposal-form">
-          {% csrf_token %}
-
-          {% if error %}
-          <div class="error-box">{{ error }}</div>
-          {% endif %}
-
-          <!-- CLIENT -->
-          <p class="section-label">Bill to</p>
-
-          <select class="field" name="client" id="client-select" onchange="loadClient()" required>
-            <option value="">Select Company</option>
-            {% for c in clients %}
-            <option value="{{ c.id }}">{{ c.company_name }}</option>
-            {% endfor %}
-          </select>
-
-          <input class="field" type="text" id="client-name" placeholder="Client Name" readonly style="margin-top:10px;">
-          <textarea class="field" id="client-address" placeholder="Address" readonly style="margin-top:10px;"></textarea>
-
-          <hr class="divider">
-
-          <!-- PROPOSAL DETAILS -->
-          <p class="section-label">Proposal details</p>
-          <input class="field" type="text" name="proposal_title" placeholder="Proposal title — e.g. Website Redesign & SEO Package" style="margin-bottom:10px;">
-          <textarea class="field" name="overview" placeholder="Proposal overview / introduction paragraph shown on the proposal document…" style="min-height:100px;"></textarea>
-
-          <hr class="divider">
-
-          <!-- SERVICES -->
-          <p class="section-label">Services</p>
-
-          <div class="service-items" id="service-items">
-            <div class="service-item">
-              <div class="service-item-header">
-                <span class="item-num">Service 1</span>
-                <button type="button" class="rm-btn" onclick="removeItem(this)" title="Remove">✕</button>
+ 
+      <!-- ── Proposal Details ── -->
+      <div class="pl-form-card">
+        <div class="pl-card-head">
+          <h6>Proposal Details</h6>
+        </div>
+        <div class="pl-form-body">
+ 
+          <div class="pl-field">
+            <label class="pl-label">Title <span class="req">*</span></label>
+            <input type="text" name="proposal_title" class="pl-input"
+                   placeholder="e.g. Website Redesign &amp; SEO Package" required>
+          </div>
+ 
+          <hr class="pl-divider">
+ 
+          <div class="pl-field">
+            <label class="pl-label">Overview</label>
+            <textarea name="overview" class="pl-textarea"
+                      placeholder="Proposal overview / introduction paragraph shown on the proposal document…"
+                      style="min-height:120px;"></textarea>
+          </div>
+ 
+        </div>
+      </div>
+ 
+      <!-- ── Services ── -->
+      <div class="pl-form-card">
+        <div class="pl-card-head">
+          <h6>Services <span class="sub">— line items</span></h6>
+        </div>
+        <div class="pl-form-body">
+ 
+          <div class="pl-services" id="service-items">
+ 
+            <!-- Default first item -->
+            <div class="pl-service-item">
+              <div class="pl-service-head">
+                <span class="pl-item-num">Service 1</span>
+                <button type="button" class="pl-rm-btn" onclick="removeItem(this)" title="Remove">✕</button>
               </div>
-              <div class="service-item-body">
-                <input class="service-name-input" type="text" name="service_name[]" placeholder="Service name — e.g. Logo Design" required>
-                <textarea class="service-detail-input" name="service_detail[]" placeholder="Detailed description of this service — shown in the proposal document…"></textarea>
-                <div class="service-row">
-                  <div class="input-wrap">
-                    <span class="input-label">Quantity</span>
-                    <input class="qty-amt-input" type="number" name="quantity[]" value="1" min="1" oninput="recalc()">
-                  </div>
-                  <div class="input-wrap">
-                    <span class="input-label">Amount (₹)</span>
-                    <input class="qty-amt-input" type="number" name="amount[]" placeholder="0.00" min="0" step="0.01" oninput="recalc()">
+              <div class="pl-service-body">
+                <input class="pl-svc-name" type="text" name="service_name[]"
+                       placeholder="Service name — e.g. Logo Design" required>
+                <div class="pl-svc-main-row">
+                  <textarea class="pl-svc-desc" name="service_detail[]"
+                            placeholder="Detailed description of this service…"></textarea>
+                  <div class="pl-svc-amounts">
+                    <div class="pl-input-wrap">
+                      <span class="pl-input-lbl">Quantity</span>
+                      <input class="pl-num-input" type="number" name="quantity[]" value="1" min="1" oninput="recalc()">
+                    </div>
+                    <div class="pl-input-wrap">
+                      <span class="pl-input-lbl">Amount (₹)</span>
+                      <input class="pl-num-input" type="number" name="amount[]" placeholder="0.00" min="0" step="0.01" oninput="recalc()">
+                    </div>
+                    <p class="pl-item-sub">Subtotal: <span class="item-sub-val">₹0.00</span></p>
                   </div>
                 </div>
               </div>
             </div>
+ 
           </div>
-
-          <button type="button" class="add-btn" onclick="addItem()">＋ Add another service</button>
-
-          <!-- TOTALS -->
-          <div class="totals-row">
-            <div class="totals-box">
-              <div class="total-line">
+ 
+          <button type="button" class="pl-add-btn" onclick="addItem()">+ Add another service</button>
+ 
+          <!-- Totals -->
+          <div class="pl-totals-wrap">
+            <div class="pl-totals-box">
+              <div class="pl-total-line">
                 <span>Subtotal</span>
-                <span class="total-val" id="subtotal">₹0.00</span>
+                <span class="pl-total-val" id="subtotal">₹0.00</span>
               </div>
-              <div class="total-line">
+              <div class="pl-total-line">
                 <span>Tax (0%)</span>
-                <span class="total-val">₹0.00</span>
+                <span class="pl-total-val">₹0.00</span>
               </div>
-              <div class="total-line grand">
+              <div class="pl-total-line grand">
                 <span>Total</span>
-                <span class="total-val" id="grand-total">₹0.00</span>
+                <span class="pl-total-val" id="grand-total">₹0.00</span>
               </div>
             </div>
           </div>
-
-          <!-- FOOTER ACTIONS -->
-          <div class="footer-row">
-            <p class="footer-note">All amounts in Indian Rupees (INR)</p>
-            <div class="footer-actions">
-              <a href="{% url 'proposal_list' %}" class="cancel-link">Cancel</a>
-              <button type="submit" class="save-btn">Save Proposal →</button>
-            </div>
-          </div>
-
-        </form>
+ 
+        </div>
       </div>
-
-    </div>
-  </div>
+ 
+      <!-- ── Footer / Actions ── -->
+      <div class="pl-footer-card">
+        <span class="pl-footer-note">
+          <svg width="13" height="13" fill="none" stroke="#9ca3af" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          All amounts in Indian Rupees (INR)
+        </span>
+        <div class="pl-footer-actions">
+          <a href="{% url 'proposal_list' %}" class="pl-btn-cancel">Cancel</a>
+          <button type="submit" class="pl-btn-submit">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Save Proposal
+          </button>
+        </div>
+      </div>
+ 
+    </div><!-- /container -->
+  </form>
+ 
 </div>
-
+ 
 <script>
   let itemCount = 1;
-
+ 
+  function fmt(v) {
+    return '₹' + v.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+ 
   function addItem() {
     itemCount++;
     const wrap = document.getElementById('service-items');
     const div = document.createElement('div');
-    div.className = 'service-item';
+    div.className = 'pl-service-item';
     div.innerHTML = `
-      <div class="service-item-header">
-        <span class="item-num">Service ${itemCount}</span>
-        <button type="button" class="rm-btn" onclick="removeItem(this)" title="Remove">✕</button>
+      <div class="pl-service-head">
+        <span class="pl-item-num">Service ${itemCount}</span>
+        <button type="button" class="pl-rm-btn" onclick="removeItem(this)" title="Remove">✕</button>
       </div>
-      <div class="service-item-body">
-        <input class="service-name-input" type="text" name="service_name[]" placeholder="Service name" required>
-        <textarea class="service-detail-input" name="service_detail[]" placeholder="Detailed description of this service…"></textarea>
-        <div class="service-row">
-          <div class="input-wrap">
-            <span class="input-label">Quantity</span>
-            <input class="qty-amt-input" type="number" name="quantity[]" value="1" min="1" oninput="recalc()">
-          </div>
-          <div class="input-wrap">
-            <span class="input-label">Amount (₹)</span>
-            <input class="qty-amt-input" type="number" name="amount[]" placeholder="0.00" min="0" step="0.01" oninput="recalc()">
+      <div class="pl-service-body">
+        <input class="pl-svc-name" type="text" name="service_name[]" placeholder="Service name" required>
+        <div class="pl-svc-main-row">
+          <textarea class="pl-svc-desc" name="service_detail[]" placeholder="Detailed description of this service…"></textarea>
+          <div class="pl-svc-amounts">
+            <div class="pl-input-wrap">
+              <span class="pl-input-lbl">Quantity</span>
+              <input class="pl-num-input" type="number" name="quantity[]" value="1" min="1" oninput="recalc()">
+            </div>
+            <div class="pl-input-wrap">
+              <span class="pl-input-lbl">Amount (₹)</span>
+              <input class="pl-num-input" type="number" name="amount[]" placeholder="0.00" min="0" step="0.01" oninput="recalc()">
+            </div>
+            <p class="pl-item-sub">Subtotal: <span class="item-sub-val">₹0.00</span></p>
           </div>
         </div>
       </div>`;
     wrap.appendChild(div);
     renumberItems();
   }
-
+ 
   function removeItem(btn) {
-    const items = document.querySelectorAll('.service-item');
+    const items = document.querySelectorAll('.pl-service-item');
     if (items.length > 1) {
-      btn.closest('.service-item').remove();
+      btn.closest('.pl-service-item').remove();
       recalc();
       renumberItems();
     }
   }
-
+ 
   function renumberItems() {
-    document.querySelectorAll('.item-num').forEach((el, i) => {
+    document.querySelectorAll('.pl-item-num').forEach((el, i) => {
       el.textContent = `Service ${i + 1}`;
     });
-    itemCount = document.querySelectorAll('.service-item').length;
+    itemCount = document.querySelectorAll('.pl-service-item').length;
   }
-
+ 
   function recalc() {
     let sub = 0;
-    document.querySelectorAll('.service-item').forEach(item => {
+    document.querySelectorAll('.pl-service-item').forEach(item => {
       const qty = parseFloat(item.querySelector('input[name="quantity[]"]')?.value) || 0;
       const amt = parseFloat(item.querySelector('input[name="amount[]"]')?.value) || 0;
-      sub += qty * amt;
+      const itemSub = qty * amt;
+      sub += itemSub;
+      const subEl = item.querySelector('.item-sub-val');
+      if (subEl) subEl.textContent = fmt(itemSub);
     });
-    const fmt = v => '₹' + v.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     document.getElementById('subtotal').textContent = fmt(sub);
     document.getElementById('grand-total').textContent = fmt(sub);
   }
-
+ 
   function loadClient() {
     const id = document.getElementById('client-select').value;
     if (!id) return;
@@ -576,7 +706,7 @@
   }
 </script>
 {% endblock %}
-
+ 
 {% block js %}
 <script src="{% static 'assets/js/jquery.min.js' %}"></script>
 <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>

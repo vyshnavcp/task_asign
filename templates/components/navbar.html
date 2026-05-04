@@ -84,9 +84,10 @@
                   <ul class="sidebar-submenu">
                     {% if not request.user.is_superuser %}
                         <li>
-                            <a href="{% url 'my_tasks' %}">
-                                My Task
-                            </a>
+                            <a href="{% url 'my_tasks' %}" style="display:flex; align-items:center; gap:8px;">
+                              <i class="bi bi-list-task"></i>
+                              <span>My Task</span>
+                          </a>
                         </li>
 
                         <li style="position:relative;">
