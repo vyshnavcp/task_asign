@@ -1,0 +1,239 @@
+{% extends 'main.html' %}
+{% block title %}Upload Leads{% endblock %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
+    <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+
+<style>
+  /* ───── PAGE WRAPPER ───── */
+  .pl-wrap {
+    padding: 28px 28px;
+    background: #f4f5f7;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
+  /* ───── TOP BAR ───── */
+  .pl-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    background-color: white;
+    padding: 22px;
+  }
+  .pl-topbar h4 {
+    font-size: 21px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+  }
+  .pl-topbar p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 4px 0 0;
+  }
+
+  /* ───── FORM CARD ───── */
+  .pl-form-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+    overflow: hidden;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  /* ───── FORM BODY ───── */
+  .pl-form-body {
+    padding: 28px 28px;
+  }
+
+  /* ───── FORM ELEMENTS ───── */
+  .pl-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+  }
+
+  .pl-field {
+    margin-bottom: 20px;
+  }
+
+  /* ───── FILE UPLOAD AREA ───── */
+  .pl-file-area {
+    width: 100%;
+    border: 2px dashed #d1d5db;
+    border-radius: 7px;
+    padding: 32px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    box-sizing: border-box;
+    background: #fafafa;
+  }
+  .pl-file-area:hover {
+    border-color: #22c55e;
+    background: #f0fdf4;
+  }
+  .pl-file-area.dragover {
+    border-color: #22c55e;
+    background: #f0fdf4;
+  }
+  .pl-file-area input[type="file"] {
+    display: none;
+  }
+  .pl-file-icon {
+    font-size: 36px;
+    color: #9ca3af;
+    margin-bottom: 10px;
+  }
+  .pl-file-text {
+    font-size: 13.5px;
+    color: #6b7280;
+    margin: 0 0 6px;
+  }
+  .pl-file-text span {
+    color: #22c55e;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .pl-file-hint {
+    font-size: 12px;
+    color: #9ca3af;
+    margin: 0;
+  }
+  .pl-file-name {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #374151;
+    font-weight: 500;
+    display: none;
+  }
+  .pl-file-name.visible {
+    display: block;
+  }
+
+  /* ───── SUBMIT BUTTON ───── */
+  .pl-btn-submit {
+    width: 100%;
+    background: #22c55e;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 11px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 4px;
+  }
+  .pl-btn-submit:hover { background: #16a34a; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pl-wrap">
+
+  <!-- Top bar -->
+  <div class="pl-topbar">
+    <div>
+      <h4>Upload Leads</h4>
+      <p>Upload an Excel file to generate leads</p>
+    </div>
+  </div>
+
+  <!-- Form Card -->
+  <div class="pl-form-card">
+    <div class="pl-form-body">
+      <form method="post" enctype="multipart/form-data" id="uploadForm">
+        {% csrf_token %}
+
+        <!-- File Upload -->
+        <div class="pl-field">
+          <label class="pl-label">Excel File</label>
+          <div class="pl-file-area" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <input type="file" name="file" id="fileInput" accept=".xlsx,.xls,.csv" required>
+            <div class="pl-file-icon">📊</div>
+            <p class="pl-file-text">Drag & drop your file here or <span>browse</span></p>
+            <p class="pl-file-hint">.xlsx, .xls or .csv — max 10 MB</p>
+            <p class="pl-file-name" id="fileName"></p>
+          </div>
+        </div>
+
+        <button type="submit" class="pl-btn-submit">Upload &amp; Generate Leads</button>
+
+      </form>
+    </div>
+  </div><!-- /form card -->
+
+</div><!-- /wrap -->
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
+    <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
+    <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
+    <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
+    <script src="{% static 'assets/js/config.js' %}"></script>
+    <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
+    <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
+    <script src="{% static 'assets/js/slick/slick.js' %}"></script>
+    <script src="{% static 'assets/js/header-slick.js' %}"></script>
+    <script src="{% static 'assets/js/notify/bootstrap-notify.min.js' %}"></script>
+    <script src="{% static 'assets/js/notify/index.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/datatable.custom.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatables/datatable.custom1.js' %}"></script>
+    <script src="{% static 'assets/js/owlcarousel/owl.carousel.js' %}"></script>
+    <script src="{% static 'assets/js/owlcarousel/owl-custom.js' %}"></script>
+    <script src="{% static 'assets/js/height-equal.js' %}"></script>
+
+    <script>
+      const fileInput = document.getElementById('fileInput');
+      const dropZone  = document.getElementById('dropZone');
+      const fileNameEl = document.getElementById('fileName');
+
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) {
+          fileNameEl.textContent = '📎 ' + fileInput.files[0].name;
+          fileNameEl.classList.add('visible');
+        }
+      });
+
+      dropZone.addEventListener('dragover', e => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      });
+      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+      dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+          fileInput.files = e.dataTransfer.files;
+          fileNameEl.textContent = '📎 ' + e.dataTransfer.files[0].name;
+          fileNameEl.classList.add('visible');
+        }
+      });
+    </script>
+{% endblock %}

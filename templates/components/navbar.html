@@ -181,7 +181,7 @@
                       </svg>
                       <svg class="fill-icon">
                         <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
-                      <i class="bi bi-file-earmark-text" style="font-size:medium;"></i><span>Invoice</span></a>
+                      <i class="bi bi-receipt-cutoff" style="font-size:medium;"></i><span>Invoice</span></a>
                     <ul class="sidebar-submenu">
                         
                          <li><a href="{% url 'invoice_list' %}">Invoice List</a></li>
@@ -190,6 +190,19 @@
 
                       
                      
+                    </ul>
+                  </li>
+                   <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
+                      <svg class="stroke-icon">
+                        <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
+                      </svg>
+                      <svg class="fill-icon">
+                        <use href="../assets/svg/icon-sprite.svg#fill-product"></use>
+                      <i class="fa-solid fa-people-group" style="font-size:medium;"></i><span>Lead</span></a>
+                    <ul class="sidebar-submenu">
+                        
+                         <li><a href="{% url 'upload_leads' %}">Lead Generate</a></li>
+                         <li><a href="{% url 'lead_list' %}">Lead List</a></li>
                     </ul>
                   </li>
                    {% endif %}

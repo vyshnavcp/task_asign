@@ -259,7 +259,23 @@ class InvoiceItem(models.Model):
     def line_total(self):
         return self.quantity * self.amount
     
-    
+class Lead(models.Model):
+    CALL_STATUS = [
+        ('called','Not Called'),
+        ('not_called', 'Not Called'),
+    ]
+    ATTEND_STATUS = (
+        ('attended', 'Attended'),
+        ('not_attended', 'Not Attended'),
+    )
+    name= models.CharField(max_length=150)
+    email=models.EmailField()
+    phone=models.CharField(max_length=15)
+    call_status = models.CharField(max_length=20, choices=CALL_STATUS, default='not_called')
+    attend_status = models.CharField(max_length=20, choices=ATTEND_STATUS, default='not_attended')
+    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return self.name
 
 
 

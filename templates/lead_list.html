@@ -1,0 +1,291 @@
+{% extends 'main.html' %}
+{% block title %}Lead Management{% endblock %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/slick-theme.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/owlcarousel.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
+    <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+
+<style>
+  .pl-wrap {
+    padding: 28px;
+    background: #f4f5f7;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  .pl-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    background-color: white;
+    padding: 22px;
+  }
+  .pl-topbar h4 {
+    font-size: 21px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+  }
+  .pl-topbar p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 4px 0 0;
+  }
+  .pl-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+    overflow: hidden;
+  }
+  .pl-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    table-layout: auto;
+  }
+  .pl-table thead tr {
+    border-bottom: 1.5px solid #e8e8e8;
+    background: #fff;
+  }
+  .pl-table thead th {
+    padding: 13px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #222;
+    text-align: left;
+    white-space: nowrap;
+  }
+  .pl-table tbody tr {
+    border-bottom: 1px solid #f2f2f2;
+    transition: background 0.1s;
+  }
+  .pl-table tbody tr:last-child { border-bottom: none; }
+  .pl-table tbody tr:hover { background: #f9fffe; }
+  .pl-table td {
+    padding: 14px 18px;
+    color: #374151;
+    vertical-align: middle;
+    line-height: 1.4;
+  }
+  .pl-name { font-weight: 700; color: #1a1a1a; font-size: 13.5px; }
+  .pl-text { color: #374151; font-size: 13.5px; }
+
+  .pl-select-inline {
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 6px 30px 6px 10px;
+    font-size: 12.5px;
+    color: #374151;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    min-width: 130px;
+  }
+  .pl-select-inline:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
+  }
+
+  /* Saving states */
+  .pl-select-inline.saving {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245,158,11,0.1);
+    opacity: 0.7;
+  }
+  .pl-select-inline.saved {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
+  }
+  .pl-select-inline.error {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+  }
+
+  /* Toast */
+  .pl-toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 9999;
+    pointer-events: none;
+  }
+  .pl-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .pl-toast.success { background: #16a34a; }
+  .pl-toast.error   { background: #ef4444; }
+
+  .pl-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #9ca3af;
+    font-size: 14px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pl-wrap">
+
+  <div class="pl-topbar">
+    <div>
+      <h4>Lead Management</h4>
+      <p>Changes are saved automatically</p>
+    </div>
+  </div>
+
+  <div class="pl-card">
+    <div style="overflow-x:auto;">
+      <table class="pl-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Call Status</th>
+            <th>Attend Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lead in leads %}
+          <tr>
+            <td class="pl-text">{{ forloop.counter }}</td>
+            <td><span class="pl-name">{{ lead.name }}</span></td>
+            <td class="pl-text">{{ lead.email }}</td>
+            <td class="pl-text">{{ lead.phone }}</td>
+
+            <td>
+              <select
+                class="pl-select-inline"
+                data-lead-id="{{ lead.id }}"
+                data-field="call_status"
+                onchange="updateStatus(this)">
+                <option value="called"     {% if lead.call_status == "called" %}selected{% endif %}>Called</option>
+                <option value="not_called" {% if lead.call_status == "not_called" %}selected{% endif %}>Not Called</option>
+              </select>
+            </td>
+
+            <td>
+              <select
+                class="pl-select-inline"
+                data-lead-id="{{ lead.id }}"
+                data-field="attend_status"
+                onchange="updateStatus(this)">
+                <option value="attended"     {% if lead.attend_status == "attended" %}selected{% endif %}>Attended</option>
+                <option value="not_attended" {% if lead.attend_status == "not_attended" %}selected{% endif %}>Not Attended</option>
+              </select>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6">
+              <div class="pl-empty">No leads found.</div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast notification -->
+<div class="pl-toast" id="pl-toast"></div>
+
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
+    <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
+    <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
+    <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
+    <script src="{% static 'assets/js/config.js' %}"></script>
+    <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
+    <script src="{% static 'assets/js/sidebar-pin.js' %}"></script>
+    <script src="{% static 'assets/js/height-equal.js' %}"></script>
+
+<script>
+  const CSRF = '{{ csrf_token }}';
+  let toastTimer;
+
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('pl-toast');
+    t.textContent = msg;
+    t.className = 'pl-toast show ' + type;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  function updateStatus(select) {
+    const leadId = select.dataset.leadId;
+    const field  = select.dataset.field;
+    const value  = select.value;
+
+    select.classList.add('saving');
+    select.disabled = true;
+
+    const body = new FormData();
+    body.append('csrfmiddlewaretoken', CSRF);
+    body.append(field, value);
+
+    fetch(`/leads/update/${leadId}/`, { method: 'POST', body })
+      .then(r => r.json())
+      .then(data => {
+        select.classList.remove('saving');
+        select.disabled = false;
+        if (data.success) {
+          select.classList.add('saved');
+          showToast('✓ Saved', 'success');
+          setTimeout(() => select.classList.remove('saved'), 1500);
+        } else {
+          select.classList.add('error');
+          showToast('Failed to save', 'error');
+          setTimeout(() => select.classList.remove('error'), 1500);
+        }
+      })
+      .catch(() => {
+        select.classList.remove('saving');
+        select.disabled = false;
+        select.classList.add('error');
+        showToast('Network error', 'error');
+        setTimeout(() => select.classList.remove('error'), 1500);
+      });
+  }
+</script>
+{% endblock %}

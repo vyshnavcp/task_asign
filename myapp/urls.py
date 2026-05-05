@@ -53,6 +53,9 @@ urlpatterns = [
     path('invoices/create/', views.create_invoice, name='create_invoice'),
     path('invoices/edit/<int:pk>/', views.edit_invoice, name='edit_invoice'),
     path('invoices/delete/<int:pk>/', views.delete_invoice, name='delete_invoice'),
+    path('upload-leads/', views.upload_leads, name='upload_leads'),
+    path('leads/', views.lead_list, name='lead_list'),
+    path('leads/update/<int:lead_id>/',views.update_lead_status, name='update_lead_status'),
 
 
 

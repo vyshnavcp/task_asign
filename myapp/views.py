@@ -23,6 +23,9 @@ from django.urls import reverse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from io import BytesIO
+import openpyxl
+from django.views.decorators.http import require_POST
+
 # Create your views here.
 def home(request):
     return render(request,'home.html')
@@ -1049,3 +1052,59 @@ def delete_invoice(request, pk):
     invoice = get_object_or_404(Invoice, pk=pk)
     invoice.delete()
     return redirect('invoice_list')
+
+def upload_leads(request):
+    if request.method == "POST":
+        excel_file = request.FILES.get('file')
+        if excel_file:
+            wb = openpyxl.load_workbook(excel_file)
+            sheet = wb.active
+            for row in sheet.iter_rows(min_row=2, values_only=True):
+                name, email, phone = row
+
+                Lead.objects.create(
+                    name=name,
+                    email=email,
+                    phone=phone
+                )
+        return redirect('lead_list')
+    return render(request, 'upload_leads.html')
+
+@require_POST
+def update_lead_status(request, lead_id):
+    try:
+        lead = Lead.objects.get(id=lead_id)
+        call_status = request.POST.get('call_status')
+        attend_status = request.POST.get('attend_status')
+
+        if call_status:
+            lead.call_status = call_status
+        if attend_status:
+            lead.attend_status = attend_status
+
+        lead.save()
+        return JsonResponse({'success': True})
+    except Lead.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Lead not found'}, status=404)
+    
+def lead_list(request):
+    leads = Lead.objects.all()
+
+    if request.method == "POST":
+        for lead in leads:
+            call_status = request.POST.get(f'call_status_{lead.id}')
+            attend_status = request.POST.get(f'attend_status_{lead.id}')
+
+            if call_status:
+                lead.call_status = call_status
+            if attend_status:
+                lead.attend_status = attend_status
+
+            lead.save()
+
+        return redirect('lead_list')
+
+    return render(request, 'lead_list.html', {'leads': leads})
+            
+        
+        
