@@ -1,5 +1,5 @@
 {% extends 'main.html' %}
-{% block title %}Lead Management{% endblock %}
+{% block title %}Lead Update Log{% endblock %}
 {% load static %}
 
 {% block css %}
@@ -47,6 +47,22 @@
     color: #6b7280;
     margin: 4px 0 0;
   }
+  .pl-btn-back {
+    background: #f3f4f6;
+    color: #374151 !important;
+    border: none;
+    border-radius: 7px;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 9px 18px;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+  .pl-btn-back:hover { background: #e5e7eb; color: #111 !important; }
 
   /* ── Filter bar ── */
   .pl-filter-wrap {
@@ -110,7 +126,6 @@
     border-color: #22c55e;
     box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
   }
-
   .pl-filter-reset {
     background: none;
     border: 1px solid #d1d5db;
@@ -124,7 +139,6 @@
     white-space: nowrap;
   }
   .pl-filter-reset:hover { background: #f3f4f6; color: #374151; }
-
   .pl-filter-count {
     font-size: 12.5px;
     color: #9ca3af;
@@ -176,67 +190,40 @@
   .pl-text { color: #374151; font-size: 13.5px; }
   .pl-sub  { font-size: 11px; color: #94a3b8; margin-top: 2px; }
 
-  /* ── Inline select ── */
-  .pl-select-inline {
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    padding: 6px 30px 6px 10px;
-    font-size: 12.5px;
-    color: #374151;
-    background: #fff;
-    outline: none;
-    transition: border-color 0.15s;
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    min-width: 130px;
-    font-family: 'Segoe UI', Arial, sans-serif;
-  }
-  .pl-select-inline:focus {
-    border-color: #22c55e;
-    box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
-  }
-  .pl-select-inline.saving {
-    border-color: #f59e0b;
-    box-shadow: 0 0 0 3px rgba(245,158,11,0.1);
-    opacity: 0.7;
-  }
-  .pl-select-inline.saved {
-    border-color: #22c55e;
-    box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
-  }
-  .pl-select-inline.error {
-    border-color: #ef4444;
-    box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
-  }
-
-  /* ── Actions ── */
-  .pl-actions {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    justify-content: flex-end;
-  }
-  .pl-icon {
+  /* ── Avatar ── */
+  .pl-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #22c55e;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 5px;
-    border: none;
-    background: transparent;
-    color: #6b7280;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background 0.13s, color 0.13s;
-    padding: 0;
+    margin-right: 8px;
+    flex-shrink: 0;
+    text-transform: uppercase;
   }
-  .pl-icon svg { display: block; }
-  .pl-icon:hover     { background: #f3f4f6; color: #222; }
-  .pl-icon.del:hover { background: #fef2f2; color: #ef4444; }
+  .pl-user-cell {
+    display: flex;
+    align-items: center;
+  }
+
+  /* ── Badges ── */
+  .pl-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+  .pl-badge.called       { background: #dcfce7; color: #16a34a; }
+  .pl-badge.not-called   { background: #fef9c3; color: #b45309; }
+  .pl-badge.attended     { background: #dbeafe; color: #1d4ed8; }
+  .pl-badge.not-attended { background: #fce7f3; color: #be185d; }
 
   /* ── Empty ── */
   .pl-empty {
@@ -246,66 +233,6 @@
     font-size: 14px;
   }
   #pl-no-results { display: none; }
-
-  /* ── Delete Modal ── */
-  #pl-del-modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.38);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-  }
-  #pl-del-modal.show { display: flex; }
-  .pl-modal-box {
-    background: #fff;
-    border-radius: 10px;
-    padding: 26px 28px;
-    max-width: 370px;
-    width: 92%;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-  }
-  .pl-modal-box h6 { font-size: 15px; font-weight: 700; color: #111; margin: 0 0 10px; }
-  .pl-modal-box p  { font-size: 13.5px; color: #6b7280; margin: 0 0 20px; }
-  .pl-modal-foot   { display: flex; gap: 10px; justify-content: flex-end; }
-  .pl-modal-cancel {
-    border: 1px solid #d1d5db; background: #fff; border-radius: 6px;
-    padding: 7px 18px; font-size: 13px; cursor: pointer; color: #374151;
-    font-family: 'Segoe UI', Arial, sans-serif;
-  }
-  .pl-modal-cancel:hover { background: #f9fafb; }
-  .pl-modal-del {
-    background: #ef4444; color: #fff; border: none; border-radius: 6px;
-    padding: 7px 18px; font-size: 13px; font-weight: 600; cursor: pointer;
-    text-decoration: none; display: inline-block;
-    font-family: 'Segoe UI', Arial, sans-serif;
-  }
-  .pl-modal-del:hover { background: #dc2626; color: #fff; text-decoration: none; }
-
-  /* ── Toast ── */
-  .pl-toast {
-    position: fixed;
-    bottom: 28px;
-    right: 28px;
-    background: #1a1a1a;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 500;
-    padding: 10px 18px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.2s, transform 0.2s;
-    z-index: 9999;
-    pointer-events: none;
-  }
-  .pl-toast.show    { opacity: 1; transform: translateY(0); }
-  .pl-toast.success { background: #16a34a; }
-  .pl-toast.error   { background: #ef4444; }
 </style>
 {% endblock %}
 
@@ -315,9 +242,15 @@
   <!-- Top bar -->
   <div class="pl-topbar">
     <div>
-      <h4>Lead Management</h4>
-      <p>Changes are saved automatically</p>
+      <h4>Lead Update Log</h4>
+      <p>Track who updated each lead's call and attend status</p>
     </div>
+    <a href="{% url 'lead_list' %}" class="pl-btn-back">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Back to Leads
+    </a>
   </div>
 
   <!-- Card -->
@@ -325,6 +258,8 @@
 
     <!-- Filter bar -->
     <div class="pl-filter-wrap">
+
+      <!-- Search -->
       <div class="pl-search-box">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -333,24 +268,28 @@
           type="text"
           id="pl-search"
           class="pl-search-input"
-          placeholder="Search name, email, phone…"
+          placeholder="Search lead or staff name…"
           oninput="applyFilters()">
       </div>
 
+      <!-- Filter by call status -->
       <select id="fl-call" class="pl-filter-select" onchange="applyFilters()">
         <option value="">All Call Status</option>
         <option value="called">Called</option>
         <option value="not_called">Not Called</option>
       </select>
 
+      <!-- Filter by attend status -->
       <select id="fl-attend" class="pl-filter-select" onchange="applyFilters()">
         <option value="">All Attend Status</option>
         <option value="attended">Attended</option>
         <option value="not_attended">Not Attended</option>
       </select>
 
+      <!-- Reset -->
       <button class="pl-filter-reset" onclick="resetFilters()">Reset</button>
 
+      <!-- Count -->
       <span class="pl-filter-count" id="pl-count"></span>
     </div>
 
@@ -359,92 +298,78 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Name</th>
-            <th>Email</th>
+            <th>Lead Name</th>
             <th>Phone</th>
             <th>Call Status</th>
             <th>Attend Status</th>
             <th>Updated By</th>
-            <th style="text-align:right;">Actions</th>
+            <th>Updated At</th>
           </tr>
         </thead>
         <tbody id="pl-tbody">
-          {% for lead in leads %}
+          {% for lead in updated_leads %}
           <tr class="pl-row"
-              data-search="{{ lead.name|lower }} {{ lead.email|lower }} {{ lead.phone }}"
+              data-search="{{ lead.name|lower }} {{ lead.updated_by.username|lower }} {{ lead.updated_by.get_full_name|lower }}  {{ lead.phone }}"
               data-call="{{ lead.call_status }}"
               data-attend="{{ lead.attend_status }}">
 
             <td class="pl-text pl-counter">{{ forloop.counter }}</td>
 
-            <td><span class="pl-name">{{ lead.name }}</span></td>
+            <!-- Lead -->
+            <td>
+              <span class="pl-name">{{ lead.name }}</span>
+              <div class="pl-sub">{{ lead.email }}</div>
+            </td>
 
-            <td class="pl-text">{{ lead.email }}</td>
-
+            <!-- Phone -->
             <td class="pl-text">{{ lead.phone }}</td>
 
             <!-- Call Status -->
             <td>
-              <select
-                class="pl-select-inline"
-                data-lead-id="{{ lead.id }}"
-                data-field="call_status"
-                onchange="updateStatus(this)">
-                <option value="called"     {% if lead.call_status == "called" %}selected{% endif %}>Called</option>
-                <option value="not_called" {% if lead.call_status == "not_called" %}selected{% endif %}>Not Called</option>
-              </select>
+              {% if lead.call_status == 'called' %}
+                <span class="pl-badge called">Called</span>
+              {% else %}
+                <span class="pl-badge not-called">Not Called</span>
+              {% endif %}
             </td>
 
             <!-- Attend Status -->
             <td>
-              <select
-                class="pl-select-inline"
-                data-lead-id="{{ lead.id }}"
-                data-field="attend_status"
-                onchange="updateStatus(this)">
-                <option value="attended"     {% if lead.attend_status == "attended" %}selected{% endif %}>Attended</option>
-                <option value="not_attended" {% if lead.attend_status == "not_attended" %}selected{% endif %}>Not Attended</option>
-              </select>
+              {% if lead.attend_status == 'attended' %}
+                <span class="pl-badge attended">Attended</span>
+              {% else %}
+                <span class="pl-badge not-attended">Not Attended</span>
+              {% endif %}
             </td>
 
             <!-- Updated By -->
             <td>
-              {% if lead.updated_by %}
-                <span class="pl-name">{{ lead.updated_by.get_full_name|default:lead.updated_by.username }}</span>
-                <div class="pl-sub">{{ lead.updated_at|date:"d M Y, H:i" }}</div>
-              {% else %}
-                <span class="pl-text" style="color:#9ca3af;">—</span>
-              {% endif %}
+              <div class="pl-user-cell">
+                <div class="pl-avatar">
+                  {{ lead.updated_by.get_full_name|default:lead.updated_by.username|slice:":1" }}
+                </div>
+                <div>
+                  <span class="pl-name">{{ lead.updated_by.get_full_name|default:lead.updated_by.username }}</span>
+                  <div class="pl-sub">{{ lead.updated_by.email }}</div>
+                </div>
+              </div>
             </td>
 
-            <!-- Actions -->
+            <!-- Updated At -->
             <td>
-              <div class="pl-actions">
-                <button
-                  class="pl-icon del"
-                  title="Delete"
-                  data-url="{% url 'delete_lead' lead.id %}"
-                  data-name="{{ lead.name }}"
-                  onclick="plDelOpen(this)">
-                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <polyline points="3 6 5 6 21 6"/>
-                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                    <path d="M10 11v6M14 11v6"/>
-                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                  </svg>
-                </button>
-              </div>
+              <span class="pl-text">{{ lead.updated_at|date:"d M Y" }}</span>
+              <div class="pl-sub">{{ lead.updated_at|date:"H:i" }}</div>
             </td>
 
           </tr>
           {% empty %}
           <tr>
-            <td colspan="8"><div class="pl-empty">No leads found.</div></td>
+            <td colspan="7"><div class="pl-empty">No updates recorded yet.</div></td>
           </tr>
           {% endfor %}
 
           <tr id="pl-no-results">
-            <td colspan="8"><div class="pl-empty">No leads match your filters.</div></td>
+            <td colspan="7"><div class="pl-empty">No records match your filters.</div></td>
           </tr>
         </tbody>
       </table>
@@ -452,22 +377,6 @@
   </div>
 
 </div>
-
-<!-- Delete Modal -->
-<div id="pl-del-modal">
-  <div class="pl-modal-box">
-    <h6>Delete Lead</h6>
-    <p id="pl-del-msg"></p>
-    <div class="pl-modal-foot">
-      <button class="pl-modal-cancel" onclick="plDelClose()">Cancel</button>
-      <a id="pl-del-link" href="#" class="pl-modal-del">Delete</a>
-    </div>
-  </div>
-</div>
-
-<!-- Toast -->
-<div class="pl-toast" id="pl-toast"></div>
-
 {% endblock %}
 
 {% block js %}
@@ -483,70 +392,6 @@
     <script src="{% static 'assets/js/height-equal.js' %}"></script>
 
 <script>
-  const CSRF = '{{ csrf_token }}';
-  let toastTimer;
-
-  /* ── Toast ── */
-  function showToast(msg, type = 'success') {
-    const t = document.getElementById('pl-toast');
-    t.textContent = msg;
-    t.className = 'pl-toast show ' + type;
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
-  }
-
-  /* ── Live AJAX status update ── */
-  function updateStatus(select) {
-    const leadId = select.dataset.leadId;
-    const field  = select.dataset.field;
-    const value  = select.value;
-
-    // keep data attributes in sync for filtering
-    const row = select.closest('tr');
-    if (field === 'call_status')   row.dataset.call   = value;
-    if (field === 'attend_status') row.dataset.attend = value;
-
-    select.classList.add('saving');
-    select.disabled = true;
-
-    const body = new FormData();
-    body.append('csrfmiddlewaretoken', CSRF);
-    body.append(field, value);
-
-    fetch(`/leads/update/${leadId}/`, { method: 'POST', body })
-      .then(r => r.json())
-      .then(data => {
-        select.classList.remove('saving');
-        select.disabled = false;
-        if (data.success) {
-          select.classList.add('saved');
-          showToast('✓ Saved', 'success');
-
-          // update the Updated By cell with response data
-          if (data.updated_by || data.updated_at) {
-            const cells = row.querySelectorAll('td');
-            const updCell = cells[cells.length - 2]; // second last cell
-            updCell.innerHTML =
-              `<span class="pl-name">${data.updated_by || ''}</span>` +
-              `<div class="pl-sub">${data.updated_at || ''}</div>`;
-          }
-
-          setTimeout(() => select.classList.remove('saved'), 1500);
-        } else {
-          select.classList.add('error');
-          showToast('Failed to save', 'error');
-          setTimeout(() => select.classList.remove('error'), 1500);
-        }
-      })
-      .catch(() => {
-        select.classList.remove('saving');
-        select.disabled = false;
-        select.classList.add('error');
-        showToast('Network error', 'error');
-        setTimeout(() => select.classList.remove('error'), 1500);
-      });
-  }
-
   /* ── Combined filters ── */
   function applyFilters() {
     const q      = document.getElementById('pl-search').value.trim().toLowerCase();
@@ -571,30 +416,15 @@
     });
 
     document.getElementById('pl-no-results').style.display = visible === 0 ? '' : 'none';
-    document.getElementById('pl-count').textContent = visible + ' lead' + (visible !== 1 ? 's' : '');
+    document.getElementById('pl-count').textContent = visible + ' record' + (visible !== 1 ? 's' : '');
   }
 
-  /* ── Reset filters ── */
   function resetFilters() {
     document.getElementById('pl-search').value = '';
     document.getElementById('fl-call').value   = '';
     document.getElementById('fl-attend').value = '';
     applyFilters();
   }
-
-  /* ── Delete modal ── */
-  function plDelOpen(btn) {
-    document.getElementById('pl-del-msg').textContent =
-      'Are you sure you want to delete "' + btn.getAttribute('data-name') + '"? This cannot be undone.';
-    document.getElementById('pl-del-link').href = btn.getAttribute('data-url');
-    document.getElementById('pl-del-modal').classList.add('show');
-  }
-  function plDelClose() {
-    document.getElementById('pl-del-modal').classList.remove('show');
-  }
-  document.getElementById('pl-del-modal').addEventListener('click', function(e) {
-    if (e.target === this) plDelClose();
-  });
 
   applyFilters();
 </script>

@@ -192,7 +192,18 @@
                      
                     </ul>
                   </li>
-                   <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
+                   
+                   {% endif %}
+               
+                  <li class="sidebar-main-title">
+                    <div>
+                       
+                      <h6 class="lan-1">Leads</h6>
+                   
+                    </div>
+                  </li>
+                 
+                  <li class="sidebar-list"><i ></i><a class="sidebar-link sidebar-title" href="#">
                       <svg class="stroke-icon">
                         <use href="../assets/svg/icon-sprite.svg#stroke-widget"></use>
                       </svg>
@@ -203,10 +214,12 @@
                         
                          <li><a href="{% url 'upload_leads' %}">Lead Generate</a></li>
                          <li><a href="{% url 'lead_list' %}">Lead List</a></li>
+                         {% if request.user.is_superuser %}
+                          <li><a href="{% url 'lead_update_log' %}">Lead update by </a></li>
+                          {% endif %}
                     </ul>
                   </li>
-                   {% endif %}
-                 
+             
                  {% if request.user.is_superuser %}
                   <li class="sidebar-main-title">
                     <div>

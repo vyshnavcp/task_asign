@@ -56,6 +56,8 @@ urlpatterns = [
     path('upload-leads/', views.upload_leads, name='upload_leads'),
     path('leads/', views.lead_list, name='lead_list'),
     path('leads/update/<int:lead_id>/',views.update_lead_status, name='update_lead_status'),
+    path('delete-lead/<int:id>/', views.delete_lead, name='delete_lead'),
+    path('leads/update-log/', views.lead_update_log, name='lead_update_log'),
 
 
 

@@ -261,18 +261,20 @@ class InvoiceItem(models.Model):
     
 class Lead(models.Model):
     CALL_STATUS = [
-        ('called','Not Called'),
+        ('called', 'Called'),
         ('not_called', 'Not Called'),
     ]
-    ATTEND_STATUS = (
+    ATTEND_STATUS = [
         ('attended', 'Attended'),
         ('not_attended', 'Not Attended'),
-    )
-    name= models.CharField(max_length=150)
-    email=models.EmailField()
-    phone=models.CharField(max_length=15)
+    ]
+    name = models.CharField(max_length=150)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15)
     call_status = models.CharField(max_length=20, choices=CALL_STATUS, default='not_called')
     attend_status = models.CharField(max_length=20, choices=ATTEND_STATUS, default='not_attended')
+    updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.name

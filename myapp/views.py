@@ -1070,11 +1070,13 @@ def upload_leads(request):
         return redirect('lead_list')
     return render(request, 'upload_leads.html')
 
+
+
 @require_POST
 def update_lead_status(request, lead_id):
     try:
         lead = Lead.objects.get(id=lead_id)
-        call_status = request.POST.get('call_status')
+        call_status   = request.POST.get('call_status')
         attend_status = request.POST.get('attend_status')
 
         if call_status:
@@ -1082,29 +1084,49 @@ def update_lead_status(request, lead_id):
         if attend_status:
             lead.attend_status = attend_status
 
+        lead.updated_by = request.user
         lead.save()
-        return JsonResponse({'success': True})
+
+        return JsonResponse({
+            'success':    True,
+            'updated_by': request.user.get_full_name() or request.user.username,
+            'updated_at': lead.updated_at.strftime('%d %b %Y, %H:%M'),
+        })
     except Lead.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Lead not found'}, status=404)
     
 def lead_list(request):
-    leads = Lead.objects.all()
-
-    if request.method == "POST":
-        for lead in leads:
-            call_status = request.POST.get(f'call_status_{lead.id}')
-            attend_status = request.POST.get(f'attend_status_{lead.id}')
-
-            if call_status:
-                lead.call_status = call_status
-            if attend_status:
-                lead.attend_status = attend_status
-
-            lead.save()
-
-        return redirect('lead_list')
-
+    leads = Lead.objects.all().order_by('-created_at')
     return render(request, 'lead_list.html', {'leads': leads})
-            
+
+@require_POST
+def update_lead_status(request, lead_id):
+    try:
+        lead = Lead.objects.get(id=lead_id)
+        call_status   = request.POST.get('call_status')
+        attend_status = request.POST.get('attend_status')
+
+        if call_status:
+            lead.call_status = call_status
+        if attend_status:
+            lead.attend_status = attend_status
+
+        lead.updated_by = request.user
+        lead.save()
+
+        return JsonResponse({'success': True})
+    except Lead.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Lead not found'}, status=404)
+
+def delete_lead(request, id):
+    lead = get_object_or_404(Lead, id=id)
+    lead.delete()
+    return redirect('lead_list')
+
+def lead_update_log(request):
+    updated_leads = Lead.objects.filter(updated_by__isnull=False).order_by('-updated_at')
+    return render(request, 'lead_update_log.html', {'updated_leads': updated_leads})
+    
+    
         
         
